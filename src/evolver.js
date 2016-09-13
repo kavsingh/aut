@@ -16,6 +16,22 @@ export const createEvolver = rule => state => {
     return state.concat([output])
 }
 
+/*
+    rules from http://atlas.wolfram.com/01/01/
+    takes an array of previous generation combos that should result in a
+    next generation state of 1 (active, or black, or what have you)
+
+    i.e. given a rule as described in the link above
+    where # is black and - is white
+
+    #--    --#    #-#
+     #      -      #
+
+    100    001    101
+     1      0      1
+
+    the rule is codified by createRule(['100', '101'])
+*/
 export const createRule = patterns => (a, b, c) => {
     const inPattern = [a, b, c].join('')
     const hasMatch = any(pattern => pattern === inPattern) 
@@ -23,7 +39,6 @@ export const createRule = patterns => (a, b, c) => {
     return hasMatch(patterns) ? 1 : 0
 }
 
-// http://atlas.wolfram.com/01/01/
 export const rule3 = createRule(['001', '000'])
 export const rule18 = createRule(['100', '001'])
 export const rule45 = createRule(['101', '011', '010', '000'])
