@@ -1,0 +1,28 @@
+export const range = max => (new Array(max)).fill(0).map((v, i) => i)
+
+export const mod = (n, m) => ((n % m) + m) % m
+
+export const sample = arr => arr[Math.floor(Math.random() * arr.length)]
+
+export const any = pred => coll => {
+    for (let i = 0; i < coll.length; i ++) {
+        if (pred(coll[i])) return true
+    }
+    return false
+}
+
+export const seedSingle = len => {
+    if (!len) return []
+    const lr = range(Math.floor(len / 2)).map(_ => 0)
+
+    if (len % 2 === 0) return lr.slice(0, -1).concat(1).concat(lr)
+    return lr.concat(1).concat(lr)
+}
+
+export const seedRandom = len =>
+    range(len).map(_ => Math.floor(Math.random() * 2))
+
+export const pipe = (...fns) => (...firstArgs) => {
+    const [first, ...rest] = fns
+    return rest.reduce((result, fn) => fn(result), first(...firstArgs))
+}
