@@ -11,12 +11,17 @@ import {
 } from './evolver.js'
 
 ;(function () {
-    const render = createCanvasRenderer(
-        document.getElementById('world'), { cellDim: 4 })
     const rules = [rule18, rule45, rule57, rule73, rule182, rule225]
+    const cellDim = 3
+    const width = 600
     const createRandomEvolver = pipe(sample, createEvolver)
+    const render = createCanvasRenderer(document.getElementById('world'), {
+        cellDim,
+        width,
+        height: cellDim * 110,
+    })
 
-    let worldState = [seedSingle(201)]
+    let worldState = [seedSingle(width / cellDim)]
     let evolve = createRandomEvolver(rules)
 
     const update = tick => {
@@ -26,7 +31,7 @@ import {
     }
 
     const onframe = () => {
-        requestAnimationFrame(tick => {
+        window.requestAnimationFrame(tick => {
             update(tick)
             onframe()
         })

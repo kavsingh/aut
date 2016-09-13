@@ -1,11 +1,18 @@
-export const createCanvasRenderer = (canvas, props = {}) => {
-    const cellDim = props.cellDim || 2
-    const inactiveFill = props.inactiveFill || '#FFFFFF'
-    const activeFill = props.activeFill || '#000000'
+export function createCanvasRenderer(
+    canvas,
+    {
+        width = 200,
+        height = 200,
+        cellDim = 2,
+        inactiveFill = '#FFFFFF',
+        activeFill = '#000000',
+    } = {}
+) {
     const context = canvas.getContext('2d')
+    const maxRows = Math.floor(height / cellDim)
     const clear = _ => {
         context.fillStyle = inactiveFill
-        context.fillRect(0, 0, canvas.width, canvas.height)
+        context.fillRect(0, 0, width, height)
     }
     const drawRow = (row, yOffset) => {
         for (let i = 0; i < row.length; i++) {
@@ -14,16 +21,14 @@ export const createCanvasRenderer = (canvas, props = {}) => {
         }
     }
 
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-    
+    canvas.width = width
+    canvas.height = height
+
     return state => {
         clear()
-        const visRows = Math.floor(canvas.height / cellDim)
-        const startIdx = Math.max(0, state.length - visRows)
+        const startIdx = Math.max(0, state.length - maxRows)
         for (let i = startIdx; i < state.length; i++) {
-            drawRow(
-                state[i], (canvas.height - ((state.length - i) * cellDim)))
+            drawRow(state[i], (height - ((state.length - i) * cellDim)))
         }
     }
 }

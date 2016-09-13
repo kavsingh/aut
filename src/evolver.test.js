@@ -1,7 +1,7 @@
 import test from 'ava'
 import { createRule, createEvolver } from './evolver.js'
 
-test('create a rule to return next states', t => {
+test('create a rule to return next state', t => {
     t.plan(8)
 
     const rule = createRule(['001', '110', '111'])
