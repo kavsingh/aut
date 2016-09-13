@@ -32,7 +32,7 @@ test('create a single active value in the center of an n-length array', t => {
     t.deepEqual(seedSingle(0), [])
 })
 
-test('should compose functions left to right', t => {
+test('compose functions left to right', t => {
     t.plan(1)
 
     const fn1 = (a, b) => a + b
