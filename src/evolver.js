@@ -32,5 +32,3 @@ export const rule90 = createRule(['001', '100', '011', '001'])
 export const rule160 = createRule(['111', '101'])
 export const rule182 = createRule(['111', '101', '100', '010', '001'])
 export const rule225 = createRule(['111', '110', '101', '000'])
-
-export const rules = [rule18, rule45, rule57, rule73, rule182]
