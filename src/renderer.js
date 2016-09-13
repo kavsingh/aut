@@ -13,11 +13,11 @@ export function createCanvasRenderer(
     const clear = _ => {
         context.fillStyle = inactiveFill
         context.fillRect(0, 0, width, height)
+        context.fillStyle = activeFill
     }
     const drawRow = (row, yOffset) => {
         for (let i = 0; i < row.length; i++) {
-            context.fillStyle = row[i] ? activeFill : inactiveFill
-            context.fillRect(i * cellDim, yOffset, cellDim, cellDim)
+            if (row[i]) context.fillRect(i * cellDim, yOffset, cellDim, cellDim)
         }
     }
 

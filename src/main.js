@@ -13,13 +13,13 @@ import {
 
 ;(function () {
     const rules = [rule3, rule18, rule45, rule57, rule73, rule182, rule225]
-    const cellDim = 3
+    const cellDim = 2
     const width = 600
     const createRandomEvolver = pipe(sample, createEvolver)
     const render = createCanvasRenderer(document.getElementById('world'), {
         cellDim,
         width,
-        height: cellDim * 110,
+        height: Math.round(width * 0.8),
     })
 
     let worldState = [seedSingle(width / cellDim)]
