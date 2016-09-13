@@ -24,6 +24,7 @@ export const createRule = patterns => (a, b, c) => {
 }
 
 // http://atlas.wolfram.com/01/01/
+export const rule3 = createRule(['001', '000'])
 export const rule18 = createRule(['100', '001'])
 export const rule45 = createRule(['101', '011', '010', '000'])
 export const rule57 = createRule(['101', '100', '011', '000'])

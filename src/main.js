@@ -2,6 +2,7 @@ import { sample, seedSingle, pipe } from './util.js'
 import { createCanvasRenderer } from './renderer.js'
 import {
     createEvolver,
+    rule3,
     rule18,
     rule45,
     rule57,
@@ -11,7 +12,7 @@ import {
 } from './evolver.js'
 
 ;(function () {
-    const rules = [rule18, rule45, rule57, rule73, rule182, rule225]
+    const rules = [rule3, rule18, rule45, rule57, rule73, rule182, rule225]
     const cellDim = 3
     const width = 600
     const createRandomEvolver = pipe(sample, createEvolver)
@@ -23,11 +24,16 @@ import {
 
     let worldState = [seedSingle(width / cellDim)]
     let evolve = createRandomEvolver(rules)
+    let switchAccum = 0
 
-    const update = tick => {
-        if ((tick % 350) < 10) evolve = createRandomEvolver(rules)
+    const update = () => {
+        if (switchAccum >= 60) {
+            evolve = createRandomEvolver(rules)
+            switchAccum = 0
+        }
         worldState = evolve(worldState)
         render(worldState)
+        switchAccum++
     }
 
     const onframe = () => {
