@@ -21,7 +21,8 @@
   "scripts": {
     "test": "BABEL_DISABLE_CACHE=1 NODE_ENV=test ava",
     "serve": "live-server --watch=\"./dist\"",
-    "roll": "rollup -c --watch rollup.config.js",
+    "roll": "NODE_ENV=development rollup -c --watch rollup.config.js",
+    "rollout": "NODE_ENV=production rollup -c rollup.config.js",
     "start": "npm run roll & npm run serve"
   },
   "author": "",
@@ -36,6 +37,7 @@
     "live-server": "^1.1.0",
     "rollup": "^0.35.9",
     "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-uglify": "^1.0.1",
     "rollup-watch": "^2.5.0"
   }
 }
