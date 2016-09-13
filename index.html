@@ -1,0 +1,93 @@
+<head>
+    <style>
+        #world {
+            width: 100%;
+            height: 100%;
+        }
+        .cell {
+            background-color: white;
+            width: 1px;
+            height: 1px;
+            display: inline-block;
+        }
+        .cell.active {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <div id="world"></div>
+    <script>
+        const range = max => (new Array(max)).fill(0).map((v, i) => i)
+        const mod = (n, m) => ((n % m) + m) % m
+        const any = pred => coll => {
+            for (let i = 0; i < coll.length; i ++) {
+                if (pred(coll[i])) return true
+            }
+            return false
+        }
+        const seedSingle = len => {
+            const lr = range(Math.floor(len / 2)).map(_ => 0)
+            return [lr.concat(1).concat(lr)]
+        }
+        const seedRandom = len =>
+            [range(len).map(_ => Math.floor(Math.random() * 2))]
+        
+        const evolver = rule => state => {
+            const input = state[state.length - 1]
+            const len = input.length
+            const output = []
+
+            for (let i = 0; i < len; i++) {
+                output.push(rule(
+                    input[mod(i - 1, len)],
+                    input[i],
+                    input[mod(i + 1, len)]
+                ))
+            }
+
+            return state.concat([output])
+        }
+        
+        const renderer = container => state => {
+            const row = state[state.length - 1]
+            const rowEl = document.createElement('div')
+            rowEl.classList.add('row')
+            rowEl.innerHTML = `${row.map(isActive => {
+                return `<div class="cell${isActive ? ' active' : ''}"></div>`
+            }).join('')}`
+            container.appendChild(rowEl)
+        }
+
+        const createRule = patterns => (a, b, c) => {
+            const inPattern = [a, b, c].join('')
+            const hasMatch = any(pattern => pattern === inPattern) 
+            return hasMatch(patterns) ? 1 : 0
+        }
+
+        const rule18 = createRule(['100', '001'])
+        const rule45 = createRule(['101', '011', '010', '000'])
+        const rule57 = createRule(['101', '100', '011', '000'])
+        const rule73 = createRule(['110', '011', '000'])
+        const rule90 = createRule(['001', '100', '011', '001'])
+        const rule160 = createRule(['111', '101'])
+        const rule225 = createRule(['111', '110', '101', '000'])
+
+        // GO
+
+        const render = renderer(document.getElementById('world'))
+        const evolve = evolver(rule45)
+
+        let worldState = seedSingle(401)
+        const update = _ => {
+            worldState = evolve(worldState)
+            render(worldState)
+        }
+
+        let interval
+        $$START = () => interval = setInterval(update, 60)
+        $$STOP = _ => clearInterval(interval)
+        update()
+        $$START()
+    </script>
+</body>
