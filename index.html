@@ -1,8 +1,10 @@
 <head>
     <style>
-        #world {
+        html, body {
             width: 100%;
             height: 100%;
+            padding: 0;
+            margin: 0;
         }
         .cell {
             background-color: white;
@@ -16,10 +18,11 @@
     </style>
 </head>
 <body>
-    <div id="world"></div>
+    <canvas id="world"></canvas>
     <script>
         const range = max => (new Array(max)).fill(0).map((v, i) => i)
         const mod = (n, m) => ((n % m) + m) % m
+        const sample = arr => arr[Math.floor(Math.random() * arr.length)]
         const any = pred => coll => {
             for (let i = 0; i < coll.length; i ++) {
                 if (pred(coll[i])) return true
@@ -49,14 +52,34 @@
             return state.concat([output])
         }
         
-        const renderer = container => state => {
-            const row = state[state.length - 1]
-            const rowEl = document.createElement('div')
-            rowEl.classList.add('row')
-            rowEl.innerHTML = `${row.map(isActive => {
-                return `<div class="cell${isActive ? ' active' : ''}"></div>`
-            }).join('')}`
-            container.appendChild(rowEl)
+        const renderer = canvas => {
+            const cellDim = 2
+            const inactiveFill = '#FFFFFF'
+            const activeFill = '#000000'
+            const context = canvas.getContext('2d')
+            const clear = _ => {
+                context.fillStyle = '#FFFFFF'
+                context.fillRect(0, 0, canvas.width, canvas.height)
+            }
+            const drawRow = (row, yOffset) => {
+                for (let i = 0; i < row.length; i++) {
+                    context.fillStyle = row[i] ? activeFill : inactiveFill
+                    context.fillRect(i * cellDim, yOffset, cellDim, cellDim)
+                }
+            }
+
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
+            
+            return state => {
+                clear()
+                const startIdx = Math.max(
+                    0, state.length - Math.floor(canvas.height / cellDim))
+                for (let i = startIdx; i < state.length; i++) {
+                    drawRow(
+                        state[i], (canvas.height - ((state.length - i) * cellDim)))
+                }
+            }
         }
 
         const createRule = patterns => (a, b, c) => {
@@ -73,21 +96,32 @@
         const rule160 = createRule(['111', '101'])
         const rule225 = createRule(['111', '110', '101', '000'])
 
+        const rules = [rule18, rule45, rule57]
+
         // GO
 
         const render = renderer(document.getElementById('world'))
-        const evolve = evolver(rule45)
 
-        let worldState = seedSingle(401)
+        let worldState = seedSingle(201)
+        let evolve = evolver(sample(rules))
+        let switchAccum = 0
         const update = _ => {
+            if (switchAccum > 200) {
+                switchAccum = 0
+                evolve = evolver(sample(rules))
+            }
             worldState = evolve(worldState)
             render(worldState)
+            switchAccum++
         }
 
-        let interval
-        $$START = () => interval = setInterval(update, 60)
-        $$STOP = _ => clearInterval(interval)
-        update()
-        $$START()
+        const onframe = _ => {
+            requestAnimationFrame(tick => {
+                update(tick)
+                onframe()
+            })
+        }
+
+        onframe()
     </script>
 </body>
