@@ -1,7 +1,7 @@
 import { sample, seedSingle, pipe } from './util.js'
 import { createCanvasRenderer } from './renderer.js'
+import { createEvolver } from './evolver.js'
 import {
-    createEvolver,
     rule3,
     rule18,
     rule45,
@@ -9,7 +9,7 @@ import {
     rule73,
     rule182,
     rule225,
-} from './evolver.js'
+} from './rules.js'
 
 ;(function () {
     const rules = [rule3, rule18, rule45, rule57, rule73, rule182, rule225]
