@@ -30,24 +30,24 @@ test('should draw state to canvas context', t => {
     t.deepEqual(spy.getCall(2).args, [1, 9, 1, 1])
 })
 
-test('should draw only visible rows from state', t => {
-    t.plan(5)
+test.only('should draw only visible rows from state', t => {
+    t.plan(4)
 
     const { mock, spy } = getMockCanvas()
     const render = createCanvasRenderer(
         mock, { width: 10, height: 4, cellDim: 2 })
 
-    render([[1, 0], [0, 1], [0, 1], [0, 0], [1, 0], [1, 1]])
+    render([[1, 0, 0], [0, 1, 0], [0, 1, 1], [0, 0, 1], [1, 0, 0], [1, 1, 0]])
 
     // Draw only active state in last 2 rows:
     // height 4, cell height 2 = 2 max rows visible
-    t.is(spy.callCount, 4)
+    // last row has 2 contiguous active slots, so draw once
+    t.is(spy.callCount, 3)
 
     // clear
     t.deepEqual(spy.getCall(0).args, [0, 0, 10, 4])
 
     // draw
     t.deepEqual(spy.getCall(1).args, [0, 0, 2, 2])
-    t.deepEqual(spy.getCall(2).args, [0, 2, 2, 2])
-    t.deepEqual(spy.getCall(3).args, [2, 2, 2, 2])
+    t.deepEqual(spy.getCall(2).args, [0, 2, 4, 2])
 })

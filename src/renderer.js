@@ -1,3 +1,5 @@
+import { last, head, contiguous } from './util'
+
 export function createCanvasRenderer(
     canvas,
     {
@@ -16,8 +18,21 @@ export function createCanvasRenderer(
         context.fillStyle = activeFill
     }
     const drawRow = (row, yOffset) => {
-        for (let i = 0; i < row.length; i++) {
-            if (row[i]) context.fillRect(i * cellDim, yOffset, cellDim, cellDim)
+        const activeRanges = contiguous(1, row)
+
+        for (let i = 0; i < activeRanges.length; i++) {
+            const current = activeRanges[i]
+            const start = head(current)
+            const end = last(current)
+
+            if (start !== undefined && end !== undefined) {
+                context.fillRect(
+                    start * cellDim,
+                    yOffset,
+                    current.length * cellDim,
+                    cellDim
+                )
+            }
         }
     }
 

@@ -1,5 +1,28 @@
 import test from 'ava'
-import { range, mod, any, seedSingle, pipe } from './util.js'
+import {
+    last, head, range, mod, any, seedSingle, pipe, contiguous } from './util.js'
+
+test('gets last element of an array', t => {
+    t.plan(3)
+
+    t.is(last([]), undefined)
+    t.is(last([1]), 1)
+    t.is(last([1, 2]), 2)
+})
+
+test('gets first element of an array', t => {
+    t.plan(3)
+
+    t.is(head([]), undefined)
+    t.is(head([1]), 1)
+    t.is(head([1, 2]), 1)
+})
+
+test('group contiguous indexes of value in array', t => {
+    t.plan(1)
+
+    t.deepEqual(contiguous(1, [0, 1, 0, 1, 1, 0]), [[1], [3, 4]])
+})
 
 test('creates a range of values', t => {
     t.plan(2)

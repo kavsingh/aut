@@ -4,6 +4,10 @@ export const mod = (n, m) => ((n % m) + m) % m
 
 export const sample = arr => arr[Math.floor(Math.random() * arr.length)]
 
+export const last = arr => arr[arr.length - 1]
+
+export const head = arr => arr[0]
+
 export const any = pred => coll => {
     for (let i = 0; i < coll.length; i ++) {
         if (pred(coll[i])) return true
@@ -25,4 +29,20 @@ export const seedRandom = len =>
 export const pipe = (...fns) => (...firstArgs) => {
     const [first, ...rest] = fns
     return rest.reduce((result, fn) => fn(result), first(...firstArgs))
+}
+
+export const contiguous = (val, arr) => {
+    const ranges = []
+
+    for (let i = 0; i < arr.length; i++) {
+        const currentRange = last(ranges)
+        
+        if (arr[i] === val) {
+            if (currentRange && last(currentRange) === i - 1) {
+                currentRange.push(i)
+            } else ranges.push([i])
+        }
+    }
+
+    return ranges
 }
