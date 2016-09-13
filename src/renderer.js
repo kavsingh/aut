@@ -19,8 +19,8 @@ export const createCanvasRenderer = (canvas, props = {}) => {
     
     return state => {
         clear()
-        const startIdx = Math.max(
-            0, state.length - Math.floor(canvas.height / cellDim))
+        const visRows = Math.floor(canvas.height / cellDim)
+        const startIdx = Math.max(0, state.length - visRows)
         for (let i = startIdx; i < state.length; i++) {
             drawRow(
                 state[i], (canvas.height - ((state.length - i) * cellDim)))

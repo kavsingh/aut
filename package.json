@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "roll": "rollup -c --watch rollup.config.js"
+    "serve": "live-server --watch=\"./dist\"",
+    "roll": "rollup -c --watch rollup.config.js",
+    "start": "npm run roll & npm run serve"
   },
   "author": "",
   "license": "ISC",

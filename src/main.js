@@ -4,7 +4,7 @@ import { createEvolver, rules } from './evolver.js'
 
 ;(function () {
     const render = createCanvasRenderer(
-        document.getElementById('world'), { cellDim: 2 })
+        document.getElementById('world'), { cellDim: 4 })
     const createRandomEvolver = pipe(sample, createEvolver)
 
     let worldState = [seedSingle(201)]
