@@ -12,7 +12,10 @@ export const any = pred => coll => {
 }
 
 export const seedSingle = len => {
+    if (!len) return []
     const lr = range(Math.floor(len / 2)).map(_ => 0)
+
+    if (len % 2 === 0) return lr.slice(0, -1).concat(1).concat(lr)
     return lr.concat(1).concat(lr)
 }
 
