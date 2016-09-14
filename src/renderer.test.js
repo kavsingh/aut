@@ -30,7 +30,7 @@ test('should draw state to canvas context', t => {
     t.deepEqual(spy.getCall(2).args, [1, 9, 1, 1])
 })
 
-test.only('should draw only visible rows from state', t => {
+test('should draw only visible rows from state', t => {
     t.plan(4)
 
     const { mock, spy } = getMockCanvas()
