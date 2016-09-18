@@ -1,6 +1,15 @@
 import test from 'ava'
 import {
-    last, head, range, mod, any, seedSingle, pipe, contiguous } from './util.js'
+    last,
+    head,
+    range,
+    mod,
+    any,
+    seedSingle,
+    pipe,
+    contiguous,
+    take,
+} from './util.js'
 
 test('gets last element of an array', t => {
     t.plan(3)
@@ -8,6 +17,20 @@ test('gets last element of an array', t => {
     t.is(last([]), undefined)
     t.is(last([1]), 1)
     t.is(last([1, 2]), 2)
+})
+
+test('take n elements from start of array', t => {
+    t.plan(3)
+    t.deepEqual(take(2)([]), [])
+    t.deepEqual(take(2)([1]), [1])
+    t.deepEqual(take(2)([1, 2, 3]), [1, 2])
+})
+
+test('take n elements from end of array', t => {
+    t.plan(3)
+    t.deepEqual(take(-2)([]), [])
+    t.deepEqual(take(-2)([1]), [1])
+    t.deepEqual(take(-2)([1, 2, 3]), [2, 3])
 })
 
 test('gets first element of an array', t => {
@@ -18,7 +41,7 @@ test('gets first element of an array', t => {
     t.is(head([1, 2]), 1)
 })
 
-test('group contiguous indexes of value in array', t => {
+test('groups contiguous indexes of value in array', t => {
     t.plan(1)
 
     t.deepEqual(contiguous(1, [0, 1, 0, 1, 1, 0]), [[1], [3, 4]])

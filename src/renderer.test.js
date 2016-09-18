@@ -37,11 +37,11 @@ test('should draw only visible rows from state', t => {
     const render = createCanvasRenderer(
         mock, { width: 10, height: 4, cellDim: 2 })
 
-    render([[1, 0, 0], [0, 1, 0], [0, 1, 1], [0, 0, 1], [1, 0, 0], [1, 1, 0]])
+    render([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]])
 
-    // Draw only active state in last 2 rows:
+    // Draw only visible state
     // height 4, cell height 2 = 2 max rows visible
-    // last row has 2 contiguous active slots, so draw once
+    // last visible row has 2 contiguous active slots, so draw once
     t.is(spy.callCount, 3)
 
     // clear

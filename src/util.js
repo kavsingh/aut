@@ -15,6 +15,8 @@ export const any = pred => coll => {
     return false
 }
 
+export const take = n => arr => n < 0 ? arr.slice(n) : arr.slice(0, n)
+
 export const seedSingle = len => {
     if (!len) return []
     const lr = range(Math.floor(len / 2)).map(_ => 0)
