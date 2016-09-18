@@ -2,7 +2,8 @@ export const range = max => (new Array(max)).fill(0).map((v, i) => i)
 
 export const mod = (n, m) => ((n % m) + m) % m
 
-export const sample = arr => arr[Math.floor(Math.random() * arr.length)]
+export const sample = (arr, randomFn = ::Math.random) =>
+    arr[Math.floor(randomFn() * arr.length)]
 
 export const last = arr => arr[arr.length - 1]
 
@@ -27,14 +28,14 @@ export const pipe = (...fns) => (...firstArgs) => {
 }
 
 export const adjacentByIndex = val => arr => {
-    const ranges = []
+    const groups = []
 
     for (let i = 0; i < arr.length; i++) {
         if (arr[i] !== val) continue
-        const currentRange = last(ranges)
-        if (currentRange && last(currentRange) === i - 1) currentRange.push(i)
-        else ranges.push([i])
+        const currentGroup = last(groups)
+        if (currentGroup && last(currentGroup) === i - 1) currentGroup.push(i)
+        else groups.push([i])
     }
 
-    return ranges
+    return groups
 }

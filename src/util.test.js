@@ -5,10 +5,32 @@ import {
     range,
     mod,
     seedSingle,
+    seedRandom,
     pipe,
     adjacentByIndex,
     take,
+    sample,
 } from './util.js'
+
+test('samples a value from array', t => {
+    t.plan(2)
+    
+    const source = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    const sampled = (new Array(100)).fill(0).map(() => sample(source))
+    const sampledCustom = (new Array(10)).fill(0).map(
+        () => sample(source, () => 0.5))
+    
+    t.is(true, sampled.every(v => source.indexOf(v) !== -1))
+    t.is(true, sampledCustom.every(v => v === 5))
+})
+
+test('creates an array with random 0 and 1', t => {
+    t.plan(1)
+
+    const result = seedRandom(1000)
+
+    t.is(false, result.some(r => r !== 1 && r !== 0))
+})
 
 test('gets last element of an array', t => {
     t.plan(3)
