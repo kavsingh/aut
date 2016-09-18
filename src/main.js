@@ -36,12 +36,10 @@ import {
         switchAccum++
     }
 
-    const onframe = () => {
-        window.requestAnimationFrame(tick => {
-            update(tick)
-            onframe()
-        })
+     const onFrame = tick => {
+        update(tick)
+        window.requestAnimationFrame(onFrame)
     }
 
-    onframe()
+    window.requestAnimationFrame(onFrame)
 }())
