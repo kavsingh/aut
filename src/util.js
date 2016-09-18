@@ -8,13 +8,6 @@ export const last = arr => arr[arr.length - 1]
 
 export const head = arr => arr[0]
 
-export const some = pred => coll => {
-    for (let i = 0; i < coll.length; i ++) {
-        if (pred(coll[i])) return true
-    }
-    return false
-}
-
 export const take = n => arr => n < 0 ? arr.slice(n) : arr.slice(0, n)
 
 export const seedSingle = len => {

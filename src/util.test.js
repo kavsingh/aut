@@ -4,7 +4,6 @@ import {
     head,
     range,
     mod,
-    some,
     seedSingle,
     pipe,
     adjacentByIndex,
@@ -61,13 +60,6 @@ test('implements negative mod correctly', t => {
     t.is(0, mod(-3, 3))
     t.is(2, mod(2, 3))
     t.is(1, mod(-2, 3))
-})
-
-test('check if predicate matches some elements of array', t => {
-    t.plan(2)
-
-    t.is(some(x => x === 2)([1, 2, 3]), true)
-    t.is(some(x => x === 2)([1, 4, 3]), false)
 })
 
 test('create a single active value in the center of an n-length array', t => {
