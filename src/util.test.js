@@ -1,4 +1,5 @@
 import test from 'ava'
+import sinon from 'sinon'
 import {
     last,
     head,
@@ -13,15 +14,15 @@ import {
 } from './util.js'
 
 test('samples a value from array', t => {
-    t.plan(2)
-    
-    const source = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    const sampled = (new Array(100)).fill(0).map(() => sample(source))
-    const sampledCustom = (new Array(10)).fill(0).map(
-        () => sample(source, () => 0.5))
-    
-    t.is(true, sampled.every(v => source.indexOf(v) !== -1))
-    t.is(true, sampledCustom.every(v => v === 5))
+    t.plan(1)
+
+    const spy = sinon.stub(Math, 'random', () => (4 - spy.callCount) / 4)
+    const source = [1, 2, 3, 4]
+    const sampled = (new Array(4)).fill(0).map(() => sample(source))
+
+    t.deepEqual([4, 3, 2, 1], sampled)
+
+    Math.random.restore()
 })
 
 test('creates an array with random 0 and 1', t => {

@@ -2,8 +2,7 @@ export const range = max => (new Array(max)).fill(0).map((v, i) => i)
 
 export const mod = (n, m) => ((n % m) + m) % m
 
-export const sample = (arr, randomFn = ::Math.random) =>
-    arr[Math.floor(randomFn() * arr.length)]
+export const sample = arr => arr[Math.floor(Math.random() * arr.length)]
 
 export const last = arr => arr[arr.length - 1]
 
