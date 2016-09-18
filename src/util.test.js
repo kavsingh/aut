@@ -4,10 +4,10 @@ import {
     head,
     range,
     mod,
-    any,
+    some,
     seedSingle,
     pipe,
-    contiguous,
+    adjacentByIndex,
     take,
 } from './util.js'
 
@@ -41,10 +41,12 @@ test('gets first element of an array', t => {
     t.is(head([1, 2]), 1)
 })
 
-test('groups contiguous indexes of value in array', t => {
-    t.plan(1)
+test('groups adjacent indeces of specified value in array', t => {
+    t.plan(3)
 
-    t.deepEqual(contiguous(1, [0, 1, 0, 1, 1, 0]), [[1], [3, 4]])
+    t.deepEqual(adjacentByIndex(1)([0, 2, 3, 5, 6, 0]), [])
+    t.deepEqual(adjacentByIndex(1)([0, 1, 0, 1, 1, 0]), [[1], [3, 4]])
+    t.deepEqual(adjacentByIndex(1)([1, 1, 0, 1, 0, 1]), [[0, 1], [3], [5]])
 })
 
 test('creates a range of values', t => {
@@ -61,11 +63,11 @@ test('implements negative mod correctly', t => {
     t.is(1, mod(-2, 3))
 })
 
-test('check if predicate matches any element of array', t => {
+test('check if predicate matches some elements of array', t => {
     t.plan(2)
 
-    t.is(any(x => x === 2)([1, 2, 3]), true)
-    t.is(any(x => x === 2)([1, 4, 3]), false)
+    t.is(some(x => x === 2)([1, 2, 3]), true)
+    t.is(some(x => x === 2)([1, 4, 3]), false)
 })
 
 test('create a single active value in the center of an n-length array', t => {

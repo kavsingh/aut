@@ -1,4 +1,4 @@
-import { any, mod } from './util.js'
+import { some, mod } from './util.js'
 
 export const createEvolver = rule => state => {
     const input = state[state.length - 1]
@@ -34,7 +34,7 @@ export const createEvolver = rule => state => {
 */
 export const createRule = patterns => (a, b, c) => {
     const inPattern = [a, b, c].join('')
-    const hasMatch = any(pattern => pattern === inPattern) 
+    const hasMatch = some(pattern => pattern === inPattern) 
  
     return hasMatch(patterns) ? 1 : 0
 }

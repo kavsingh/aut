@@ -8,7 +8,7 @@ export const last = arr => arr[arr.length - 1]
 
 export const head = arr => arr[0]
 
-export const any = pred => coll => {
+export const some = pred => coll => {
     for (let i = 0; i < coll.length; i ++) {
         if (pred(coll[i])) return true
     }
@@ -33,17 +33,14 @@ export const pipe = (...fns) => (...firstArgs) => {
     return rest.reduce((result, fn) => fn(result), first(...firstArgs))
 }
 
-export const contiguous = (val, arr) => {
+export const adjacentByIndex = val => arr => {
     const ranges = []
 
     for (let i = 0; i < arr.length; i++) {
+        if (arr[i] !== val) continue
         const currentRange = last(ranges)
-        
-        if (arr[i] === val) {
-            if (currentRange && last(currentRange) === i - 1) {
-                currentRange.push(i)
-            } else ranges.push([i])
-        }
+        if (currentRange && last(currentRange) === i - 1) currentRange.push(i)
+        else ranges.push([i])
     }
 
     return ranges
