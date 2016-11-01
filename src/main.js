@@ -1,19 +1,19 @@
 import { sample, seedSingle, pipe, constant } from './util.js'
 import { createCanvasRenderer } from './renderer.js'
 import { createEvolver } from './evolver.js'
-import * as evolverRules from './rules.js'
+import * as rules from './rules.js'
 
 const CELL_DIM = 2
 const WORLD_WIDTH = 600
 
 const createRandomEvolver = pipe(constant([
-    evolverRules.rule3,
-    evolverRules.rule18,
-    evolverRules.rule45,
-    evolverRules.rule57,
-    evolverRules.rule73,
-    evolverRules.rule182,
-    evolverRules.rule225,
+    rules.rule3,
+    rules.rule18,
+    rules.rule45,
+    rules.rule57,
+    rules.rule73,
+    rules.rule182,
+    rules.rule225,
 ]), sample, createEvolver)
 
 const render = createCanvasRenderer(document.getElementById('world'), {
