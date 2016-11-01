@@ -1,33 +1,34 @@
-import { sample, seedSingle, pipe } from './util.js'
+import { sample, seedSingle, pipe, constant } from './util.js'
 import { createCanvasRenderer } from './renderer.js'
 import { createEvolver } from './evolver.js'
-import {
-    rule3,
-    rule18,
-    rule45,
-    rule57,
-    rule73,
-    rule182,
-    rule225,
-} from './rules.js'
+import * as evolverRules from './rules.js'
 
-const rules = [rule3, rule18, rule45, rule57, rule73, rule182, rule225]
-const cellDim = 2
-const width = 600
-const createRandomEvolver = pipe(sample, createEvolver)
+const CELL_DIM = 2
+const WORLD_WIDTH = 600
+
+const createRandomEvolver = pipe(constant([
+    evolverRules.rule3,
+    evolverRules.rule18,
+    evolverRules.rule45,
+    evolverRules.rule57,
+    evolverRules.rule73,
+    evolverRules.rule182,
+    evolverRules.rule225,
+]), sample, createEvolver)
+
 const render = createCanvasRenderer(document.getElementById('world'), {
-    cellDim,
-    width,
-    height: Math.round(width * 0.8),
+    CELL_DIM,
+    width: WORLD_WIDTH,
+    height: Math.round(WORLD_WIDTH * 0.8),
 })
 
-let worldState = [seedSingle(width / cellDim)]
-let evolve = createRandomEvolver(rules)
+let worldState = [seedSingle(WORLD_WIDTH / CELL_DIM)]
+let evolve = createRandomEvolver()
 let switchAccum = 0
 
 const update = () => {
     if (switchAccum >= 60) {
-        evolve = createRandomEvolver(rules)
+        evolve = createRandomEvolver()
         switchAccum = 0
     }
     worldState = evolve(worldState)

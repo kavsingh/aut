@@ -10,6 +10,8 @@ export const head = arr => arr[0]
 
 export const take = n => arr => n < 0 ? arr.slice(n) : arr.slice(0, n)
 
+export const constant = val => () => val
+
 export const seedSingle = len => {
     if (!len) return []
     const lr = range(Math.floor(len / 2)).map(_ => 0)

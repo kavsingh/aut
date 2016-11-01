@@ -12,6 +12,7 @@ import {
     take,
     sample,
     flatten,
+    constant,
 } from './util.js'
 
 test('samples a value from array', t => {
@@ -111,4 +112,15 @@ test('shallow flatten arrays', t => {
 
     t.deepEqual([1, 2, 3, 4], flatten([[1, 2], [3 ,4]]))
     t.deepEqual([1, [2, 3], 4], flatten([[1, [2, 3]], 4]))
+})
+
+test('return a function that always returns the same value', t => {
+    t.plan(4)
+
+    const byRef = {}
+
+    t.is('function', typeof constant())
+    t.is(undefined, constant()())
+    t.is(true, byRef === constant(byRef)())
+    t.deepEqual([1, 2], constant([1, 2])())
 })
