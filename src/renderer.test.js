@@ -41,7 +41,7 @@ test('should draw only visible rows from state', t => {
 
     // Draw only visible state
     // height 4, cell height 2 = 2 max rows visible
-    // last visible row has 2 contiguous active slots, so draw once
+    // last visible row has 2 adjacent active slots, so draw once
     t.is(spy.callCount, 3)
 
     // clear

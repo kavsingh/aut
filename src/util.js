@@ -22,8 +22,8 @@ export const seedRandom = len =>
     range(len).map(_ => Math.floor(Math.random() * 2))
 
 export const pipe = (...fns) => (...firstArgs) => {
-    const [first, ...rest] = fns
-    return rest.reduce((result, fn) => fn(result), first(...firstArgs))
+    const [firstFn, ...rest] = fns
+    return rest.reduce((result, fn) => fn(result), firstFn(...firstArgs))
 }
 
 export const adjacentByIndex = val => arr => {
@@ -38,3 +38,6 @@ export const adjacentByIndex = val => arr => {
 
     return groups
 }
+
+export const flatten = arr =>
+    arr.reduce((flat, val) => flat.concat(val), [])

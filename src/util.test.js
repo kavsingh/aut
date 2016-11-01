@@ -11,6 +11,7 @@ import {
     adjacentByIndex,
     take,
     sample,
+    flatten,
 } from './util.js'
 
 test('samples a value from array', t => {
@@ -95,7 +96,7 @@ test('create a single active value in the center of an n-length array', t => {
     t.deepEqual(seedSingle(0), [])
 })
 
-test('compose functions left to right', t => {
+test('pipe composes functions left to right with variadic first fn', t => {
     t.plan(1)
 
     const fn1 = (a, b) => a + b
@@ -103,4 +104,11 @@ test('compose functions left to right', t => {
     const fn = pipe(fn1, fn2)
 
     t.is(fn(1, 2), 6)
+})
+
+test('shallow flatten arrays', t => {
+    t.plan(2)
+
+    t.deepEqual([1, 2, 3, 4], flatten([[1, 2], [3 ,4]]))
+    t.deepEqual([1, [2, 3], 4], flatten([[1, [2, 3]], 4]))
 })
