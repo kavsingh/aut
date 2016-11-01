@@ -35,10 +35,11 @@
   },
   "scripts": {
     "test": "BABEL_DISABLE_CACHE=1 NODE_ENV=test nyc ava",
+    "test:watch": "npm t -- --watch",
     "serve": "live-server --watch=\"./dist\"",
-    "roll": "NODE_ENV=development rollup -c --watch rollup.config.js",
-    "rollout": "NODE_ENV=production rollup -c rollup.config.js",
-    "start": "npm run roll & npm run serve & npm t -- --watch",
+    "rollup:watch": "NODE_ENV=development rollup -c --watch rollup.config.js",
+    "rollup": "NODE_ENV=production rollup -c rollup.config.js",
+    "start": "npm run rollup:watch & npm run serve",
     "report": "nyc report --reporter=lcov && open coverage/lcov-report/index.html"
   },
   "author": "",
