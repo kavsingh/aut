@@ -3,17 +3,12 @@ import { mod } from './util.js'
 export const createEvolver = rule => state => {
     const input = state[state.length - 1]
     const len = input.length
-    const output = []
 
-    for (let i = 0; i < len; i++) {
-        output.push(rule(
-            input[mod(i - 1, len)],
-            input[i],
-            input[mod(i + 1, len)]
-        ))
-    }
-
-    return state.concat([output])
+    return state.concat([input.map((_, index) => rule(
+        input[mod(index - 1, len)],
+        input[index],
+        input[mod(index + 1, len)]
+    ))])
 }
 
 /*
