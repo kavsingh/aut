@@ -20,7 +20,7 @@ test('should draw state to canvas context', t => {
 
     t.is(spy.calledOn(mockContext), true)
     t.is(spy.callCount, 3)
-    
+
     // Clear canvas
     t.deepEqual(spy.getCall(0).args, [0, 0, 10, 10])
     // First active, second row from bottom (state is 2 rows)

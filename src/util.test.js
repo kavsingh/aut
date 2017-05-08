@@ -110,7 +110,7 @@ test('pipe composes functions left to right with variadic first fn', t => {
 test('shallow flatten arrays', t => {
     t.plan(2)
 
-    t.deepEqual([1, 2, 3, 4], flatten([[1, 2], [3 ,4]]))
+    t.deepEqual([1, 2, 3, 4], flatten([[1, 2], [3, 4]]))
     t.deepEqual([1, [2, 3], 4], flatten([[1, [2, 3]], 4]))
 })
 

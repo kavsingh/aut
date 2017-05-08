@@ -23,7 +23,9 @@ test('create a function that evolves state', t => {
 
     const evolve1 = createEvolver(createRule(['001', '110']))
     const expectedState1 = initState.concat([[0, 1, 0, 0, 0, 1, 0, 1, 0]])
-    const expectedState1_2 = expectedState1.concat([[1, 0, 0, 0, 1, 0, 0, 0, 0]])
+    const expectedState1_2 = expectedState1.concat(
+        [[1, 0, 0, 0, 1, 0, 0, 0, 0]],
+    )
 
     const evolve2 = createEvolver(createRule([]))
     const expectedState2 = initState.concat([[0, 0, 0, 0, 0, 0, 0, 0, 0]])

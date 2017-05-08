@@ -8,11 +8,11 @@ export function createCanvasRenderer(
         cellDim = 2,
         inactiveFill = '#FFFFFF',
         activeFill = '#000000',
-    } = {}
+    } = {},
 ) {
     const context = canvas.getContext('2d')
     const maxRows = Math.floor(height / cellDim)
-    const clear = _ => {
+    const clear = () => {
         context.fillStyle = inactiveFill
         context.fillRect(0, 0, width, height)
         context.fillStyle = activeFill
@@ -30,7 +30,7 @@ export function createCanvasRenderer(
                     start * cellDim,
                     yOffset,
                     current.length * cellDim,
-                    cellDim
+                    cellDim,
                 )
             }
         }

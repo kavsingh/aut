@@ -14,14 +14,14 @@ export const constant = val => () => val
 
 export const seedSingle = len => {
     if (!len) return []
-    const lr = range(Math.floor(len / 2)).map(_ => 0)
+    const lr = range(Math.floor(len / 2)).map(() => 0)
 
     if (len % 2 === 0) return lr.slice(0, -1).concat(1).concat(lr)
     return lr.concat(1).concat(lr)
 }
 
 export const seedRandom = len =>
-    range(len).map(_ => Math.floor(Math.random() * 2))
+    range(len).map(() => Math.floor(Math.random() * 2))
 
 export const pipe = (...fns) => (...firstArgs) => {
     const [firstFn, ...rest] = fns

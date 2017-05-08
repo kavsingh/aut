@@ -7,10 +7,9 @@ module.exports = {
     dest: 'dist/bundle.js',
     format: 'iife',
     plugins: [
-        babel({
-            exclude: 'node_modules/**'
-        })
-    ].concat(env === 'production' ? [
-        uglify()
-    ] : [])
+        babel({ exclude: 'node_modules/**' }),
+    ].concat(env === 'production'
+        ? [uglify()]
+        : []
+    ),
 }

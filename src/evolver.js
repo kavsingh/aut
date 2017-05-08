@@ -7,7 +7,7 @@ export const createEvolver = rule => state => {
     return state.concat([input.map((_, index) => rule(
         input[mod(index - 1, len)],
         input[index],
-        input[mod(index + 1, len)]
+        input[mod(index + 1, len)],
     ))])
 }
 
