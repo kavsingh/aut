@@ -23,17 +23,13 @@ const render = createCanvasRenderer(document.getElementById('world'), {
 })
 
 let worldState = [seedSingle(WORLD_WIDTH / CELL_DIM)]
-let evolve = createRandomEvolver()
 let switchAccum = 0
+let evolve = createRandomEvolver()
 
 const update = () => {
-    if (switchAccum >= 60) {
-        evolve = createRandomEvolver()
-        switchAccum = 0
-    }
-    worldState = evolve(worldState)
-    render(worldState)
-    switchAccum++
+    switchAccum = switchAccum >= 60 ? 0 : switchAccum + 1
+    evolve = switchAccum === 0 ? createRandomEvolver() : evolve
+    render(worldState = evolve(worldState))
 }
 
 const onFrame = tick => {

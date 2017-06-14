@@ -1,10 +1,11 @@
 import test from 'ava'
 import sinon from 'sinon'
 import {
+    curry,
     last,
     head,
     range,
-    mod,
+    mathMod,
     seedSingle,
     seedRandom,
     pipe,
@@ -15,6 +16,18 @@ import {
     constant,
 } from './util.js'
 
+test('currys variadic fn', t => {
+    t.plan(5)
+
+    const add = curry((a, b, c) => a + b + c)
+
+    t.is(add(1, 2, 3), 6)
+    t.is(add(1)(2, 3), 6)
+    t.is(add(1, 2)(3), 6)
+    t.is(add(1, 2)()(3), 6)
+    t.is(typeof add(1)(2), 'function')
+})
+
 test('samples a value from array', t => {
     t.plan(1)
 
@@ -22,17 +35,24 @@ test('samples a value from array', t => {
     const source = [1, 2, 3, 4]
     const sampled = (new Array(4)).fill(0).map(() => sample(source))
 
-    t.deepEqual([4, 3, 2, 1], sampled)
+    t.deepEqual(sampled, [4, 3, 2, 1])
 
     Math.random.restore()
 })
 
 test('creates an array with random 0 and 1', t => {
-    t.plan(1)
+    t.plan(3)
+
+    const spy = sinon.stub(Math, 'random', () =>
+        (spy.callCount <= 500 ? 0.001 : 0.999))
 
     const result = seedRandom(1000)
 
-    t.is(false, result.some(r => r !== 1 && r !== 0))
+    t.is(result.some(r => r !== 1 && r !== 0), false)
+    t.is(result.filter(r => r === 0).length, 500)
+    t.is(result.filter(r => r === 1).length, 500)
+
+    Math.random.restore()
 })
 
 test('gets last element of an array', t => {
@@ -45,13 +65,15 @@ test('gets last element of an array', t => {
 
 test('take n elements from start of array', t => {
     t.plan(3)
+
     t.deepEqual(take(2)([]), [])
-    t.deepEqual(take(2)([1]), [1])
+    t.deepEqual(take(2, [1]), [1])
     t.deepEqual(take(2)([1, 2, 3]), [1, 2])
 })
 
 test('take n elements from end of array', t => {
     t.plan(3)
+
     t.deepEqual(take(-2)([]), [])
     t.deepEqual(take(-2)([1]), [1])
     t.deepEqual(take(-2)([1, 2, 3]), [2, 3])
@@ -68,23 +90,25 @@ test('gets first element of an array', t => {
 test('groups adjacent indeces of specified value in array', t => {
     t.plan(3)
 
-    t.deepEqual(adjacentByIndex(1)([0, 2, 3, 5, 6, 0]), [])
-    t.deepEqual(adjacentByIndex(1)([0, 1, 0, 1, 1, 0]), [[1], [3, 4]])
+    t.deepEqual(adjacentByIndex(1, [0, 2, 3, 5, 6, 0]), [])
+    t.deepEqual(adjacentByIndex(1, [0, 1, 0, 1, 1, 0]), [[1], [3, 4]])
     t.deepEqual(adjacentByIndex(1)([1, 1, 0, 1, 0, 1]), [[0, 1], [3], [5]])
 })
 
 test('creates a range of values', t => {
     t.plan(2)
+
     t.deepEqual(range(10), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     t.deepEqual(range(0), [])
 })
 
 test('implements negative mod correctly', t => {
     t.plan(4)
-    t.is(0, mod(3, 3))
-    t.is(0, mod(-3, 3))
-    t.is(2, mod(2, 3))
-    t.is(1, mod(-2, 3))
+
+    t.is(mathMod(3, 3), 0)
+    t.is(mathMod(3)(-3), 0)
+    t.is(mathMod(3, -2), 1)
+    t.is(mathMod(3)(2), 2)
 })
 
 test('create a single active value in the center of an n-length array', t => {
@@ -110,8 +134,8 @@ test('pipe composes functions left to right with variadic first fn', t => {
 test('shallow flatten arrays', t => {
     t.plan(2)
 
-    t.deepEqual([1, 2, 3, 4], flatten([[1, 2], [3, 4]]))
-    t.deepEqual([1, [2, 3], 4], flatten([[1, [2, 3]], 4]))
+    t.deepEqual(flatten([[1, 2], [3, 4]]), [1, 2, 3, 4])
+    t.deepEqual(flatten([[1, [2, 3]], 4]), [1, [2, 3], 4])
 })
 
 test('return a function that always returns the same value', t => {
@@ -119,8 +143,8 @@ test('return a function that always returns the same value', t => {
 
     const byRef = {}
 
-    t.is('function', typeof constant())
-    t.is(undefined, constant()())
-    t.is(true, byRef === constant(byRef)())
-    t.deepEqual([1, 2], constant([1, 2])())
+    t.is(typeof constant(), 'function')
+    t.is(constant()(), undefined)
+    t.is(byRef === constant(byRef)(), true)
+    t.deepEqual(constant([1, 2])(), [1, 2])
 })

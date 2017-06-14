@@ -10,6 +10,6 @@ module.exports = {
         babel({ exclude: 'node_modules/**' }),
     ].concat(env === 'production'
         ? [uglify()]
-        : []
+        : [],
     ),
 }

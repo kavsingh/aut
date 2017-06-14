@@ -1,6 +1,9 @@
-export const range = max => (new Array(max)).fill(0).map((v, i) => i)
+export const curry = fn => (...args) =>
+    (args.length >= fn.length ? fn(...args) : curry(fn.bind(null, ...args)))
 
-export const mod = (n, m) => ((n % m) + m) % m
+export const range = max => Array.from({ length: max }, (_, i) => i)
+
+export const mathMod = curry((m, n) => ((n % m) + m) % m)
 
 export const sample = arr => arr[Math.floor(Math.random() * arr.length)]
 
@@ -8,7 +11,7 @@ export const last = arr => arr[arr.length - 1]
 
 export const head = arr => arr[0]
 
-export const take = n => arr => n < 0 ? arr.slice(n) : arr.slice(0, n)
+export const take = curry((n, arr) => n < 0 ? arr.slice(n) : arr.slice(0, n))
 
 export const constant = val => () => val
 
@@ -28,7 +31,7 @@ export const pipe = (...fns) => (...firstArgs) => {
     return rest.reduce((result, fn) => fn(result), firstFn(...firstArgs))
 }
 
-export const adjacentByIndex = val => arr => {
+export const adjacentByIndex = curry((val, arr) => {
     const groups = []
 
     for (let i = 0; i < arr.length; i++) {
@@ -39,7 +42,7 @@ export const adjacentByIndex = val => arr => {
     }
 
     return groups
-}
+})
 
 export const flatten = arr =>
     arr.reduce((flat, val) => flat.concat(val), [])

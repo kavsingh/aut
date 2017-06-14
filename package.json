@@ -4,6 +4,21 @@
   "description": "",
   "main": "index.js",
   "private": true,
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node" : ">=8.0.0"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "BABEL_DISABLE_CACHE=1 NODE_ENV=test nyc ava --verbose",
+    "test:watch": "npm t -- --watch",
+    "test:report": "nyc report --reporter=lcov && open coverage/lcov-report/index.html",
+    "rollup:watch": "NODE_ENV=development rollup -c --watch rollup.config.js",
+    "rollup": "NODE_ENV=production rollup -c rollup.config.js",
+    "serve": "live-server --watch=\"./dist\"",
+    "start": "npm run rollup:watch & npm run serve"
+  },
   "ava": {
     "files": [
       "src/**/*.test.js"
@@ -33,32 +48,20 @@
       "**/__tests__/**"
     ]
   },
-  "scripts": {
-    "lint": "eslint .",
-    "test": "BABEL_DISABLE_CACHE=1 NODE_ENV=test nyc ava",
-    "test:watch": "npm t -- --watch",
-    "serve": "live-server --watch=\"./dist\"",
-    "rollup:watch": "NODE_ENV=development rollup -c --watch rollup.config.js",
-    "rollup": "NODE_ENV=production rollup -c rollup.config.js",
-    "start": "npm run rollup:watch & npm run serve",
-    "report": "nyc report --reporter=lcov && open coverage/lcov-report/index.html"
-  },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "ava": "^0.19.1",
-    "babel-core": "^6.24.1",
+    "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
-    "babel-preset-env": "^1.4.0",
+    "babel-preset-env": "^1.5.2",
     "babel-register": "^6.24.1",
     "eslint": "^3.19.0",
     "live-server": "^1.2.0",
-    "nyc": "^10.3.2",
-    "rollup": "^0.41.6",
+    "nyc": "^11.0.2",
+    "rollup": "^0.43.0",
     "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-uglify": "^1.0.2",
-    "rollup-watch": "^3.2.2",
-    "sinon": "^2.2.0"
+    "rollup-plugin-uglify": "^2.0.1",
+    "rollup-watch": "^4.0.0",
+    "sinon": "^2.3.4"
   }
 }
