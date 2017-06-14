@@ -49,7 +49,8 @@ test('return conditional result', t => {
 test('samples a value from array', t => {
     t.plan(1)
 
-    const spy = sinon.stub(Math, 'random', () => (4 - spy.callCount) / 4)
+    const spy = sinon.stub(Math, 'random')
+        .callsFake(() => (4 - spy.callCount) / 4)
     const source = [1, 2, 3, 4]
     const sampled = (new Array(4)).fill(0).map(() => sample(source))
 
@@ -61,8 +62,8 @@ test('samples a value from array', t => {
 test('creates an array with random 0 and 1', t => {
     t.plan(3)
 
-    const spy = sinon.stub(Math, 'random', () =>
-        (spy.callCount <= 500 ? 0.001 : 0.999))
+    const spy = sinon.stub(Math, 'random')
+        .callsFake(() => (spy.callCount <= 500 ? 0.001 : 0.999))
 
     const result = seedRandom(1000)
 
