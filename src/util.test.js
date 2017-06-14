@@ -2,6 +2,7 @@ import test from 'ava'
 import sinon from 'sinon'
 import {
     curry,
+    cond,
     last,
     head,
     range,
@@ -28,6 +29,21 @@ test('currys variadic fn', t => {
     t.is(add(1, 2)(3), 6)
     t.is(add(1, 2)()(3), 6)
     t.is(typeof add(1)(2), 'function')
+})
+
+test('return conditional result', t => {
+    t.plan(4)
+
+    const conditions = cond([
+        [n => n > 5, n => n * 3],
+        [n => n > 2, n => n * 2],
+        [() => true, n => n],
+    ])
+
+    t.is(conditions(10), 30)
+    t.is(conditions(4), 8)
+    t.is(conditions(1), 1)
+    t.is(conditions(null), null)
 })
 
 test('samples a value from array', t => {

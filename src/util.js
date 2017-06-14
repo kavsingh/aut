@@ -33,6 +33,20 @@ export const pipe = (...fns) => (...firstArgs) => {
     return rest.reduce((result, fn) => fn(result), firstFn(...firstArgs))
 }
 
+export const cond = curry((conditions, val) => {
+    let result
+
+    for (let i = 0; i < conditions.length; i++) {
+        const [predicate, exec] = conditions[i]
+        if (predicate(val)) {
+            result = exec(val)
+            break
+        }
+    }
+
+    return result
+})
+
 export const takeIndexWhile = curry((predicate, arr) => {
     const result = []
 
@@ -49,7 +63,9 @@ export const groupIndecesBy = curry((predicate, arr) => {
 
     for (let i = 0; i < arr.length; i++) {
         if (!predicate(arr[i])) continue
+
         const currentGroup = last(groups)
+
         if (currentGroup && last(currentGroup) === i - 1) currentGroup.push(i)
         else groups.push([i])
     }
