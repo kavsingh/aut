@@ -1,4 +1,4 @@
-import { last, head, adjacentByIndex } from './util'
+import { last, head, groupIndecesBy, eq } from './util'
 
 export function createCanvasRenderer(
     canvas,
@@ -18,7 +18,7 @@ export function createCanvasRenderer(
         context.fillStyle = activeFill
     }
     const drawRow = (row, yOffset) => {
-        const activeRanges = adjacentByIndex(1)(row)
+        const activeRanges = groupIndecesBy(eq(1), row)
 
         for (let i = 0; i < activeRanges.length; i++) {
             const current = activeRanges[i]

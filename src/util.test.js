@@ -9,11 +9,13 @@ import {
     seedSingle,
     seedRandom,
     pipe,
-    adjacentByIndex,
+    groupIndecesBy,
+    eq,
     take,
     sample,
     flatten,
     constant,
+    takeIndexWhile,
 } from './util.js'
 
 test('currys variadic fn', t => {
@@ -55,6 +57,15 @@ test('creates an array with random 0 and 1', t => {
     Math.random.restore()
 })
 
+test('checks values equal', t => {
+    t.plan(4)
+
+    t.is(eq(1, 2), false)
+    t.is(eq(NaN, NaN), false)
+    t.is(eq(1)(3), false)
+    t.is(eq(1)(1), true)
+})
+
 test('gets last element of an array', t => {
     t.plan(3)
 
@@ -63,7 +74,16 @@ test('gets last element of an array', t => {
     t.is(last([1, 2]), 2)
 })
 
-test('take n elements from start of array', t => {
+test('take indeces from start of array while predicate is true', t => {
+    t.plan(4)
+
+    t.deepEqual(takeIndexWhile(n => n > 10)([1, 2, 3, 4]), [])
+    t.deepEqual(takeIndexWhile(n => n > 2, [1, 2, 3, 4]), [2, 3])
+    t.deepEqual(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 3, 4]), [1, 2])
+    t.deepEqual(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 5, 3, 4]), [1])
+})
+
+test('take n values from start of array', t => {
     t.plan(3)
 
     t.deepEqual(take(2)([]), [])
@@ -71,7 +91,7 @@ test('take n elements from start of array', t => {
     t.deepEqual(take(2)([1, 2, 3]), [1, 2])
 })
 
-test('take n elements from end of array', t => {
+test('take n values from end of array', t => {
     t.plan(3)
 
     t.deepEqual(take(-2)([]), [])
@@ -79,7 +99,7 @@ test('take n elements from end of array', t => {
     t.deepEqual(take(-2)([1, 2, 3]), [2, 3])
 })
 
-test('gets first element of an array', t => {
+test('gets first value of an array', t => {
     t.plan(3)
 
     t.is(head([]), undefined)
@@ -90,9 +110,11 @@ test('gets first element of an array', t => {
 test('groups adjacent indeces of specified value in array', t => {
     t.plan(3)
 
-    t.deepEqual(adjacentByIndex(1, [0, 2, 3, 5, 6, 0]), [])
-    t.deepEqual(adjacentByIndex(1, [0, 1, 0, 1, 1, 0]), [[1], [3, 4]])
-    t.deepEqual(adjacentByIndex(1)([1, 1, 0, 1, 0, 1]), [[0, 1], [3], [5]])
+    const eq1 = n => n === 1
+
+    t.deepEqual(groupIndecesBy(eq1, [0, 2, 3, 5, 6, 0]), [])
+    t.deepEqual(groupIndecesBy(eq1, [0, 1, 0, 1, 1, 0]), [[1], [3, 4]])
+    t.deepEqual(groupIndecesBy(eq1)([1, 1, 0, 1, 0, 1]), [[0, 1], [3], [5]])
 })
 
 test('creates a range of values', t => {
