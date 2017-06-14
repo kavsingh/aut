@@ -19,8 +19,10 @@
     "rollup:watch": "NODE_ENV=development rollup -c --watch rollup.config.js",
     "webpack": "NODE_ENV=production webpack --config webpack.config.js --verbose",
     "webpack:dev": "NODE_ENV=development webpack --config webpack.config.js --verbose",
+    "webpack:watch": "NODE_ENV=development webpack --watch --config webpack.config.js --verbose --colors",
     "serve": "live-server --watch=\"./dist\"",
-    "start": "npm run rollup:watch & npm run serve"
+    "start": "npm run rollup:watch & npm run serve",
+    "start:webpack": "npm run webpack:watch & npm run serve"
   },
   "ava": {
     "files": [
