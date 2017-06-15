@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import { sample, seedSingle, pipe, constant } from './util.js'
 import { createCanvasRenderer } from './renderer.js'
 import { createEvolver } from './evolver.js'
