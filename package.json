@@ -16,10 +16,10 @@
     "test:report": "nyc report --reporter=lcov && open coverage/lcov-report/index.html",
     "rollup": "NODE_ENV=production rollup -c rollup.config.js",
     "rollup:dev": "NODE_ENV=development rollup -c rollup.config.js",
-    "rollup:watch": "NODE_ENV=development rollup -c --watch rollup.config.js",
+    "rollup:watch": "npm run rollup:dev -- --watch",
     "webpack": "NODE_ENV=production webpack --config webpack.config.js --verbose",
     "webpack:dev": "NODE_ENV=development webpack --config webpack.config.js --verbose",
-    "webpack:watch": "NODE_ENV=development webpack --watch --config webpack.config.js --verbose --colors",
+    "webpack:watch": "npm run webpack:dev -- --watch",
     "serve": "live-server --watch=\"./dist\"",
     "start": "npm run rollup:watch & npm run serve",
     "start:webpack": "npm run webpack:watch & npm run serve"

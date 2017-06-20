@@ -2,6 +2,7 @@
   "presets": [["env", {
     "modules": false,
     "useBuiltIns": true,
+    "loose": true,
     "targets": {
       "browsers": ["last 1 Chrome versions"]
     }
