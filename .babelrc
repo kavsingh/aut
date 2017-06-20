@@ -3,8 +3,7 @@
     "modules": false,
     "useBuiltIns": true,
     "targets": {
-      "browsers": ["last 1 Chrome versions"],
-      "uglify": true
+      "browsers": ["last 1 Chrome versions"]
     }
   }]],
   "env": {

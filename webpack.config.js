@@ -1,7 +1,9 @@
 const path = require('path')
 const webpack = require('webpack')
+const BabiliPlugin = require('babili-webpack-plugin')
 
-const isProduction = process.env.NODE_ENV === 'production'
+const isProd = process.env.NODE_ENV === 'production'
+
 const fromRoot = path.resolve.bind(path, __dirname)
 const publicPath = '/'
 
@@ -27,8 +29,7 @@ module.exports = {
     plugins: [
         new webpack.EnvironmentPlugin('NODE_ENV'),
         new webpack.optimize.ModuleConcatenationPlugin(),
-        isProduction &&
-            new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
+        isProd && new BabiliPlugin(),
     ].filter(Boolean),
     resolve: {
         modules: [fromRoot('src'), 'node_modules'],

@@ -1,8 +1,9 @@
 const babel = require('rollup-plugin-babel')
 const resolve = require('rollup-plugin-node-resolve')
 const commonjs = require('rollup-plugin-commonjs')
-const uglify = require('rollup-plugin-uglify')
-const env = process.env.NODE_ENV || 'development'
+const babili = require('rollup-plugin-babili')
+
+const isProd = process.env.NODE_ENV === 'production'
 
 module.exports = {
     entry: 'src/main.js',
@@ -16,8 +17,6 @@ module.exports = {
         }),
         commonjs(),
         babel({ exclude: 'node_modules/**' }),
-    ].concat(env === 'production'
-        ? [uglify()]
-        : [],
-    ),
+        isProd && babili({ comments: false }),
+    ].filter(Boolean),
 }
