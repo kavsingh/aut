@@ -26,7 +26,7 @@ module.exports = {
     },
     plugins: [
         new webpack.EnvironmentPlugin('NODE_ENV'),
-        isProduction && new webpack.optimize.OccurrenceOrderPlugin(true),
+        new webpack.optimize.ModuleConcatenationPlugin(),
         isProduction &&
             new webpack.optimize.UglifyJsPlugin({ sourceMap: true }),
     ].filter(Boolean),
