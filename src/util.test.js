@@ -19,7 +19,7 @@ import {
     takeIndexWhile,
 } from './util.js'
 
-test('currys variadic fn', t => {
+test('currys a variadic fn', t => {
     t.plan(5)
 
     const add = curry((a, b, c) => a + b + c)
@@ -124,7 +124,7 @@ test('gets first value of an array', t => {
     t.is(head([1, 2]), 1)
 })
 
-test('groups adjacent indeces of specified value in array', t => {
+test('groups adjacent indeces in array where value satisfies predicate', t => {
     t.plan(3)
 
     const eq1 = n => n === 1
@@ -141,7 +141,7 @@ test('creates a range of values', t => {
     t.deepEqual(range(0), [])
 })
 
-test('implements negative mod correctly', t => {
+test('mod negative numbers the euclidean way', t => {
     t.plan(4)
 
     t.is(mathMod(3, 3), 0)
