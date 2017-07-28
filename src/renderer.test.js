@@ -40,7 +40,7 @@ test('should draw only visible rows from state', t => {
     render([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0]])
 
     // Draw only visible state
-    // height 4, cell height 2 = 2 max rows visible
+    // height 4, cell height 2 => 2 rows visible
     // last visible row has 2 adjacent active slots, so draw once
     t.is(spy.callCount, 3)
 
