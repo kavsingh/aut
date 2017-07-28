@@ -28,23 +28,16 @@ export const seedSingle = len => {
 export const seedRandom = len =>
     range(len).map(() => Math.floor(Math.random() * 2))
 
-export const pipe = (...fns) => (...firstArgs) => {
-    const [firstFn, ...rest] = fns
-    return rest.reduce((result, fn) => fn(result), firstFn(...firstArgs))
-}
+export const pipe = (firstFn, ...fns) => (...firstArgs) =>
+    fns.reduce((result, fn) => fn(result), firstFn(...firstArgs))
 
 export const cond = curry((conditions, val) => {
-    let result
-
     for (let i = 0; i < conditions.length; i++) {
         const [predicate, exec] = conditions[i]
-        if (predicate(val)) {
-            result = exec(val)
-            break
-        }
+        if (predicate(val)) return exec(val)
     }
 
-    return result
+    return undefined
 })
 
 export const takeIndexWhile = curry((predicate, arr) => {
@@ -52,7 +45,7 @@ export const takeIndexWhile = curry((predicate, arr) => {
 
     for (let i = 0; i < arr.length; i++) {
         if (predicate(arr[i])) result.push(i)
-        else if (result.length) break
+        else if (result.length) return result
     }
 
     return result
@@ -73,5 +66,4 @@ export const groupIndecesBy = curry((predicate, arr) => {
     return groups
 })
 
-export const flatten = arr =>
-    arr.reduce((flat, val) => flat.concat(val), [])
+export const flatten = arr => arr.reduce((flat, val) => flat.concat(val), [])
