@@ -133,7 +133,7 @@ test('create a single active value in the center of an n-length array', t => {
     t.deepEqual(seedSingle(0), [])
 })
 
-test('pipe composes functions left to right with variadic first fn', t => {
+test('pipe composes functions left to right with first fn of any arity', t => {
     const fn1 = (a, b) => a + b
     const fn2 = x => x * 2
     const fn = pipe(fn1, fn2)
