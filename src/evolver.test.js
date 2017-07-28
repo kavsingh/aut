@@ -2,8 +2,6 @@ import test from 'ava'
 import { createRule, createEvolver } from './evolver.js'
 
 test('create a rule to return next state', t => {
-    t.plan(8)
-
     const rule = createRule(['001', '110', '111'])
 
     t.is(rule(0, 0, 0), 0)
@@ -17,8 +15,6 @@ test('create a rule to return next state', t => {
 })
 
 test('create a function that evolves state', t => {
-    t.plan(4)
-
     const initState = [[0, 0, 1, 0, 0, 0, 1, 1, 0]]
 
     const evolve1 = createEvolver(createRule(['001', '110']))

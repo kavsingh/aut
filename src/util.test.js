@@ -20,8 +20,6 @@ import {
 } from './util.js'
 
 test('currys a function', t => {
-    t.plan(5)
-
     const add = curry((a, b, c) => a + b + c)
 
     t.is(add(1, 2, 3), 6)
@@ -32,8 +30,6 @@ test('currys a function', t => {
 })
 
 test('returns conditional result', t => {
-    t.plan(5)
-
     const conditions = cond([
         [n => n > 5, n => n * 3],
         [n => n > 2, n => n * 2],
@@ -48,8 +44,6 @@ test('returns conditional result', t => {
 })
 
 test('samples a value from array', t => {
-    t.plan(1)
-
     const spy = sinon.stub(Math, 'random')
         .callsFake(() => (4 - spy.callCount) / 4)
     const source = [1, 2, 3, 4]
@@ -61,8 +55,6 @@ test('samples a value from array', t => {
 })
 
 test('creates an array with random 0 and 1', t => {
-    t.plan(3)
-
     const spy = sinon.stub(Math, 'random')
         .callsFake(() => (spy.callCount <= 500 ? 0.001 : 0.999))
 
@@ -76,8 +68,6 @@ test('creates an array with random 0 and 1', t => {
 })
 
 test('checks values equal', t => {
-    t.plan(4)
-
     t.is(eq(1, 2), false)
     t.is(eq(NaN, NaN), false)
     t.is(eq(1)(3), false)
@@ -85,16 +75,12 @@ test('checks values equal', t => {
 })
 
 test('gets last element of an array', t => {
-    t.plan(3)
-
     t.is(last([]), undefined)
     t.is(last([1]), 1)
     t.is(last([1, 2]), 2)
 })
 
 test('take indeces from start of array while predicate is true', t => {
-    t.plan(4)
-
     t.deepEqual(takeIndexWhile(n => n > 10)([1, 2, 3, 4]), [])
     t.deepEqual(takeIndexWhile(n => n > 2, [1, 2, 3, 4]), [2, 3])
     t.deepEqual(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 3, 4]), [1, 2])
@@ -102,32 +88,24 @@ test('take indeces from start of array while predicate is true', t => {
 })
 
 test('take n values from start of array', t => {
-    t.plan(3)
-
     t.deepEqual(take(2)([]), [])
     t.deepEqual(take(2, [1]), [1])
     t.deepEqual(take(2)([1, 2, 3]), [1, 2])
 })
 
 test('take n values from end of array', t => {
-    t.plan(3)
-
     t.deepEqual(take(-2)([]), [])
     t.deepEqual(take(-2)([1]), [1])
     t.deepEqual(take(-2)([1, 2, 3]), [2, 3])
 })
 
 test('gets first value of an array', t => {
-    t.plan(3)
-
     t.is(head([]), undefined)
     t.is(head([1]), 1)
     t.is(head([1, 2]), 1)
 })
 
 test('groups adjacent indeces in array where value satisfies predicate', t => {
-    t.plan(3)
-
     const eq1 = n => n === 1
 
     t.deepEqual(groupIndecesBy(eq1, [0, 2, 3, 5, 6, 0]), [])
@@ -136,15 +114,11 @@ test('groups adjacent indeces in array where value satisfies predicate', t => {
 })
 
 test('creates a range of values', t => {
-    t.plan(2)
-
     t.deepEqual(range(10), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     t.deepEqual(range(0), [])
 })
 
 test('mod negative numbers the euclidean way', t => {
-    t.plan(4)
-
     t.is(mathMod(3, 3), 0)
     t.is(mathMod(3)(-3), 0)
     t.is(mathMod(3, -2), 1)
@@ -152,8 +126,6 @@ test('mod negative numbers the euclidean way', t => {
 })
 
 test('create a single active value in the center of an n-length array', t => {
-    t.plan(5)
-
     t.deepEqual(seedSingle(5), [0, 0, 1, 0, 0])
     t.deepEqual(seedSingle(6), [0, 0, 1, 0, 0, 0])
     t.deepEqual(seedSingle(1), [1])
@@ -162,8 +134,6 @@ test('create a single active value in the center of an n-length array', t => {
 })
 
 test('pipe composes functions left to right with variadic first fn', t => {
-    t.plan(1)
-
     const fn1 = (a, b) => a + b
     const fn2 = x => x * 2
     const fn = pipe(fn1, fn2)
@@ -172,15 +142,11 @@ test('pipe composes functions left to right with variadic first fn', t => {
 })
 
 test('shallow flatten arrays', t => {
-    t.plan(2)
-
     t.deepEqual(flatten([[1, 2], [3, 4]]), [1, 2, 3, 4])
     t.deepEqual(flatten([[1, [2, 3]], 4]), [1, [2, 3], 4])
 })
 
 test('return a function that always returns the same value', t => {
-    t.plan(4)
-
     const byRef = {}
 
     t.is(typeof constant(), 'function')

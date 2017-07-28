@@ -5,12 +5,11 @@ import { createCanvasRenderer } from './renderer.js'
 const getMockCanvas = () => {
     const mockContext = { fillRect: () => {} }
     const contextSpy = sinon.spy(mockContext, 'fillRect')
+
     return { mock: { getContext: () => mockContext }, spy: contextSpy }
 }
 
 test('should draw state to canvas context', t => {
-    t.plan(5)
-
     const { mock, spy } = getMockCanvas()
     const mockContext = mock.getContext()
     const render = createCanvasRenderer(
@@ -31,8 +30,6 @@ test('should draw state to canvas context', t => {
 })
 
 test('should draw only visible rows from state', t => {
-    t.plan(4)
-
     const { mock, spy } = getMockCanvas()
     const render = createCanvasRenderer(
         mock, { width: 10, height: 4, cellDim: 2 })
