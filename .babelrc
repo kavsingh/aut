@@ -1,10 +1,10 @@
 {
   "presets": [["env", {
     "modules": false,
-    "useBuiltIns": true,
+    "useBuiltIns": "usage",
     "loose": true,
     "targets": {
-      "browsers": ["last 1 Chrome versions"]
+      "browsers": ["ie 8"]
     }
   }]],
   "env": {
