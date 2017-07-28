@@ -19,7 +19,7 @@ import {
     takeIndexWhile,
 } from './util.js'
 
-test('currys a variadic fn', t => {
+test('currys a function', t => {
     t.plan(5)
 
     const add = curry((a, b, c) => a + b + c)
@@ -31,8 +31,8 @@ test('currys a variadic fn', t => {
     t.is(typeof add(1)(2), 'function')
 })
 
-test('return conditional result', t => {
-    t.plan(4)
+test('returns conditional result', t => {
+    t.plan(5)
 
     const conditions = cond([
         [n => n > 5, n => n * 3],
@@ -44,6 +44,7 @@ test('return conditional result', t => {
     t.is(conditions(4), 8)
     t.is(conditions(1), 1)
     t.is(conditions(null), null)
+    t.is(cond([[n => n > 5, n => n]], 2), undefined)
 })
 
 test('samples a value from array', t => {
