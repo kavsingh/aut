@@ -2,12 +2,22 @@ module.exports = {
     parser: 'babel-eslint',
 
     env: {
+        es6: true,
         node: true,
         browser: false,
-        es6: true,
     },
 
     extends: ['eslint:recommended'],
+
+    overrides: [
+        {
+            files: ['src/**/*.js'],
+            env: {
+                browser: true,
+                node: false,
+            },
+        },
+    ],
 
     rules: {
         'no-shadow': ['error', {

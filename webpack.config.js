@@ -1,6 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
-const BabiliPlugin = require('babili-webpack-plugin')
+const BabelMinifyPlugin = require('babel-minify-webpack-plugin')
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -29,7 +29,7 @@ module.exports = {
     plugins: [
         new webpack.EnvironmentPlugin('NODE_ENV'),
         new webpack.optimize.ModuleConcatenationPlugin(),
-        isProd && new BabiliPlugin(),
+        isProd && new BabelMinifyPlugin(),
     ].filter(Boolean),
     resolve: {
         modules: [fromRoot('src'), 'node_modules'],

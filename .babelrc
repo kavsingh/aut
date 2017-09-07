@@ -1,12 +1,17 @@
 {
-  "presets": [["env", {
-    "modules": false,
-    "useBuiltIns": "usage",
-    "loose": true,
-    "targets": {
-      "browsers": ["ie 8"]
-    }
-  }]],
+  "presets": [
+    [
+      "env",
+      {
+        "modules": false,
+        "useBuiltIns": "usage",
+        "loose": true,
+        "targets": {
+          "browsers": ["chrome 60"]
+        }
+      }
+    ]
+  ],
   "env": {
     "test": {
       "plugins": ["transform-es2015-modules-commonjs"]
