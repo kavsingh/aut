@@ -7,7 +7,7 @@
         "useBuiltIns": "usage",
         "loose": true,
         "targets": {
-          "browsers": ["chrome 60"]
+          "browsers": ["ie 8"]
         }
       }
     ]
