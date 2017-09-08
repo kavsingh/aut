@@ -410,6 +410,26 @@ babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
     esutils "^2.0.2"
     js-tokens "^3.0.2"
 
+babel-core@7.0.0-alpha.20, babel-core@^7.0.0-alpha.18:
+  version "7.0.0-alpha.20"
+  resolved "https://registry.yarnpkg.com/babel-core/-/babel-core-7.0.0-alpha.20.tgz#699f0881bb7f46111323fe23778f78055362e6e1"
+  dependencies:
+    babel-code-frame "7.0.0-alpha.20"
+    babel-generator "7.0.0-alpha.20"
+    babel-helpers "7.0.0-alpha.20"
+    babel-messages "7.0.0-alpha.20"
+    babel-template "7.0.0-alpha.20"
+    babel-traverse "7.0.0-alpha.20"
+    babel-types "7.0.0-alpha.20"
+    babylon "7.0.0-beta.22"
+    convert-source-map "^1.1.0"
+    debug "^2.1.1"
+    json5 "^0.5.0"
+    lodash "^4.2.0"
+    micromatch "^2.3.11"
+    resolve "^1.3.2"
+    source-map "^0.5.0"
+
 babel-core@^6.17.0, babel-core@^6.21.0, babel-core@^6.24.1, babel-core@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-core/-/babel-core-6.26.0.tgz#af32f78b31a6fcef119c87b0fd8d9753f03a0bb8"
@@ -433,26 +453,6 @@ babel-core@^6.17.0, babel-core@^6.21.0, babel-core@^6.24.1, babel-core@^6.26.0:
     private "^0.1.7"
     slash "^1.0.0"
     source-map "^0.5.6"
-
-babel-core@^7.0.0-alpha.18:
-  version "7.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/babel-core/-/babel-core-7.0.0-alpha.20.tgz#699f0881bb7f46111323fe23778f78055362e6e1"
-  dependencies:
-    babel-code-frame "7.0.0-alpha.20"
-    babel-generator "7.0.0-alpha.20"
-    babel-helpers "7.0.0-alpha.20"
-    babel-messages "7.0.0-alpha.20"
-    babel-template "7.0.0-alpha.20"
-    babel-traverse "7.0.0-alpha.20"
-    babel-types "7.0.0-alpha.20"
-    babylon "7.0.0-beta.22"
-    convert-source-map "^1.1.0"
-    debug "^2.1.1"
-    json5 "^0.5.0"
-    lodash "^4.2.0"
-    micromatch "^2.3.11"
-    resolve "^1.3.2"
-    source-map "^0.5.0"
 
 babel-eslint@^8.0.0-alpha.15:
   version "8.0.0-alpha.17"
@@ -1215,6 +1215,19 @@ babel-register@^6.26.0:
     lodash "^4.17.4"
     mkdirp "^0.5.1"
     source-map-support "^0.4.15"
+
+babel-register@^7.0.0-alpha.18:
+  version "7.0.0-alpha.20"
+  resolved "https://registry.yarnpkg.com/babel-register/-/babel-register-7.0.0-alpha.20.tgz#bc062f5f02a4f06b39868312172732a5b9c35e27"
+  dependencies:
+    babel-core "7.0.0-alpha.20"
+    core-js "^2.4.0"
+    find-cache-dir "^1.0.0"
+    home-or-tmp "^3.0.0"
+    lodash "^4.2.0"
+    mkdirp "^0.5.1"
+    pirates "^3.0.1"
+    source-map-support "^0.4.2"
 
 babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.26.0:
   version "6.26.0"
@@ -2753,6 +2766,10 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
+home-or-tmp@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/home-or-tmp/-/home-or-tmp-3.0.0.tgz#57a8fe24cf33cdd524860a15821ddc25c86671fb"
+
 hosted-git-info@^2.1.4:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.5.0.tgz#6d60e34b3abbc8313062c3b798ef8d901a07af3c"
@@ -3643,6 +3660,10 @@ node-libs-browser@^2.0.0:
     util "^0.10.3"
     vm-browserify "0.0.4"
 
+node-modules-regexp@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/node-modules-regexp/-/node-modules-regexp-1.0.0.tgz#8d9dbe28964a4ac5712e9131642107c71e90ec40"
+
 node-pre-gyp@^0.6.36:
   version "0.6.36"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.6.36.tgz#db604112cb74e0d477554e9b505b17abddfab786"
@@ -4001,6 +4022,12 @@ pinkie@^1.0.0:
 pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
+
+pirates@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/pirates/-/pirates-3.0.1.tgz#8a87bf9ab7f58d6c3deee6a1a1c892ffe823811f"
+  dependencies:
+    node-modules-regexp "^1.0.0"
 
 pkg-conf@^2.0.0:
   version "2.0.0"
@@ -4628,7 +4655,7 @@ source-list-map@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-2.0.0.tgz#aaa47403f7b245a92fbc97ea08f250d6087ed085"
 
-source-map-support@^0.4.0, source-map-support@^0.4.15:
+source-map-support@^0.4.0, source-map-support@^0.4.15, source-map-support@^0.4.2:
   version "0.4.17"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.17.tgz#6f2150553e6375375d0ccb3180502b78c18ba430"
   dependencies:
