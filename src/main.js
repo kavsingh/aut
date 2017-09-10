@@ -16,25 +16,27 @@ const createRandomEvolver = pipe(constant([
     rules.rule225,
 ]), sample, createEvolver)
 
-const render = createCanvasRenderer(document.getElementById('world'), {
-    CELL_DIM,
-    width: WORLD_WIDTH,
-    height: Math.round(WORLD_WIDTH * 0.8),
-})
-
 let worldState = [seedSingle(WORLD_WIDTH / CELL_DIM)]
 let switchAccum = 0
 let evolve = createRandomEvolver()
 
-const update = () => {
-    switchAccum = switchAccum >= 60 ? 0 : switchAccum + 1
-    evolve = switchAccum === 0 ? createRandomEvolver() : evolve
-    render(worldState = evolve(worldState))
-}
+window.bootApp = container => {
+    const render = createCanvasRenderer(container, {
+        CELL_DIM,
+        width: WORLD_WIDTH,
+        height: Math.round(WORLD_WIDTH * 0.8),
+    })
 
-const onFrame = tick => {
-    update(tick)
+    const update = () => {
+        switchAccum = switchAccum >= 60 ? 0 : switchAccum + 1
+        evolve = switchAccum === 0 ? createRandomEvolver() : evolve
+        render(worldState = evolve(worldState))
+    }
+
+    const onFrame = tick => {
+        update(tick)
+        window.requestAnimationFrame(onFrame)
+    }
+
     window.requestAnimationFrame(onFrame)
 }
-
-window.requestAnimationFrame(onFrame)
