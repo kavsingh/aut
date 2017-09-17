@@ -3,7 +3,7 @@ const resolve = require('rollup-plugin-node-resolve')
 const commonjs = require('rollup-plugin-commonjs')
 const minify = require('rollup-plugin-babel-minify')
 const prepack = require('rollup-plugin-prepack')
-const prepackConfig = require('./.prepackconfig')
+const prepackConfig = require('./.prepackrc')
 
 const isProd = process.env.NODE_ENV === 'production'
 

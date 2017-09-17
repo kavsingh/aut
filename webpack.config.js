@@ -2,7 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const BabelMinifyPlugin = require('babel-minify-webpack-plugin')
 const { default: PrepackPlugin } = require('prepack-webpack-plugin')
-const prepackConfig = require('./.prepackconfig')
+const prepackConfig = require('./.prepackrc')
 
 const isProd = process.env.NODE_ENV === 'production'
 
