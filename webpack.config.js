@@ -2,6 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const BabelMinifyPlugin = require('babel-minify-webpack-plugin')
 const { default: PrepackPlugin } = require('prepack-webpack-plugin')
+const prepackConfig = require('./.prepackconfig')
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -30,12 +31,7 @@ module.exports = {
     plugins: [
         new webpack.EnvironmentPlugin('NODE_ENV'),
         new webpack.optimize.ModuleConcatenationPlugin(),
-        isProd && new PrepackPlugin({
-            prepack: {
-                compatibility: 'browser',
-                mathRandomSeed: `${Math.random()}`,
-            },
-        }),
+        isProd && new PrepackPlugin({ prepack: prepackConfig }),
         isProd && new BabelMinifyPlugin(),
     ].filter(Boolean),
     resolve: {
