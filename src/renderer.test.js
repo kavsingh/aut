@@ -13,7 +13,10 @@ describe('Renderer', () => {
         const render = createCanvasRenderer(
             canvas, { width: 10, height: 10, cellDim: 1 })
 
-        render([[1, 0], [0, 1]])
+        render([
+            [1, 0],
+            [0, 1],
+        ])
 
         const fillCalls = canvas.getContext().fillRect.mock.calls
 
@@ -34,7 +37,12 @@ describe('Renderer', () => {
             canvas, { width: 10, height: 4, cellDim: 2 })
 
         render([
-            [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [1, 0, 0], [1, 1, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 1, 1],
         ])
 
         const fillCalls = canvas.getContext().fillRect.mock.calls
@@ -49,6 +57,6 @@ describe('Renderer', () => {
 
         // draw
         expect(fillCalls[1]).toEqual([0, 0, 2, 2])
-        expect(fillCalls[2]).toEqual([0, 2, 4, 2])
+        expect(fillCalls[2]).toEqual([2, 2, 4, 2])
     })
 })
