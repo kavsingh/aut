@@ -11,9 +11,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "BABEL_DISABLE_CACHE=1 NODE_ENV=test nyc ava --verbose",
+    "test": "BABEL_DISABLE_CACHE=1 NODE_ENV=test jest --verbose",
     "test:watch": "npm t -- --watch",
-    "test:report": "nyc report --reporter=lcov && open coverage/lcov-report/index.html",
     "rollup": "NODE_ENV=production rollup -c rollup.config.js",
     "rollup:dev": "NODE_ENV=development rollup -c rollup.config.js",
     "rollup:watch": "npm run rollup:dev -- --watch",
@@ -24,39 +23,10 @@
     "start": "npm run rollup:watch & npm run serve",
     "start:webpack": "npm run webpack:watch & npm run serve"
   },
-  "ava": {
-    "files": [
-      "src/**/*.test.js"
-    ],
-    "source": [
-      "src/**/*.js",
-      "!dist/**/*",
-      "!node_modules/**/*"
-    ],
-    "failFast": true,
-    "require": [
-      "babel-register"
-    ],
-    "babel": "inherit"
-  },
-  "nyc": {
-    "include": [
-      "src/**/*.js"
-    ],
-    "exclude": [
-      "node_modules",
-      "coverage",
-      "dist",
-      "test",
-      "test{,-*}.js",
-      "**/*.test.js",
-      "**/__tests__/**"
-    ]
-  },
   "devDependencies": {
-    "ava": "^0.22.0",
     "babel-core": "^7.0.0-beta.0",
     "babel-eslint": "^8.0.0",
+    "babel-jest": "^21.0.2",
     "babel-loader": "^7.1.2",
     "babel-minify-webpack-plugin": "^0.2.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^7.0.0-beta.0",
@@ -64,8 +34,8 @@
     "babel-preset-env": "^2.0.0-beta.0",
     "babel-register": "^7.0.0-beta.0",
     "eslint": "^4.7.1",
+    "jest": "^21.1.0",
     "live-server": "^1.2.0",
-    "nyc": "^11.2.1",
     "prepack-webpack-plugin": "^1.1.0",
     "rollup": "^0.50.0",
     "rollup-plugin-babel": "^3.0.2",

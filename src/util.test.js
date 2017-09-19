@@ -1,4 +1,4 @@
-import test from 'ava'
+/* eslint-env jest */
 import sinon from 'sinon'
 import {
     curry,
@@ -19,138 +19,144 @@ import {
     takeIndexWhile,
 } from './util.js'
 
-test('currys a function', t => {
-    const add = curry((a, b, c) => a + b + c)
+describe('Util', () => {
+    it('Should curry a function', () => {
+        const add = curry((a, b, c) => a + b + c)
 
-    t.is(add(1, 2, 3), 6)
-    t.is(add(1)(2, 3), 6)
-    t.is(add(1, 2)(3), 6)
-    t.is(add(1, 2)()(3), 6)
-    t.is(typeof add(1)(2), 'function')
-})
+        expect(add(1, 2, 3)).toBe(6)
+        expect(add(1)(2, 3)).toBe(6)
+        expect(add(1, 2)(3)).toBe(6)
+        expect(add(1, 2)()(3)).toBe(6)
+        expect(typeof add(1)(2)).toBe('function')
+    })
 
-test('returns conditional result', t => {
-    const conditions = cond([
-        [n => n > 5, n => n * 3],
-        [n => n > 2, n => n * 2],
-        [() => true, n => n],
-    ])
+    it('Should return conditional result', () => {
+        const conditions = cond([
+            [n => n > 5, n => n * 3],
+            [n => n > 2, n => n * 2],
+            [() => true, n => n],
+        ])
 
-    t.is(conditions(10), 30)
-    t.is(conditions(4), 8)
-    t.is(conditions(1), 1)
-    t.is(conditions(null), null)
-    t.is(cond([[n => n > 5, n => n]], 2), undefined)
-})
+        expect(conditions(10)).toBe(30)
+        expect(conditions(4)).toBe(8)
+        expect(conditions(1)).toBe(1)
+        expect(conditions(null)).toBe(null)
+        expect(cond([[n => n > 5, n => n]], 2)).toBe(undefined)
+    })
 
-test('samples a value from array', t => {
-    const spy = sinon.stub(Math, 'random')
-        .callsFake(() => (4 - spy.callCount) / 4)
-    const source = [1, 2, 3, 4]
-    const sampled = (new Array(4)).fill(0).map(() => sample(source))
+    it('Should sample a random value from array', () => {
+        const spy = sinon.stub(Math, 'random')
+            .callsFake(() => (4 - spy.callCount) / 4)
+        const source = [1, 2, 3, 4]
+        const sampled = (new Array(4)).fill(0).map(() => sample(source))
 
-    t.deepEqual(sampled, [4, 3, 2, 1])
+        expect(sampled).toEqual([4, 3, 2, 1])
 
-    Math.random.restore()
-})
+        Math.random.restore()
+    })
 
-test('creates an array with random 0 and 1', t => {
-    const spy = sinon.stub(Math, 'random')
-        .callsFake(() => (spy.callCount <= 500 ? 0.001 : 0.999))
+    it('Should create an array with random 0s and 1s', () => {
+        const spy = sinon.stub(Math, 'random')
+            .callsFake(() => (spy.callCount <= 500 ? 0.001 : 0.999))
 
-    const result = seedRandom(1000)
+        const result = seedRandom(1000)
 
-    t.is(result.some(r => r !== 1 && r !== 0), false)
-    t.is(result.filter(r => r === 0).length, 500)
-    t.is(result.filter(r => r === 1).length, 500)
+        expect(result.some(r => r !== 1 && r !== 0)).toBe(false)
+        expect(result.filter(r => r === 0).length).toBe(500)
+        expect(result.filter(r => r === 1).length).toBe(500)
 
-    Math.random.restore()
-})
+        Math.random.restore()
+    })
 
-test('checks values equal', t => {
-    t.is(eq(1, 2), false)
-    t.is(eq(NaN, NaN), false)
-    t.is(eq(1)(3), false)
-    t.is(eq(1)(1), true)
-})
+    it('Should check values are strictly equal', () => {
+        expect(eq(1, 2)).toBe(false)
+        expect(eq(NaN, NaN)).toBe(false)
+        expect(eq(1)(3)).toBe(false)
+        expect(eq(1)(1)).toBe(true)
+    })
 
-test('gets last element of an array', t => {
-    t.is(last([]), undefined)
-    t.is(last([1]), 1)
-    t.is(last([1, 2]), 2)
-})
+    it('Should get the last element in an array', () => {
+        expect(last([])).toBe(undefined)
+        expect(last([1])).toBe(1)
+        expect(last([1, 2])).toBe(2)
+    })
 
-test('take indeces from start of array while predicate is true', t => {
-    t.deepEqual(takeIndexWhile(n => n > 10)([1, 2, 3, 4]), [])
-    t.deepEqual(takeIndexWhile(n => n > 2, [1, 2, 3, 4]), [2, 3])
-    t.deepEqual(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 3, 4]), [1, 2])
-    t.deepEqual(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 5, 3, 4]), [1])
-})
+    it('Should take indeces from start of array while predicate is true', () => {
+        expect(takeIndexWhile(n => n > 10)([1, 2, 3, 4])).toEqual([])
+        expect(takeIndexWhile(n => n > 2, [1, 2, 3, 4])).toEqual([2, 3])
+        expect(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 3, 4]))
+            .toEqual([1, 2])
+        expect(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 5, 3, 4]))
+            .toEqual([1])
+    })
 
-test('take n values from start of array', t => {
-    t.deepEqual(take(2)([]), [])
-    t.deepEqual(take(2, [1]), [1])
-    t.deepEqual(take(2)([1, 2, 3]), [1, 2])
-})
+    it('Should take n values from start of array', () => {
+        expect(take(2)([])).toEqual([])
+        expect(take(2, [1])).toEqual([1])
+        expect(take(2)([1, 2, 3])).toEqual([1, 2])
+    })
 
-test('take n values from end of array', t => {
-    t.deepEqual(take(-2)([]), [])
-    t.deepEqual(take(-2)([1]), [1])
-    t.deepEqual(take(-2)([1, 2, 3]), [2, 3])
-})
+    it('Should take n values from end of array', () => {
+        expect(take(-2)([])).toEqual([])
+        expect(take(-2)([1])).toEqual([1])
+        expect(take(-2)([1, 2, 3])).toEqual([2, 3])
+    })
 
-test('gets first value of an array', t => {
-    t.is(head([]), undefined)
-    t.is(head([1]), 1)
-    t.is(head([1, 2]), 1)
-})
+    it('Should get the first element in an array', () => {
+        expect(head([])).toBe(undefined)
+        expect(head([1])).toBe(1)
+        expect(head([1, 2])).toBe(1)
+    })
 
-test('groups adjacent indeces in array where value satisfies predicate', t => {
-    const eq1 = n => n === 1
+    it('Should group adjacent indeces in array where value satisfies predicate', () => {
+        const eq1 = n => n === 1
 
-    t.deepEqual(groupIndecesBy(eq1, [0, 2, 3, 5, 6, 0]), [])
-    t.deepEqual(groupIndecesBy(eq1, [0, 1, 0, 1, 1, 0]), [[1], [3, 4]])
-    t.deepEqual(groupIndecesBy(eq1)([1, 1, 0, 1, 0, 1]), [[0, 1], [3], [5]])
-})
+        expect(groupIndecesBy(eq1, [0, 2, 3, 5, 6, 0])).toEqual([])
+        expect(groupIndecesBy(eq1, [0, 1, 0, 1, 1, 0])).toEqual([[1], [3, 4]])
+        expect(groupIndecesBy(eq1)([1, 1, 0, 1, 0, 1]))
+            .toEqual([[0, 1], [3], [5]])
+    })
 
-test('creates a range of values', t => {
-    t.deepEqual(range(10), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    t.deepEqual(range(0), [])
-})
+    it('Should create a range of values', () => {
+        expect(range(10)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        expect(range(0)).toEqual([])
+    })
 
-test('mod negative numbers the euclidean way', t => {
-    t.is(mathMod(3, 3), 0)
-    t.is(mathMod(3)(-3), 0)
-    t.is(mathMod(3, -2), 1)
-    t.is(mathMod(3)(2), 2)
-})
+    it('Should mod negative numbers the euclidean way', () => {
+        expect(mathMod(3, 3)).toBe(0)
+        expect(mathMod(3)(-3)).toBe(0)
+        expect(mathMod(3, -2)).toBe(1)
+        expect(mathMod(3)(2)).toBe(2)
+    })
 
-test('create a single active value in the center of an n-length array', t => {
-    t.deepEqual(seedSingle(5), [0, 0, 1, 0, 0])
-    t.deepEqual(seedSingle(6), [0, 0, 1, 0, 0, 0])
-    t.deepEqual(seedSingle(1), [1])
-    t.deepEqual(seedSingle(2), [1, 0])
-    t.deepEqual(seedSingle(0), [])
-})
+    it('Should create a single positive value in the center of an n-length array', () => {
+        expect(seedSingle(5)).toEqual([0, 0, 1, 0, 0])
+        expect(seedSingle(6)).toEqual([0, 0, 1, 0, 0, 0])
+        expect(seedSingle(1)).toEqual([1])
+        expect(seedSingle(2)).toEqual([1, 0])
+        expect(seedSingle(0)).toEqual([])
+    })
 
-test('pipe composes functions left to right with first fn of any arity', t => {
-    const fn1 = (a, b) => a + b
-    const fn2 = x => x * 2
-    const fn = pipe(fn1, fn2)
+    it('Should compose functions left to right with first fn of any arity', () => {
+        const add = (a, b) => a + b
+        const double = x => x * 2
+        const addThenDouble = pipe(add, double)
 
-    t.is(fn(1, 2), 6)
-})
+        expect(addThenDouble(1, 2)).toBe(6)
+    })
 
-test('shallow flatten arrays', t => {
-    t.deepEqual(flatten([[1, 2], [3, 4]]), [1, 2, 3, 4])
-    t.deepEqual(flatten([[1, [2, 3]], 4]), [1, [2, 3], 4])
-})
+    it('Should shallow flatten arrays', () => {
+        expect(flatten([[1, 2], [3, 4]])).toEqual([1, 2, 3, 4])
+        expect(flatten([[1, [2, 3]], 4])).toEqual([1, [2, 3], 4])
+    })
 
-test('return a function that always returns the same value', t => {
-    const byRef = {}
+    it('Should create a function that always returns the same value', () => {
+        const byRef = {}
 
-    t.is(typeof constant(), 'function')
-    t.is(constant()(), undefined)
-    t.is(byRef === constant(byRef)(), true)
-    t.deepEqual(constant([1, 2])(), [1, 2])
+        expect(typeof constant()).toBe('function')
+        expect(constant()()).toBe(undefined)
+        expect(constant(byRef)()).toBe(byRef)
+        expect(constant(byRef)(5)).toBe(byRef)
+        expect(constant([1, 2])([100])).toEqual([1, 2])
+    })
 })
