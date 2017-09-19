@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import sinon from 'sinon'
+
 import {
     curry,
     cond,
@@ -18,6 +18,21 @@ import {
     constant,
     takeIndexWhile,
 } from './util.js'
+
+const mockRandom = fn => {
+    const _Math = window.Math
+    const random = jest.fn()
+    const mockMath = Object.create(_Math)
+
+    mockMath.random = (...args) => {
+        random(...args)
+        return fn(random.mock)
+    }
+
+    window.Math = mockMath
+
+    return () => window.Math = _Math
+}
 
 describe('Util', () => {
     it('Should curry a function', () => {
@@ -45,19 +60,18 @@ describe('Util', () => {
     })
 
     it('Should sample a random value from array', () => {
-        const spy = sinon.stub(Math, 'random')
-            .callsFake(() => (4 - spy.callCount) / 4)
+        const restoreRandom = mockRandom(mock => (4 - mock.calls.length) / 4)
         const source = [1, 2, 3, 4]
         const sampled = (new Array(4)).fill(0).map(() => sample(source))
 
         expect(sampled).toEqual([4, 3, 2, 1])
 
-        Math.random.restore()
+        restoreRandom()
     })
 
     it('Should create an array with random 0s and 1s', () => {
-        const spy = sinon.stub(Math, 'random')
-            .callsFake(() => (spy.callCount <= 500 ? 0.001 : 0.999))
+        const restoreRandom = mockRandom(
+            mock => (mock.calls.length <= 500 ? 0.001 : 0.999))
 
         const result = seedRandom(1000)
 
@@ -65,7 +79,7 @@ describe('Util', () => {
         expect(result.filter(r => r === 0).length).toBe(500)
         expect(result.filter(r => r === 1).length).toBe(500)
 
-        Math.random.restore()
+        restoreRandom()
     })
 
     it('Should check values are strictly equal', () => {
