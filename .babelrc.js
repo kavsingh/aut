@@ -7,8 +7,8 @@ module.exports = {
         useBuiltIns: 'usage',
         loose: true,
         targets: {
-          browsers: ['last 2 versions']
-        }
+          browsers: ['last 2 versions'],
+        },
       },
     ],
   ],
