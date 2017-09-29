@@ -31,7 +31,7 @@ const mockRandom = fn => {
 
     window.Math = mockMath
 
-    return () => window.Math = _Math
+    return () => (window.Math = _Math)
 }
 
 describe('Util', () => {
@@ -64,7 +64,7 @@ describe('Util', () => {
         const restoreRandom = mockRandom(
             ({ calls }) => (source.length - calls.length) / source.length,
         )
-        const sampled = (new Array(4)).fill(0).map(() => sample(source))
+        const sampled = new Array(4).fill(0).map(() => sample(source))
 
         expect(sampled).toEqual([4, 3, 2, 1])
 
@@ -73,7 +73,7 @@ describe('Util', () => {
 
     it('Should create an array with random 0s and 1s', () => {
         const restoreRandom = mockRandom(
-            ({ calls }) => calls.length <= 500 ? 0.001 : 0.999,
+            ({ calls }) => (calls.length <= 500 ? 0.001 : 0.999),
         )
 
         const result = seedRandom(1000)
@@ -101,10 +101,13 @@ describe('Util', () => {
     it('Should take indeces from start of array while predicate is true', () => {
         expect(takeIndexWhile(n => n > 10)([1, 2, 3, 4])).toEqual([])
         expect(takeIndexWhile(n => n > 2, [1, 2, 3, 4])).toEqual([2, 3])
-        expect(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 3, 4]))
-            .toEqual([1, 2])
-        expect(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 5, 3, 4]))
-            .toEqual([1])
+        expect(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 3, 4])).toEqual([
+            1,
+            2,
+        ])
+        expect(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 5, 3, 4])).toEqual([
+            1,
+        ])
     })
 
     it('Should take n values from start of array', () => {
@@ -130,8 +133,11 @@ describe('Util', () => {
 
         expect(groupIndecesBy(eq1, [0, 2, 3, 5, 6, 0])).toEqual([])
         expect(groupIndecesBy(eq1, [0, 1, 0, 1, 1, 0])).toEqual([[1], [3, 4]])
-        expect(groupIndecesBy(eq1)([1, 1, 0, 1, 0, 1]))
-            .toEqual([[0, 1], [3], [5]])
+        expect(groupIndecesBy(eq1)([1, 1, 0, 1, 0, 1])).toEqual([
+            [0, 1],
+            [3],
+            [5],
+        ])
     })
 
     it('Should create a range of values', () => {

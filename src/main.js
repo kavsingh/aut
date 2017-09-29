@@ -6,15 +6,19 @@ import * as rules from './rules.js'
 const CELL_DIM = 2
 const WORLD_WIDTH = 600
 
-const createRandomEvolver = pipe(constant([
-    rules.rule3,
-    rules.rule18,
-    rules.rule45,
-    rules.rule57,
-    rules.rule73,
-    rules.rule182,
-    rules.rule225,
-]), sample, createEvolver)
+const createRandomEvolver = pipe(
+    constant([
+        rules.rule3,
+        rules.rule18,
+        rules.rule45,
+        rules.rule57,
+        rules.rule73,
+        rules.rule182,
+        rules.rule225,
+    ]),
+    sample,
+    createEvolver,
+)
 
 let worldState = [seedSingle(WORLD_WIDTH / CELL_DIM)]
 let switchAccum = 0
@@ -30,7 +34,7 @@ window.bootApp = container => {
     const update = () => {
         switchAccum = switchAccum >= 60 ? 0 : switchAccum + 1
         evolve = switchAccum === 0 ? createRandomEvolver() : evolve
-        render(worldState = evolve(worldState))
+        render((worldState = evolve(worldState)))
     }
 
     const onFrame = tick => {

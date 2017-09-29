@@ -4,11 +4,15 @@ export const createEvolver = rule => state => {
     const input = state[state.length - 1]
     const modLength = mathMod(input.length)
 
-    return state.concat([input.map((_, index) => rule(
-        input[modLength(index - 1)],
-        input[index],
-        input[modLength(index + 1)],
-    ))])
+    return state.concat([
+        input.map((_, index) =>
+            rule(
+                input[modLength(index - 1)],
+                input[index],
+                input[modLength(index + 1)],
+            ),
+        ),
+    ])
 }
 
 /*

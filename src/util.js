@@ -1,11 +1,11 @@
 export const curry = fn => (...args) =>
-    (args.length >= fn.length ? fn(...args) : curry(fn.bind(null, ...args)))
+    args.length >= fn.length ? fn(...args) : curry(fn.bind(null, ...args))
 
 export const eq = curry((c, a) => c === a)
 
 export const range = max => Array.from({ length: max }, (_, i) => i)
 
-export const mathMod = curry((m, n) => ((n % m) + m) % m)
+export const mathMod = curry((m, n) => (n % m + m) % m)
 
 export const sample = arr => arr[Math.floor(Math.random() * arr.length)]
 
@@ -13,16 +13,20 @@ export const last = arr => arr[arr.length - 1]
 
 export const head = arr => arr[0]
 
-export const take = curry((n, arr) => n < 0 ? arr.slice(n) : arr.slice(0, n))
+export const take = curry((n, arr) => (n < 0 ? arr.slice(n) : arr.slice(0, n)))
 
 export const constant = val => () => val
 
 export const seedSingle = len => {
     if (!len) return []
-    const lr = range(Math.floor(len / 2)).map(() => 0)
+    const zeros = range(Math.floor(len / 2)).map(() => 0)
 
-    if (len % 2 === 0) return lr.slice(0, -1).concat(1).concat(lr)
-    return lr.concat(1).concat(lr)
+    return len % 2 === 0
+        ? zeros
+              .slice(0, -1)
+              .concat(1)
+              .concat(zeros)
+        : zeros.concat(1).concat(zeros)
 }
 
 export const seedRandom = len =>

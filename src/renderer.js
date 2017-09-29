@@ -43,7 +43,7 @@ export function createCanvasRenderer(
         clear()
         const startIdx = Math.max(0, state.length - maxRows)
         for (let i = startIdx; i < state.length; i++) {
-            drawRow(state[i], (height - ((state.length - i) * cellDim)))
+            drawRow(state[i], height - (state.length - i) * cellDim)
         }
     }
 }
