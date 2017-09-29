@@ -24,7 +24,7 @@ let worldState = [seedSingle(WORLD_WIDTH / CELL_DIM)]
 let switchAccum = 0
 let evolve = createRandomEvolver()
 
-window.bootApp = container => {
+const main = container => {
     const render = createCanvasRenderer(container, {
         CELL_DIM,
         width: WORLD_WIDTH,
@@ -44,3 +44,7 @@ window.bootApp = container => {
 
     window.requestAnimationFrame(onFrame)
 }
+
+if (typeof window !== 'undefined') window.bootApp = main
+
+export default main

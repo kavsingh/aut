@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { createCanvasRenderer } from './renderer.js'
 
 const mockCanvas = () => {

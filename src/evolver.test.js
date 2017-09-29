@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import { createRule, createEvolver } from './evolver.js'
 
 describe('Evolver', () => {
