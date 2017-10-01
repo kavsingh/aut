@@ -6,9 +6,6 @@ module.exports = {
         modules: false,
         useBuiltIns: 'usage',
         loose: true,
-        targets: {
-          browsers: ['last 2 versions'],
-        },
       },
     ],
   ],

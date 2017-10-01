@@ -1,3 +1,5 @@
+/* global window */
+
 import {
     curry,
     cond,
@@ -18,7 +20,7 @@ import {
 } from './util.js'
 
 const mockRandom = fn => {
-    const _Math = window.Math
+    const _Math = window.Math // Should be provided by jest
     const random = jest.fn()
     const mockMath = Object.create(_Math)
 
