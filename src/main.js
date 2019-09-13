@@ -37,8 +37,8 @@ const main = container => {
         render((worldState = evolve(worldState)))
     }
 
-    const onFrame = tick => {
-        update(tick)
+    const onFrame = () => {
+        update()
         window.requestAnimationFrame(onFrame)
     }
 
