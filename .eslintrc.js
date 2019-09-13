@@ -31,26 +31,22 @@ module.exports = {
     ],
 
     rules: {
-        'prettier/prettier': ['warn', {
-            semi: false,
-            tabWidth: 4,
-            trailingComma: 'all',
-            singleQuote: true,
-        }],
-        'no-shadow': ['error', {
-            builtinGlobals: false,
-            hoist: 'functions',
-            allow: [],
-        }],
-        'no-use-before-define': ['error', {
-            'functions': false,
-            'classes': false,
-        }],
-        'no-restricted-globals': [
+        'no-shadow': [
             'error',
-            'find',
-            'self',
-            'event',
+            {
+                builtinGlobals: false,
+                hoist: 'functions',
+                allow: [],
+            },
         ],
+        'no-use-before-define': [
+            'error',
+            {
+                functions: false,
+                classes: false,
+            },
+        ],
+        'no-restricted-globals': ['error', 'find', 'self', 'event'],
+        'prettier/prettier': 'warn',
     },
 }
