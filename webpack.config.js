@@ -1,7 +1,6 @@
 const path = require('path')
-// TODO: fix prepack issues
-// const { default: PrepackPlugin } = require('prepack-webpack-plugin')
-// const prepackConfig = require('./prepack.config')
+const { default: PrepackPlugin } = require('prepack-webpack-plugin')
+const prepackConfig = require('./prepack.config')
 
 const isProd = process.env.NODE_ENV === 'production'
 const fromRoot = path.resolve.bind(path, __dirname)
@@ -31,10 +30,9 @@ module.exports = {
             },
         ],
     },
-    plugins: [
-        // TODO: fix prepack issues
-        // isProd && new PrepackPlugin({ prepack: prepackConfig }),
-    ].filter(Boolean),
+    plugins: [isProd && new PrepackPlugin({ prepack: prepackConfig })].filter(
+        Boolean,
+    ),
     resolve: {
         modules: [fromRoot('src'), 'node_modules'],
         extensions: ['.js'],

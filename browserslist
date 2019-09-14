@@ -1,6 +1,3 @@
 [production]
-> 2%
-last 2 versions
-
-[development]
-last 1 versions
+chrome 77
+firefox 69
