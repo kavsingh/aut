@@ -11,8 +11,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "BABEL_DISABLE_CACHE=1 NODE_ENV=test jest --verbose --coverage",
-    "test:watch": "BABEL_DISABLE_CACHE=1 NODE_ENV=test jest -- --watch",
+    "test": "NODE_ENV=test jest --verbose --coverage",
+    "test:watch": "NODE_ENV=test jest -- --watch",
     "serve": "live-server --watch=\"./dist\"",
     "dev": "webpack --watch & npm run serve",
     "build": "NODE_ENV=production webpack --verbose"
