@@ -28,7 +28,7 @@ const main = containers => {
         width: worldDim,
         height: worldDim,
     })
-    const switchOver = Math.floor(worldDim / 5)
+    const switchOver = Math.floor(worldDim / (containers.length * 2))
 
     let worldState = [seedSingle(worldDim / cellDim)]
     let switchAccum = 0
