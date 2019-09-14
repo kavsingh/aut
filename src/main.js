@@ -37,14 +37,15 @@ const main = containers => {
     const update = () => {
         switchAccum = switchAccum >= switchOver ? 0 : switchAccum + 1
         evolve = switchAccum === 0 ? createRandomEvolver() : evolve
-        render((worldState = evolve(worldState)))
+        worldState = evolve(worldState)
     }
 
     const onFrame = () => {
-        update()
+        render(worldState)
         window.requestAnimationFrame(onFrame)
     }
 
+    setInterval(update, 14)
     window.requestAnimationFrame(onFrame)
 }
 
