@@ -13,10 +13,9 @@
     "lint": "eslint .",
     "test": "BABEL_DISABLE_CACHE=1 NODE_ENV=test jest --verbose --coverage",
     "test:watch": "BABEL_DISABLE_CACHE=1 NODE_ENV=test jest -- --watch",
-    "webpack:watch": "npm run webpack:dev -- --watch",
     "serve": "live-server --watch=\"./dist\"",
-    "dev": "npm run webpack:watch & npm run serve",
-    "build": "NODE_ENV=production webpack --config webpack.config.js --verbose"
+    "dev": "webpack --watch & npm run serve",
+    "build": "NODE_ENV=production webpack --verbose"
   },
   "devDependencies": {
     "babel-core": "7.0.0-beta.3",
