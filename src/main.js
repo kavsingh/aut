@@ -28,13 +28,14 @@ const main = containers => {
         width: worldDim,
         height: worldDim,
     })
+    const switchOver = Math.floor(worldDim / 5)
 
     let worldState = [seedSingle(worldDim / cellDim)]
     let switchAccum = 0
     let evolve = createRandomEvolver()
 
     const update = () => {
-        switchAccum = switchAccum >= 60 ? 0 : switchAccum + 1
+        switchAccum = switchAccum >= switchOver ? 0 : switchAccum + 1
         evolve = switchAccum === 0 ? createRandomEvolver() : evolve
         render((worldState = evolve(worldState)))
     }
