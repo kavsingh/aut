@@ -12,8 +12,7 @@
   "scripts": {
     "lint": "eslint .",
     "test": "jest --verbose --coverage",
-    "serve": "live-server --watch=\"./dist\"",
-    "dev": "webpack --watch & npm run serve",
+    "dev": "webpack-dev-server",
     "build": "NODE_ENV=production webpack --verbose"
   },
   "dependencies": {
@@ -31,10 +30,10 @@
     "eslint-config-prettier": "6.3.0",
     "eslint-plugin-prettier": "3.1.0",
     "jest": "24.9.0",
-    "live-server": "1.2.1",
     "prepack-webpack-plugin": "1.1.2",
     "prettier": "1.18.2",
     "webpack": "4.40.2",
-    "webpack-cli": "3.3.8"
+    "webpack-cli": "3.3.8",
+    "webpack-dev-server": "3.8.0"
   }
 }
