@@ -101,7 +101,7 @@ describe('Util', () => {
     it('Should take indeces from start of array while predicate is true', () => {
         expect(takeIndexWhile(n => n > 10)([1, 2, 3, 4])).toEqual([])
         expect(takeIndexWhile(n => n > 2, [1, 2, 3, 4])).toEqual([2, 3])
-        expect(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 3, 4])).toEqual([
+        expect(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 3, 4, 2])).toEqual([
             1,
             2,
         ])
