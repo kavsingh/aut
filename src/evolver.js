@@ -31,7 +31,5 @@ export const createEvolver = rule => state => {
 
     the rule is codified by createRule(['100', '101'])
 */
-export const createRule = patterns => (a, b, c) => {
-    const inPattern = [a, b, c].join('')
-    return patterns.some(pattern => pattern === inPattern) ? 1 : 0
-}
+export const createRule = patterns => (a, b, c) =>
+    patterns.includes(`${a}${b}${c}`) ? 1 : 0
