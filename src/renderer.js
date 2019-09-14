@@ -1,5 +1,7 @@
 import { last, head, groupIndecesBy, eq } from './util'
 
+const groupActiveIndeces = groupIndecesBy(eq(1))
+
 export function createCanvasRenderer(
     canvas,
     {
@@ -18,7 +20,7 @@ export function createCanvasRenderer(
         context.fillStyle = activeFill
     }
     const drawRow = (row, yOffset) => {
-        const activeRanges = groupIndecesBy(eq(1), row)
+        const activeRanges = groupActiveIndeces(row)
 
         for (let i = 0; i < activeRanges.length; i++) {
             const current = activeRanges[i]
