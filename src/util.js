@@ -5,7 +5,7 @@ export const eq = curry((c, a) => c === a)
 
 export const range = max => Array.from({ length: max }, (_, i) => i)
 
-export const mathMod = curry((m, n) => (n % m + m) % m)
+export const mathMod = curry((m, n) => ((n % m) + m) % m)
 
 export const sample = arr => arr[Math.floor(Math.random() * arr.length)]
 

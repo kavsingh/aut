@@ -163,7 +163,10 @@ describe('Util', () => {
     it('Should compose functions left to right with first fn of any arity', () => {
         const add = (a, b) => a + b
         const double = x => x * 2
-        const addThenDouble = pipe(add, double)
+        const addThenDouble = pipe(
+            add,
+            double,
+        )
 
         expect(addThenDouble(1, 2)).toBe(6)
     })
