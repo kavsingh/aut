@@ -3,7 +3,7 @@ import { last, head, groupIndecesBy, eq } from './util'
 const groupActiveIndeces = groupIndecesBy(eq(1))
 
 export function createCanvasRenderer(
-    canvas,
+    canvases,
     {
         width = 200,
         height = 200,
@@ -12,13 +12,14 @@ export function createCanvasRenderer(
         activeFill = '#000000',
     } = {},
 ) {
-    const context = canvas.getContext('2d')
+    const contexts = canvases.map(canvas => canvas.getContext('2d'))
     const maxRows = Math.floor(height / cellDim)
-    const clear = () => {
-        context.fillStyle = inactiveFill
-        context.fillRect(0, 0, width, height)
-        context.fillStyle = activeFill
-    }
+    const clear = () =>
+        contexts.forEach(context => {
+            context.fillStyle = inactiveFill
+            context.fillRect(0, 0, width, height)
+            context.fillStyle = activeFill
+        })
     const drawRow = (row, yOffset) => {
         const activeRanges = groupActiveIndeces(row)
 
@@ -28,18 +29,22 @@ export function createCanvasRenderer(
             const end = last(current)
 
             if (start !== undefined && end !== undefined) {
-                context.fillRect(
-                    start * cellDim,
-                    yOffset,
-                    current.length * cellDim,
-                    cellDim,
+                contexts.forEach(context =>
+                    context.fillRect(
+                        start * cellDim,
+                        yOffset,
+                        current.length * cellDim,
+                        cellDim,
+                    ),
                 )
             }
         }
     }
 
-    canvas.width = width
-    canvas.height = height
+    canvases.forEach(canvas => {
+        canvas.width = width
+        canvas.height = height
+    })
 
     return state => {
         clear()

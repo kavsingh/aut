@@ -8,7 +8,7 @@ const mockCanvas = () => {
 describe('Renderer', () => {
     it('Should draw state to canvas context', () => {
         const canvas = mockCanvas()
-        const render = createCanvasRenderer(canvas, {
+        const render = createCanvasRenderer([canvas], {
             width: 10,
             height: 10,
             cellDim: 1,
@@ -31,7 +31,7 @@ describe('Renderer', () => {
 
     it('Should draw only visible rows from state', () => {
         const canvas = mockCanvas()
-        const render = createCanvasRenderer(canvas, {
+        const render = createCanvasRenderer([canvas], {
             width: 10,
             height: 4,
             cellDim: 2,

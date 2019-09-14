@@ -72,8 +72,8 @@ describe('Util', () => {
     })
 
     it('Should create an array with random 0s and 1s', () => {
-        const restoreRandom = mockRandom(
-            ({ calls }) => (calls.length <= 500 ? 0.001 : 0.999),
+        const restoreRandom = mockRandom(({ calls }) =>
+            calls.length <= 500 ? 0.001 : 0.999,
         )
 
         const result = seedRandom(1000)

@@ -3,9 +3,6 @@ import { createCanvasRenderer } from './renderer.js'
 import { createEvolver } from './evolver.js'
 import * as rules from './rules.js'
 
-const CELL_DIM = 2
-const WORLD_WIDTH = 600
-
 const createRandomEvolver = pipe(
     constant([
         rules.rule3,
@@ -20,16 +17,21 @@ const createRandomEvolver = pipe(
     createEvolver,
 )
 
-let worldState = [seedSingle(WORLD_WIDTH / CELL_DIM)]
-let switchAccum = 0
-let evolve = createRandomEvolver()
-
-const main = container => {
-    const render = createCanvasRenderer(container, {
-        CELL_DIM,
-        width: WORLD_WIDTH,
-        height: Math.round(WORLD_WIDTH * 0.8),
+const main = containers => {
+    const cellDim = 2
+    const worldDim = Math.min(
+        Math.floor(window.innerWidth / containers.length),
+        300,
+    )
+    const render = createCanvasRenderer(containers, {
+        cellDim,
+        width: worldDim,
+        height: worldDim,
     })
+
+    let worldState = [seedSingle(worldDim / cellDim)]
+    let switchAccum = 0
+    let evolve = createRandomEvolver()
 
     const update = () => {
         switchAccum = switchAccum >= 60 ? 0 : switchAccum + 1
