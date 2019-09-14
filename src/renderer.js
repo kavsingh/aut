@@ -1,42 +1,42 @@
 import { last, head, groupIndecesBy, eq } from './util'
 
-const groupActiveIndeces = groupIndecesBy(eq(1))
-
 export function createCanvasRenderer(
     canvases,
     {
         width = 200,
         height = 200,
         cellDim = 2,
-        inactiveFill = '#FFFFFF',
-        activeFill = '#000000',
+        fillColor = '#000000',
+        fillMode = 'active',
     } = {},
 ) {
     const contexts = canvases.map(canvas => canvas.getContext('2d'))
     const maxRows = Math.floor(height / cellDim)
+    const groupFillRanges = groupIndecesBy(eq(fillMode === 'inactive' ? 0 : 1))
+
     const clear = () =>
         contexts.forEach(context => {
-            context.fillStyle = inactiveFill
-            context.fillRect(0, 0, width, height)
-            context.fillStyle = activeFill
+            context.clearRect(0, 0, width, height)
+            context.fillStyle = fillColor
         })
-    const drawRow = (row, yOffset) => {
-        const activeRanges = groupActiveIndeces(row)
 
-        for (let i = 0; i < activeRanges.length; i++) {
-            const current = activeRanges[i]
+    const drawRow = (row, yOffset) => {
+        const fillRanges = groupFillRanges(row)
+
+        for (let i = 0; i < fillRanges.length; i++) {
+            const current = fillRanges[i]
             const start = head(current)
             const end = last(current)
 
             if (start !== undefined && end !== undefined) {
-                contexts.forEach(context =>
+                contexts.forEach(context => {
                     context.fillRect(
                         start * cellDim,
                         yOffset,
                         current.length * cellDim,
                         cellDim,
-                    ),
-                )
+                    )
+                })
             }
         }
     }
@@ -48,7 +48,9 @@ export function createCanvasRenderer(
 
     return state => {
         clear()
+
         const startIdx = Math.max(0, state.length - maxRows)
+
         for (let i = startIdx; i < state.length; i++) {
             drawRow(state[i], height - (state.length - i) * cellDim)
         }
