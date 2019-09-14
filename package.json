@@ -27,14 +27,14 @@
     "babel-eslint": "10.0.3",
     "babel-jest": "24.9.0",
     "babel-loader": "8.0.6",
-    "babel-minify-webpack-plugin": "0.3.1",
     "eslint": "6.4.0",
     "eslint-config-prettier": "6.3.0",
     "eslint-plugin-prettier": "3.1.0",
     "jest": "24.9.0",
-    "live-server": "1.2.0",
-    "prepack-webpack-plugin": "1.1.0",
-    "prettier": "1.13.0",
-    "webpack": "3.8.1"
+    "live-server": "1.2.1",
+    "prepack-webpack-plugin": "1.1.2",
+    "prettier": "1.18.2",
+    "webpack": "4.40.2",
+    "webpack-cli": "3.3.8"
   }
 }
