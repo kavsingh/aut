@@ -1,7 +1,7 @@
 import { seedSingle } from './util.js'
-import * as rules from './rules.js'
 import { addRuleThumbnails } from './thumbnails'
 import { startAnimations } from './animations'
+import * as rules from './rules.js'
 
 const main = (canvases, thumbnailsContainer) => {
     const cellDim = 2
@@ -13,15 +13,7 @@ const main = (canvases, thumbnailsContainer) => {
     const state = {
         cellDim,
         worldDim,
-        rules: [
-            rules.rule3,
-            rules.rule18,
-            rules.rule45,
-            rules.rule57,
-            rules.rule73,
-            rules.rule182,
-            rules.rule225,
-        ],
+        rules: Object.values(rules),
         evolver: undefined,
         world: [seedSingle(worldDim / cellDim)],
     }
