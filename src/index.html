@@ -10,12 +10,38 @@
 
         body {
             display: flex;
+            flex-direction: column;
+        }
+
+        .centered-children {
+            display: flex;
             align-items: center;
             justify-content: center;
         }
 
+        .main {
+            position: relative;
+            margin-top: 60px;
+        }
+
         .worlds {
             display: flex;
+            margin-top: auto;
+            margin-bottom: auto;
+            z-index: 1;
+        }
+
+        .thumbnails {
+            margin-left: 20%;
+            margin-right: 20%;
+            justify-content: space-around;
+            align-items: center;
+            height: 60px;
+            opacity: 0;
+            transform: translateY(-20%);
+            pointer-events: none;
+            z-index: 0;
+            transition: all 300ms ease-out;
         }
 
         .world:nth-child(n) {
@@ -24,6 +50,12 @@
 
         .world:nth-child(2n) {
             transform: rotate(0deg);
+        }
+
+        .main:hover .thumbnails {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: initial;
         }
 
         .githubLink {
@@ -36,11 +68,14 @@
         }
     </style>
 </head>
-<body>
-    <div class="worlds">
-        <canvas class="world"></canvas>
-        <canvas class="world"></canvas>
-        <canvas class="world"></canvas>
+<body class="centered-children">
+    <div class="main">
+        <div class="worlds centered-children">
+            <canvas class="world"></canvas>
+            <canvas class="world"></canvas>
+            <canvas class="world"></canvas>
+        </div>
+        <div class="thumbnails centered-children"></div>
     </div>
     <a
         class="githubLink"
@@ -55,8 +90,10 @@
             </g>
         </svg>
     </a>
-    <script src="dist/bundle.js"></script>
     <script>
-        window.bootApp(Array.from(document.querySelectorAll('.world')))
+        window.bootApp(
+            Array.from(document.querySelectorAll('.world')),
+            document.querySelector('.thumbnails'),
+        )
     </script>
 </body>

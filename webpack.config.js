@@ -1,4 +1,5 @@
 const path = require('path')
+const HtmlPlugin = require('html-webpack-plugin')
 const { default: PrepackPlugin } = require('prepack-webpack-plugin')
 const prepackConfig = require('./prepack.config')
 
@@ -30,9 +31,14 @@ module.exports = {
             },
         ],
     },
-    plugins: [isProd && new PrepackPlugin({ prepack: prepackConfig })].filter(
-        Boolean,
-    ),
+    plugins: [
+        new HtmlPlugin({
+            title: 'app',
+            template: fromRoot('src/index.html'),
+            inject: 'head',
+        }),
+        isProd && new PrepackPlugin({ prepack: prepackConfig }),
+    ].filter(Boolean),
     resolve: {
         modules: [fromRoot('src'), 'node_modules'],
         extensions: ['.js'],
