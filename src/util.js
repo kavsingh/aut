@@ -71,3 +71,19 @@ export const groupIndecesBy = curry((predicate, arr) => {
 })
 
 export const flatten = arr => arr.reduce((flat, val) => flat.concat(val), [])
+
+export const valueEq = curry((a, b) => {
+    if (eq(a, b)) return true
+
+    if (Number.isNaN(a) && Number.isNaN(b)) return true
+
+    if (typeof a === 'object' && typeof b === 'object') {
+        const [aKeys, bKeys] = [a, b].map(Object.keys)
+
+        return aKeys.length !== bKeys.length
+            ? false
+            : aKeys.every(key => valueEq(a[key], b[key]))
+    }
+
+    return false
+})

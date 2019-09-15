@@ -1,7 +1,7 @@
 module.exports = {
     testRegex: '\\.test\\.js$',
     coverageDirectory: '<rootDir>/coverage/',
-    collectCoverageFrom: ['src/**/*.js'],
+    collectCoverageFrom: ['src/**/*.js', '!src/rules.js'],
     coveragePathIgnorePatterns: [
         '<rootDir>/node_modules/',
         '<rootDir>/dist/',

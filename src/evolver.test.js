@@ -1,3 +1,4 @@
+import * as util from './util'
 import { createRule, createEvolver } from './evolver.js'
 
 describe('Evolver', () => {
@@ -44,5 +45,18 @@ describe('Evolver', () => {
         expect(evolve1(expectedState1)).toEqual(expectedState1_2)
         expect(evolve2(initState)).toEqual(expectedState2)
         expect(evolve3(initState)).toEqual(expectedState3)
+    })
+
+    it('should not perpetuate identical generations', () => {
+        jest.spyOn(util, 'seedRandom').mockImplementationOnce(() => [0, 1, 0])
+
+        const initState = [[0, 0, 0]]
+        const evolve = createEvolver(createRule([]))
+        const nextState = evolve(initState)
+
+        expect(util.seedRandom).toHaveBeenCalledWith(3)
+        expect(nextState).toEqual([[0, 0, 0], [0, 1, 0]])
+
+        util.seedRandom.mockRestore()
     })
 })

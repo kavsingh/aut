@@ -1,20 +1,19 @@
-import { eq, mathMod, seedRandom } from './util.js'
+import { mathMod, seedRandom, valueEq } from './util.js'
 
 export const createEvolver = rule => state => {
     const input = state[state.length - 1]
     const modLength = mathMod(input.length)
+    const next = input.map((_, index) =>
+        rule(
+            input[modLength(index - 1)],
+            input[index],
+            input[modLength(index + 1)],
+        ),
+    )
 
-    return input.every(eq(1)) || input.every(eq(0))
-        ? state.concat([seedRandom(input.length)])
-        : state.concat([
-              input.map((_, index) =>
-                  rule(
-                      input[modLength(index - 1)],
-                      input[index],
-                      input[modLength(index + 1)],
-                  ),
-              ),
-          ])
+    return state.concat([
+        valueEq(input, next) ? seedRandom(input.length) : next,
+    ])
 }
 
 /*
