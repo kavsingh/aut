@@ -50,12 +50,9 @@ describe('Evolver', () => {
 	it('should not perpetuate identical generations', () => {
 		jest.spyOn(util, 'seedRandom').mockImplementationOnce(() => [0, 1, 0])
 
-		const initState = [[0, 0, 0]]
 		const evolve = createEvolver(createRule([]))
-		const nextState = evolve(initState)
 
-		expect(util.seedRandom).toHaveBeenCalledWith(3)
-		expect(nextState).toEqual([[0, 0, 0], [0, 1, 0]])
+		expect(evolve([[0, 0, 0]])).toEqual([[0, 0, 0], [0, 1, 0]])
 
 		util.seedRandom.mockRestore()
 	})
