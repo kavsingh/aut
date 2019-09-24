@@ -1,4 +1,4 @@
 module.exports = {
-    compatibility: 'browser',
-    mathRandomSeed: `${Math.random()}`,
+	compatibility: 'browser',
+	mathRandomSeed: `${Math.random()}`,
 }

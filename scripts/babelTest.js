@@ -7,5 +7,5 @@ const inPath = path.resolve(__dirname, '../src/main.js')
 const outPath = path.resolve(__dirname, 'babel.out.ignore.js')
 
 util.promisify(babel.transformFile)(inPath).then(({ code }) =>
-    util.promisify(fs.writeFile)(outPath, code),
+	util.promisify(fs.writeFile)(outPath, code),
 )

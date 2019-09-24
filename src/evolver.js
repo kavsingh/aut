@@ -1,19 +1,19 @@
 import { mathMod, seedRandom, valueEq } from './util.js'
 
 export const createEvolver = rule => state => {
-    const input = state[state.length - 1]
-    const modLength = mathMod(input.length)
-    const next = input.map((_, index) =>
-        rule(
-            input[modLength(index - 1)],
-            input[index],
-            input[modLength(index + 1)],
-        ),
-    )
+	const input = state[state.length - 1]
+	const modLength = mathMod(input.length)
+	const next = input.map((_, index) =>
+		rule(
+			input[modLength(index - 1)],
+			input[index],
+			input[modLength(index + 1)],
+		),
+	)
 
-    return state.concat([
-        valueEq(input, next) ? seedRandom(input.length) : next,
-    ])
+	return state.concat([
+		valueEq(input, next) ? seedRandom(input.length) : next,
+	])
 }
 
 /*
@@ -33,4 +33,4 @@ export const createEvolver = rule => state => {
     the rule is codified by createRule(['100', '101'])
 */
 export const createRule = patterns => (a, b, c) =>
-    patterns.includes(`${a}${b}${c}`) ? 1 : 0
+	patterns.includes(`${a}${b}${c}`) ? 1 : 0

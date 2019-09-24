@@ -4,31 +4,31 @@ import { startAnimations } from './animations'
 import * as rules from './rules.js'
 
 const main = (canvases, thumbnailsContainer) => {
-    const cellDim = 2
-    const worldDim = Math.min(
-        Math.floor(window.innerWidth / canvases.length),
-        300,
-    )
+	const cellDim = 2
+	const worldDim = Math.min(
+		Math.floor(window.innerWidth / canvases.length),
+		300,
+	)
 
-    const state = {
-        cellDim,
-        worldDim,
-        rules: Object.values(rules),
-        evolver: undefined,
-        world: [seedSingle(worldDim / cellDim)],
-    }
+	const state = {
+		cellDim,
+		worldDim,
+		rules: Object.values(rules),
+		evolver: undefined,
+		world: [seedSingle(worldDim / cellDim)],
+	}
 
-    const thumbnails = addRuleThumbnails(state.rules, thumbnailsContainer)
+	const thumbnails = addRuleThumbnails(state.rules, thumbnailsContainer)
 
-    thumbnails.forEach(({ element, evolver }) => {
-        element.addEventListener('click', () => (state.evolver = evolver))
-    })
+	thumbnails.forEach(({ element, evolver }) => {
+		element.addEventListener('click', () => (state.evolver = evolver))
+	})
 
-    canvases.forEach(canvas =>
-        canvas.addEventListener('click', () => (state.evolver = undefined)),
-    )
+	canvases.forEach(canvas =>
+		canvas.addEventListener('click', () => (state.evolver = undefined)),
+	)
 
-    startAnimations(state, canvases)
+	startAnimations(state, canvases)
 }
 
 if (typeof window !== 'undefined') window.bootApp = main
