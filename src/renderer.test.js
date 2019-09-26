@@ -42,14 +42,7 @@ describe('Renderer', () => {
 			cellDim: 2,
 		})
 
-		render([
-			[0, 0, 0],
-			[0, 0, 0],
-			[0, 0, 0],
-			[0, 0, 0],
-			[1, 0, 0],
-			[0, 1, 1],
-		])
+		render([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [1, 0, 0], [0, 1, 1]])
 
 		expect(clearRect).toHaveBeenCalledTimes(1)
 

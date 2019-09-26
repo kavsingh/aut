@@ -28,16 +28,7 @@ describe('Evolver', () => {
 		const expectedState2 = initState.concat([[0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
 		const evolve3 = createEvolver(
-			createRule([
-				'000',
-				'001',
-				'010',
-				'011',
-				'100',
-				'101',
-				'110',
-				'111',
-			]),
+			createRule(['000', '001', '010', '011', '100', '101', '110', '111']),
 		)
 		const expectedState3 = initState.concat([[1, 1, 1, 1, 1, 1, 1, 1, 1]])
 

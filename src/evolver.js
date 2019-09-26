@@ -11,9 +11,7 @@ export const createEvolver = rule => state => {
 		),
 	)
 
-	return state.concat([
-		valueEq(input, next) ? seedRandom(input.length) : next,
-	])
+	return state.concat([valueEq(input, next) ? seedRandom(input.length) : next])
 }
 
 /*
