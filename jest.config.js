@@ -1,10 +1,7 @@
 module.exports = {
-	testRegex: '\\.test\\.js$',
-	coverageDirectory: '<rootDir>/coverage/',
-	collectCoverageFrom: ['src/**/*.js', '!src/rules.js'],
-	coveragePathIgnorePatterns: [
-		'<rootDir>/node_modules/',
-		'<rootDir>/dist/',
-		'<rootDir>/scripts/',
-	],
+	testRegex: '^.+\\.test\\.[jt]s?$',
+	transform: { '^.+\\.[jt]s?$': '<rootDir>/node_modules/babel-jest' },
+	moduleFileExtensions: ['ts', 'js', 'json'],
+	coverageReporters: ['lcov'],
+	coveragePathIgnorePatterns: ['/node_modules/'],
 }

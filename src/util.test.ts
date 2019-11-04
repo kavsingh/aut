@@ -1,12 +1,10 @@
-/* global window */
-
 import {
 	curry,
 	cond,
 	last,
 	head,
 	range,
-	mathMod,
+	circMod,
 	seedSingle,
 	seedRandom,
 	pipe,
@@ -18,14 +16,14 @@ import {
 	constant,
 	takeIndexWhile,
 	valueEq,
-} from './util.js'
+} from './util'
 
-const mockRandom = fn => {
+const mockRandom = (fn: (mock: jest.MockContext<any, any>) => unknown) => {
 	const _Math = window.Math // Should be provided by jest
 	const random = jest.fn()
 	const mockMath = Object.create(_Math)
 
-	mockMath.random = (...args) => {
+	mockMath.random = (...args: Parameters<typeof Math.random>) => {
 		random(...args)
 		return fn(random.mock)
 	}
@@ -37,7 +35,7 @@ const mockRandom = fn => {
 
 describe('Util', () => {
 	it('Should curry a function', () => {
-		const add = curry((a, b, c) => a + b + c)
+		const add = curry((a: number, b: number, c: number) => a + b + c)
 
 		expect(add(1, 2, 3)).toBe(6)
 		expect(add(1)(2, 3)).toBe(6)
@@ -47,7 +45,7 @@ describe('Util', () => {
 	})
 
 	it('Should return conditional result', () => {
-		const conditions = cond([
+		const conditions = cond<number, number>([
 			[n => n > 5, n => n * 3],
 			[n => n > 2, n => n * 2],
 			[() => true, n => n],
@@ -56,8 +54,8 @@ describe('Util', () => {
 		expect(conditions(10)).toBe(30)
 		expect(conditions(4)).toBe(8)
 		expect(conditions(1)).toBe(1)
-		expect(conditions(null)).toBe(null)
-		expect(cond([[n => n > 5, n => n]], 2)).toBe(undefined)
+		expect(conditions(null as any)).toBeNull()
+		expect(cond<number, number>([[n => n > 5, n => n]])(2)).toBeUndefined()
 	})
 
 	it('Should sample a random value from array', () => {
@@ -80,8 +78,8 @@ describe('Util', () => {
 		const result = seedRandom(1000)
 
 		expect(result.some(r => r !== 1 && r !== 0)).toBe(false)
-		expect(result.filter(r => r === 0).length).toBe(500)
-		expect(result.filter(r => r === 1).length).toBe(500)
+		expect(result.filter(r => r === 0)).toHaveLength(500)
+		expect(result.filter(r => r === 1)).toHaveLength(500)
 
 		restoreRandom()
 	})
@@ -94,16 +92,20 @@ describe('Util', () => {
 	})
 
 	it('Should get the last element in an array', () => {
-		expect(last([])).toBe(undefined)
+		expect(last([])).toBeUndefined()
 		expect(last([1])).toBe(1)
 		expect(last([1, 2])).toBe(2)
 	})
 
 	it('Should take indeces from start of array while predicate is true', () => {
-		expect(takeIndexWhile(n => n > 10)([1, 2, 3, 4])).toEqual([])
-		expect(takeIndexWhile(n => n > 2, [1, 2, 3, 4])).toEqual([2, 3])
-		expect(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 3, 4, 2])).toEqual([1, 2])
-		expect(takeIndexWhile(n => n > 1 && n < 4)([1, 2, 5, 3, 4])).toEqual([1])
+		expect(takeIndexWhile((n: number) => n > 10)([1, 2, 3, 4])).toEqual([])
+		expect(takeIndexWhile((n: number) => n > 2, [1, 2, 3, 4])).toEqual([2, 3])
+		expect(
+			takeIndexWhile((n: number) => n > 1 && n < 4)([1, 2, 3, 4, 2]),
+		).toEqual([1, 2])
+		expect(
+			takeIndexWhile((n: number) => n > 1 && n < 4)([1, 2, 5, 3, 4]),
+		).toEqual([1])
 	})
 
 	it('Should take n values from start of array', () => {
@@ -119,13 +121,13 @@ describe('Util', () => {
 	})
 
 	it('Should get the first element in an array', () => {
-		expect(head([])).toBe(undefined)
+		expect(head([])).toBeUndefined()
 		expect(head([1])).toBe(1)
 		expect(head([1, 2])).toBe(1)
 	})
 
 	it('Should group adjacent indeces in array where value satisfies predicate', () => {
-		const eq1 = n => n === 1
+		const eq1 = (n: number) => n === 1
 
 		expect(groupIndecesBy(eq1, [0, 2, 3, 5, 6, 0])).toEqual([])
 		expect(groupIndecesBy(eq1, [0, 1, 0, 1, 1, 0])).toEqual([[1], [3, 4]])
@@ -138,10 +140,10 @@ describe('Util', () => {
 	})
 
 	it('Should mod negative numbers the euclidean way', () => {
-		expect(mathMod(3, 3)).toBe(0)
-		expect(mathMod(3)(-3)).toBe(0)
-		expect(mathMod(3, -2)).toBe(1)
-		expect(mathMod(3)(2)).toBe(2)
+		expect(circMod(3, 3)).toBe(0)
+		expect(circMod(3)(-3)).toBe(0)
+		expect(circMod(3, -2)).toBe(1)
+		expect(circMod(3)(2)).toBe(2)
 	})
 
 	it('Should create a single positive value in the center of an n-length array', () => {
@@ -153,8 +155,8 @@ describe('Util', () => {
 	})
 
 	it('Should compose functions left to right with first fn of any arity', () => {
-		const add = (a, b) => a + b
-		const double = x => x * 2
+		const add = (a: number, b: number) => a + b
+		const double = (x: number) => x * 2
 		const addThenDouble = pipe(
 			add,
 			double,
@@ -171,11 +173,7 @@ describe('Util', () => {
 	it('Should create a function that always returns the same value', () => {
 		const byRef = {}
 
-		expect(typeof constant()).toBe('function')
-		expect(constant()()).toBe(undefined)
 		expect(constant(byRef)()).toBe(byRef)
-		expect(constant(byRef)(5)).toBe(byRef)
-		expect(constant([1, 2])([100])).toEqual([1, 2])
 	})
 
 	it('Should check that inputs are equal by value', () => {

@@ -1,6 +1,6 @@
-import { createCanvasRenderer } from './renderer.js'
+import { createCanvasRenderer } from './renderer'
 
-const mockCanvas = () => {
+const mockCanvas = (): any => {
 	const fillRect = jest.fn()
 	const clearRect = jest.fn()
 

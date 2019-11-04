@@ -1,4 +1,4 @@
-import { createRule } from './evolver.js'
+import { createRule } from './evolver'
 
 // rules from http://atlas.wolfram.com/01/01/
 export const rule3 = createRule(['001', '000'])

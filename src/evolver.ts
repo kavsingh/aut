@@ -1,8 +1,11 @@
-import { mathMod, seedRandom, valueEq } from './util.js'
+import { circMod, seedRandom, valueEq } from './util'
+import { EvolutionRule, WorldStateEvolver } from './types'
 
-export const createEvolver = rule => state => {
+export const createEvolver = (
+	rule: EvolutionRule,
+): WorldStateEvolver => state => {
 	const input = state[state.length - 1]
-	const modLength = mathMod(input.length)
+	const modLength = circMod(input.length)
 	const next = input.map((_, index) =>
 		rule(
 			input[modLength(index - 1)],
@@ -30,5 +33,5 @@ export const createEvolver = rule => state => {
 
     the rule is codified by createRule(['100', '101'])
 */
-export const createRule = patterns => (a, b, c) =>
+export const createRule = (patterns: string[]): EvolutionRule => (a, b, c) =>
 	patterns.includes(`${a}${b}${c}`) ? 1 : 0

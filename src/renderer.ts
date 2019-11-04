@@ -1,7 +1,12 @@
 import { last, head, groupIndecesBy, eq } from './util'
+import { WorldState } from './types'
+
+const isNonNull2dContext = (
+	context: unknown,
+): context is CanvasRenderingContext2D => !!context
 
 export function createCanvasRenderer(
-	canvases,
+	canvases: HTMLCanvasElement[],
 	{
 		width = 200,
 		height = 200,
@@ -10,7 +15,9 @@ export function createCanvasRenderer(
 		fillMode = 'active',
 	} = {},
 ) {
-	const contexts = canvases.map(canvas => canvas.getContext('2d'))
+	const contexts = canvases
+		.map(canvas => canvas.getContext('2d'))
+		.filter(isNonNull2dContext)
 	const maxRows = Math.floor(height / cellDim)
 	const groupFillRanges = groupIndecesBy(eq(fillMode === 'inactive' ? 0 : 1))
 
@@ -20,12 +27,12 @@ export function createCanvasRenderer(
 			context.fillStyle = fillColor
 		})
 
-	const drawRow = (row, yOffset) => {
+	const drawRow = (row: number[], yOffset: number) => {
 		const fillRanges = groupFillRanges(row)
 
 		for (let i = 0; i < fillRanges.length; i++) {
 			const current = fillRanges[i]
-			const start = head(current)
+			const start = head<number>(current)
 			const end = last(current)
 
 			if (start !== undefined && end !== undefined) {
@@ -46,7 +53,7 @@ export function createCanvasRenderer(
 		canvas.height = height
 	})
 
-	return state => {
+	return (state: WorldState) => {
 		clear()
 
 		const startIdx = Math.max(0, state.length - maxRows)

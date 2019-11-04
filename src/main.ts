@@ -1,16 +1,20 @@
-import { seedSingle } from './util.js'
+import { State } from './types'
+import { seedSingle } from './util'
 import { addRuleThumbnails } from './thumbnails'
 import { startAnimations } from './animations'
-import * as rules from './rules.js'
+import * as rules from './rules'
 
-const main = (canvases, thumbnailsContainer) => {
+const main = (
+	canvases: HTMLCanvasElement[],
+	thumbnailsContainer: HTMLElement,
+) => {
 	const cellDim = 2
 	const worldDim = Math.min(
 		Math.floor(window.innerWidth / canvases.length),
 		300,
 	)
 
-	const state = {
+	const state: State = {
 		cellDim,
 		worldDim,
 		rules: Object.values(rules),

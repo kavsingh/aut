@@ -1,8 +1,9 @@
-import { range, seedRandom } from './util.js'
-import { createCanvasRenderer } from './renderer.js'
-import { createEvolver } from './evolver.js'
+import { range, seedRandom } from './util'
+import { createCanvasRenderer } from './renderer'
+import { createEvolver } from './evolver'
+import { EvolutionRule } from './types'
 
-const createRuleThumbnail = rule => {
+const createRuleThumbnail = (rule: EvolutionRule) => {
 	const thumbnailDim = 40
 	const ruleCanvas = document.createElement('canvas')
 	const ruleRenderer = createCanvasRenderer([ruleCanvas], {
@@ -20,7 +21,10 @@ const createRuleThumbnail = rule => {
 	return { evolver, element: ruleCanvas }
 }
 
-export const addRuleThumbnails = (rules, container) => {
+export const addRuleThumbnails = (
+	rules: EvolutionRule[],
+	container: HTMLElement,
+) => {
 	const thumbnails = rules.map(createRuleThumbnail)
 
 	thumbnails.forEach(({ element }) => container.appendChild(element))

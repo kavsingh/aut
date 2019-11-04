@@ -10,7 +10,7 @@ const publicPath = '/'
 module.exports = {
 	mode: isProd ? 'production' : 'development',
 	entry: {
-		bundle: ['./src/main.js'],
+		bundle: ['./src/main.ts'],
 	},
 	output: {
 		filename: '[name].js',
@@ -25,7 +25,7 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.js$/,
+				test: /\.[jt]s?$/,
 				exclude: fromRoot('node_modules'),
 				use: [{ loader: 'babel-loader' }],
 			},
@@ -41,6 +41,6 @@ module.exports = {
 	].filter(Boolean),
 	resolve: {
 		modules: [fromRoot('src'), 'node_modules'],
-		extensions: ['.js'],
+		extensions: ['.js', '.ts'],
 	},
 }
