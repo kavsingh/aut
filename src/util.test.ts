@@ -1,6 +1,5 @@
 import {
 	curry,
-	cond,
 	last,
 	head,
 	range,
@@ -10,9 +9,7 @@ import {
 	pipe,
 	groupIndecesBy,
 	eq,
-	take,
 	sample,
-	flatten,
 	constant,
 	valueEq,
 } from './util'
@@ -41,22 +38,6 @@ describe('Util', () => {
 		expect(add(1, 2)(3)).toBe(6)
 		expect(add(1, 2)()(3)).toBe(6)
 		expect(typeof add(1)(2)).toBe('function')
-	})
-
-	it('Should return conditional result', () => {
-		const conditions = cond<number, number>([
-			[n => n > 5, n => n * 3],
-			[n => n > 2, n => n * 2],
-			[() => true, n => n],
-		])
-
-		expect(conditions(10)).toBe(30)
-		expect(conditions(4)).toBe(8)
-		expect(conditions(1)).toBe(1)
-		expect(conditions(null as any)).toBeNull()
-		expect(
-			cond<number, number>([[n => n > 5, n => n]])(2),
-		).toBeUndefined()
 	})
 
 	it('Should sample a random value from array', () => {
@@ -96,18 +77,6 @@ describe('Util', () => {
 		expect(last([])).toBeUndefined()
 		expect(last([1])).toBe(1)
 		expect(last([1, 2])).toBe(2)
-	})
-
-	it('Should take n values from start of array', () => {
-		expect(take(2)([])).toEqual([])
-		expect(take(2, [1])).toEqual([1])
-		expect(take(2)([1, 2, 3])).toEqual([1, 2])
-	})
-
-	it('Should take n values from end of array', () => {
-		expect(take(-2)([])).toEqual([])
-		expect(take(-2)([1])).toEqual([1])
-		expect(take(-2)([1, 2, 3])).toEqual([2, 3])
 	})
 
 	it('Should get the first element in an array', () => {
@@ -152,16 +121,6 @@ describe('Util', () => {
 		const addThenDouble = pipe(add, double)
 
 		expect(addThenDouble(1, 2)).toBe(6)
-	})
-
-	it('Should shallow flatten arrays', () => {
-		expect(
-			flatten([
-				[1, 2],
-				[3, 4],
-			]),
-		).toEqual([1, 2, 3, 4])
-		expect(flatten([[1, [2, 3]], 4])).toEqual([1, [2, 3], 4])
 	})
 
 	it('Should create a function that always returns the same value', () => {

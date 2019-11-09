@@ -16,10 +16,6 @@ export const last = <T>(arr: T[]) => arr[arr.length - 1]
 
 export const head = <T>(arr: T[]) => arr[0]
 
-export const take = curry(<T>(n: number, arr: T[]) =>
-	n < 0 ? arr.slice(n) : arr.slice(0, n),
-)
-
 export const constant = <T>(val: T) => () => val
 
 export const seedSingle = (len: number) => {
@@ -37,20 +33,6 @@ export const seedSingle = (len: number) => {
 
 export const seedRandom = (len: number) =>
 	range(len).map(() => Math.floor(Math.random() * 2))
-
-type Condition<T, R> = [(val: T) => boolean, (val: T) => R]
-
-export const cond: {
-	<T, R>(conditions: Condition<T, R>[]): (val: T) => R | undefined
-	<T, R>(conditions: Condition<T, R>[], val: T): R | undefined
-} = curry((conditions: [Function, Function][], val: unknown) => {
-	for (let i = 0; i < conditions.length; i++) {
-		const [predicate, exec] = conditions[i]
-		if (predicate(val)) return exec(val)
-	}
-
-	return undefined
-})
 
 type PredicateFn<T> = (value: T) => boolean
 
@@ -71,9 +53,6 @@ export const groupIndecesBy: {
 
 	return groups
 })
-
-export const flatten = <T>(arr: (T | T[])[]) =>
-	arr.reduce((flat: T[], val) => flat.concat(val), [])
 
 const isValueNaN = (value: unknown): value is number =>
 	Number.isNaN(value as number)
