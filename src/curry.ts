@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const curryN = (fn: any) => (...args: any[]) =>
-	args.length >= fn.length ? fn(...args) : curryN(fn.bind(null, ...args))
+export const curry: Curry = (fn: any) => (...args: any[]) =>
+	args.length >= fn.length ? fn(...args) : curry(fn.bind(null, ...args))
 
-export const curry: Curry = curryN
-
+// Taken from @types/lodash
 interface Curry {
 	<T1, R>(func: (t1: T1) => R): CurriedFunction1<T1, R>
 	<T1, T2, R>(func: (t1: T1, t2: T2) => R): CurriedFunction2<T1, T2, R>

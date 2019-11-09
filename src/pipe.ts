@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const pipeN = (firstFn: any, ...fns: any[]) => (
-	...firstArgs: Parameters<typeof firstFn>
+export const pipe: Pipe = (firstFn: any, ...fns: any[]) => (
+	...firstArgs: any[]
 ) => fns.reduce((result: any, fn: any) => fn(result), firstFn(...firstArgs))
 
-export const pipe: Pipe = pipeN
-
+// Taken from @types/lodash
 interface Pipe {
 	<R1, R2>(f1: () => R1, f2: (a: R1) => R2): () => R2
 	<R1, R2, R3>(f1: () => R1, f2: (a: R1) => R2, f3: (a: R2) => R3): () => R3
