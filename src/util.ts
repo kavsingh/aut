@@ -24,6 +24,7 @@ export const constant = <T>(val: T) => () => val
 
 export const seedSingle = (len: number) => {
 	if (!len) return []
+
 	const zeros = range(Math.floor(len / 2)).map(() => 0)
 
 	return len % 2 === 0
@@ -39,33 +40,37 @@ export const seedRandom = (len: number) =>
 
 type Condition<T, R> = [(val: T) => boolean, (val: T) => R]
 
-export const cond = <T, R>(conditions: Condition<T, R>[]) => (val: T) => {
+export const cond: {
+	<T, R>(conditions: Condition<T, R>[]): (val: T) => R | undefined
+	<T, R>(conditions: Condition<T, R>[], val: T): R | undefined
+} = curry((conditions: [Function, Function][], val: unknown) => {
 	for (let i = 0; i < conditions.length; i++) {
 		const [predicate, exec] = conditions[i]
 		if (predicate(val)) return exec(val)
 	}
 
 	return undefined
-}
+})
 
 type PredicateFn<T> = (value: T) => boolean
 
-export const groupIndecesBy = curry(
-	<T>(predicate: PredicateFn<T>, arr: T[]) => {
-		const groups = []
+export const groupIndecesBy: {
+	<T>(predicate: PredicateFn<T>): (arr: T[]) => number[][]
+	<T>(predicate: PredicateFn<T>, arr: T[]): number[][]
+} = curry((predicate: Function, arr: unknown[]) => {
+	const groups = []
 
-		for (let i = 0; i < arr.length; i++) {
-			if (!predicate(arr[i])) continue
+	for (let i = 0; i < arr.length; i++) {
+		if (!predicate(arr[i])) continue
 
-			const currentGroup = last(groups)
+		const currentGroup = last(groups)
 
-			if (currentGroup && last(currentGroup) === i - 1) currentGroup.push(i)
-			else groups.push([i])
-		}
+		if (currentGroup && last(currentGroup) === i - 1) currentGroup.push(i)
+		else groups.push([i])
+	}
 
-		return groups
-	},
-)
+	return groups
+})
 
 export const flatten = <T>(arr: (T | T[])[]) =>
 	arr.reduce((flat: T[], val) => flat.concat(val), [])

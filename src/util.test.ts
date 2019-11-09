@@ -118,10 +118,12 @@ describe('Util', () => {
 
 	it('Should group adjacent indeces in array where value satisfies predicate', () => {
 		const eq1 = (n: number) => n === 1
+		const eqA = (s: string) => s === 'a'
 
 		expect(groupIndecesBy(eq1, [0, 2, 3, 5, 6, 0])).toEqual([])
 		expect(groupIndecesBy(eq1, [0, 1, 0, 1, 1, 0])).toEqual([[1], [3, 4]])
 		expect(groupIndecesBy(eq1)([1, 1, 0, 1, 0, 1])).toEqual([[0, 1], [3], [5]])
+		expect(groupIndecesBy(eqA, ['a', 'a', 'b'])).toEqual([[0, 1]])
 	})
 
 	it('Should create a range of values', () => {

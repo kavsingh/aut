@@ -19,7 +19,9 @@ export function createCanvasRenderer(
 		.map(canvas => canvas.getContext('2d'))
 		.filter(isNonNull2dContext)
 	const maxRows = Math.floor(height / cellDim)
-	const groupFillRanges = groupIndecesBy(eq(fillMode === 'inactive' ? 0 : 1))
+	const groupFillRanges = groupIndecesBy<number>(
+		eq(fillMode === 'inactive' ? 0 : 1),
+	)
 
 	const clear = () =>
 		contexts.forEach(context => {
