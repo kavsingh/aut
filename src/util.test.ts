@@ -14,7 +14,6 @@ import {
 	sample,
 	flatten,
 	constant,
-	takeIndexWhile,
 	valueEq,
 } from './util'
 
@@ -55,7 +54,9 @@ describe('Util', () => {
 		expect(conditions(4)).toBe(8)
 		expect(conditions(1)).toBe(1)
 		expect(conditions(null as any)).toBeNull()
-		expect(cond<number, number>([[n => n > 5, n => n]])(2)).toBeUndefined()
+		expect(
+			cond<number, number>([[n => n > 5, n => n]])(2),
+		).toBeUndefined()
 	})
 
 	it('Should sample a random value from array', () => {
@@ -95,17 +96,6 @@ describe('Util', () => {
 		expect(last([])).toBeUndefined()
 		expect(last([1])).toBe(1)
 		expect(last([1, 2])).toBe(2)
-	})
-
-	it('Should take indeces from start of array while predicate is true', () => {
-		expect(takeIndexWhile((n: number) => n > 10)([1, 2, 3, 4])).toEqual([])
-		expect(takeIndexWhile((n: number) => n > 2, [1, 2, 3, 4])).toEqual([2, 3])
-		expect(
-			takeIndexWhile((n: number) => n > 1 && n < 4)([1, 2, 3, 4, 2]),
-		).toEqual([1, 2])
-		expect(
-			takeIndexWhile((n: number) => n > 1 && n < 4)([1, 2, 5, 3, 4]),
-		).toEqual([1])
 	})
 
 	it('Should take n values from start of array', () => {
@@ -157,16 +147,18 @@ describe('Util', () => {
 	it('Should compose functions left to right with first fn of any arity', () => {
 		const add = (a: number, b: number) => a + b
 		const double = (x: number) => x * 2
-		const addThenDouble = pipe(
-			add,
-			double,
-		)
+		const addThenDouble = pipe(add, double)
 
 		expect(addThenDouble(1, 2)).toBe(6)
 	})
 
 	it('Should shallow flatten arrays', () => {
-		expect(flatten([[1, 2], [3, 4]])).toEqual([1, 2, 3, 4])
+		expect(
+			flatten([
+				[1, 2],
+				[3, 4],
+			]),
+		).toEqual([1, 2, 3, 4])
 		expect(flatten([[1, [2, 3]], 4])).toEqual([1, [2, 3], 4])
 	})
 

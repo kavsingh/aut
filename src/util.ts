@@ -1,13 +1,7 @@
-// TODO: Figure out how to type these things nicely
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export const curry = (fn: any) => (...args: any[]) =>
-	args.length >= fn.length ? fn(...args) : curry(fn.bind(null, ...args))
+import { curry } from './curry'
+import { pipe } from './pipe'
 
-type TEMPPipeFn = (...args: any[]) => any
-export const pipe = (firstFn: TEMPPipeFn, ...fns: TEMPPipeFn[]) => (
-	...firstArgs: Parameters<typeof firstFn>
-) => fns.reduce((result, fn) => fn(result), firstFn(...firstArgs))
-/* eslint-enable */
+export { curry, pipe }
 
 export const eq = curry((a: unknown, b: unknown) => a === b)
 
@@ -54,33 +48,24 @@ export const cond = <T, R>(conditions: Condition<T, R>[]) => (val: T) => {
 	return undefined
 }
 
-type PredicateFn = <T>(value: T) => boolean
+type PredicateFn<T> = (value: T) => boolean
 
-export const takeIndexWhile = curry(<T>(predicate: PredicateFn, arr: T[]) => {
-	const result = []
+export const groupIndecesBy = curry(
+	<T>(predicate: PredicateFn<T>, arr: T[]) => {
+		const groups = []
 
-	for (let i = 0; i < arr.length; i++) {
-		if (predicate(arr[i])) result.push(i)
-		else if (result.length) return result
-	}
+		for (let i = 0; i < arr.length; i++) {
+			if (!predicate(arr[i])) continue
 
-	return result
-})
+			const currentGroup = last(groups)
 
-export const groupIndecesBy = curry(<T>(predicate: PredicateFn, arr: T[]) => {
-	const groups = []
+			if (currentGroup && last(currentGroup) === i - 1) currentGroup.push(i)
+			else groups.push([i])
+		}
 
-	for (let i = 0; i < arr.length; i++) {
-		if (!predicate(arr[i])) continue
-
-		const currentGroup = last(groups)
-
-		if (currentGroup && last(currentGroup) === i - 1) currentGroup.push(i)
-		else groups.push([i])
-	}
-
-	return groups
-})
+		return groups
+	},
+)
 
 export const flatten = <T>(arr: (T | T[])[]) =>
 	arr.reduce((flat: T[], val) => flat.concat(val), [])
@@ -91,7 +76,7 @@ const isValueNaN = (value: unknown): value is number =>
 const isTypeofObject = (value: unknown): value is { [key: string]: unknown } =>
 	typeof value === 'object'
 
-export const valueEq = curry((a: unknown, b: unknown) => {
+export const valueEq = curry((a: unknown, b: unknown): boolean => {
 	if (eq(a, b)) return true
 
 	if (isValueNaN(a) && isValueNaN(b)) return true

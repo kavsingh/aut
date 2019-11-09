@@ -48,10 +48,7 @@ export function createCanvasRenderer(
 		}
 	}
 
-	canvases.forEach(canvas => {
-		canvas.width = width
-		canvas.height = height
-	})
+	canvases.forEach(canvas => Object.assign(canvas, { width, height }))
 
 	return (state: WorldState) => {
 		clear()

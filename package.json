@@ -10,7 +10,7 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint . --ext=.js,.ts",
     "test": "jest --verbose --coverage",
     "dev": "webpack-dev-server",
     "build": "NODE_ENV=production webpack --verbose"

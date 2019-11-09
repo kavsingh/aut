@@ -43,7 +43,10 @@ describe('Evolver', () => {
 
 		const evolve = createEvolver(createRule([]))
 
-		expect(evolve([[0, 0, 0]])).toEqual([[0, 0, 0], [0, 1, 0]])
+		expect(evolve([[0, 0, 0]])).toEqual([
+			[0, 0, 0],
+			[0, 1, 0],
+		])
 		;(util.seedRandom as jest.Mock).mockRestore()
 	})
 })

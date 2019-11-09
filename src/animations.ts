@@ -7,11 +7,8 @@ export const startAnimations = (
 	state: State,
 	canvases: HTMLCanvasElement[],
 ) => {
-	const selectRandomEvolver = pipe(
-		constant(state.rules),
-		sample,
-		createEvolver,
-	)
+	const selectRandomEvolver = pipe(constant(state.rules), sample, createEvolver)
+	const nextEvolver = () => state.evolver || selectRandomEvolver()
 
 	const render = createCanvasRenderer(canvases, {
 		cellDim: state.cellDim,
@@ -22,12 +19,11 @@ export const startAnimations = (
 	const switchThreshold = Math.floor(state.worldDim / (canvases.length * 2))
 
 	let switchAccum = 0
-	let evolver = state.evolver || selectRandomEvolver()
+	let evolver = nextEvolver()
 
 	const update = () => {
 		switchAccum = switchAccum >= switchThreshold ? 0 : switchAccum + 1
-		evolver =
-			switchAccum === 0 ? state.evolver || selectRandomEvolver() : evolver
+		evolver = switchAccum === 0 ? nextEvolver() : evolver
 		state.world = evolver(state.world)
 	}
 
