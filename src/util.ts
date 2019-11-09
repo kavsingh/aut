@@ -39,7 +39,7 @@ type PredicateFn<T> = (value: T) => boolean
 export const groupIndecesBy: {
 	<T>(predicate: PredicateFn<T>): (arr: T[]) => number[][]
 	<T>(predicate: PredicateFn<T>, arr: T[]): number[][]
-} = curry((predicate: Function, arr: unknown[]) => {
+} = curry((predicate: (...args: unknown[]) => unknown, arr: unknown[]) => {
 	const groups = []
 
 	for (let i = 0; i < arr.length; i++) {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export const curry: Curry = (fn: any) => (...args: any[]) =>
+export const curry: Curry = (fn: (...args: any[]) => any) => (...args: any[]) =>
 	args.length >= fn.length ? fn(...args) : curry(fn.bind(null, ...args))
 
 // Taken from @types/lodash
