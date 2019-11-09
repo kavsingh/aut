@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const curryN = (fn: any) => {
-	return (...args: any[]) =>
-		args.length >= fn.length ? fn(...args) : curryN(fn.bind(null, ...args))
-}
+const curryN = (fn: any) => (...args: any[]) =>
+	args.length >= fn.length ? fn(...args) : curryN(fn.bind(null, ...args))
 
 export const curry: Curry = curryN
 
