@@ -1,6 +1,7 @@
 /dist
 /node_modules
 /coverage
+/reports
 .nyc_output
 .DS_Store
 *.log
