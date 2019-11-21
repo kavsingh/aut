@@ -1,13 +1,19 @@
-import { sample, pipe, constant } from './util'
+import { sample, pipe, constant, defaultTo } from './util'
 import { createEvolver } from './evolver'
 import { createCanvasRenderer } from './renderer'
 import { State } from './types'
+import { rule3 } from './rules'
 
 export const startAnimations = (
 	state: State,
 	canvases: HTMLCanvasElement[],
 ) => {
-	const selectRandomEvolver = pipe(constant(state.rules), sample, createEvolver)
+	const selectRandomEvolver = pipe(
+		constant(state.rules),
+		sample,
+		defaultTo(rule3),
+		createEvolver,
+	)
 	const nextEvolver = () => state.evolver || selectRandomEvolver()
 
 	const render = createCanvasRenderer(canvases, {

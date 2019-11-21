@@ -3,20 +3,31 @@ import { pipe } from './pipe'
 
 export { curry, pipe }
 
+type Nil = null | undefined
+
+const isNil = (val: unknown): val is Nil => val === undefined || val === null
+
 export const eq = curry((a: unknown, b: unknown) => a === b)
 
 export const range = (max: number) => Array.from({ length: max }, (_, i) => i)
 
 export const circMod = curry((m: number, n: number) => ((n % m) + m) % m)
 
-export const sample = <T>(arr: T[]) =>
+export const sample = <T>(arr: T[]): T | undefined =>
 	arr[Math.floor(Math.random() * arr.length)]
 
-export const last = <T>(arr: T[]) => arr[arr.length - 1]
+export const last = <T>(arr: T[]): T | undefined => arr[arr.length - 1]
 
-export const head = <T>(arr: T[]) => arr[0]
+export const head = <T>(arr: T[]): T | undefined => arr[0]
 
 export const constant = <T>(val: T) => () => val
+
+export const defaultTo: {
+	<T>(defaultVal: T): (val: T | Nil) => T
+	<T>(defaultVal: T, val: T | Nil): T
+} = curry((defaultVal: unknown, val: unknown) =>
+	isNil(val) ? defaultVal : val,
+)
 
 export const seedSingle = (len: number) => {
 	if (!len) return []

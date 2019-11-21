@@ -12,6 +12,7 @@ import {
 	sample,
 	constant,
 	valueEq,
+	defaultTo,
 } from './util'
 
 const mockRandom = (fn: (mock: jest.MockContext<any, any>) => unknown) => {
@@ -129,6 +130,15 @@ describe('Util', () => {
 		expect(constant(byRef)()).toBe(byRef)
 	})
 
+	it('Should return a default value for nil arguments', () => {
+		const defaultToFoo = defaultTo('foo')
+
+		expect(defaultToFoo('yam')).toBe('yam')
+		expect(defaultToFoo(undefined)).toBe('foo')
+		expect(defaultTo('foo', null)).toBe('foo')
+		expect(defaultTo(5)(10)).toBe(10)
+	})
+
 	it('Should check that inputs are equal by value', () => {
 		const sameRef = {}
 
@@ -153,6 +163,7 @@ describe('Util', () => {
 		expect(valueEq([2, 1], [1, 2])).toBe(false)
 		expect(valueEq([1, 2, 3], [1, 2])).toBe(false)
 		expect(valueEq({ a: 1, b: 2 }, { b: 2, a: 1 })).toBe(true)
+		expect(valueEq({ a: 1, b: 2 }, { b: 2, c: 3, a: 1 })).toBe(false)
 		expect(
 			valueEq({ a: 1, b: [1, { c: 2 }] }, { b: [1, { c: 2 }], a: 1 }),
 		).toBe(true)
