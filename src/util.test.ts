@@ -130,7 +130,7 @@ describe('Util', () => {
 		expect(constant(byRef)()).toBe(byRef)
 	})
 
-	it('Should return a default value for nil arguments', () => {
+	it('Should return a default value for nullish values', () => {
 		const defaultToFoo = defaultTo('foo')
 
 		expect(defaultToFoo('yam')).toBe('yam')

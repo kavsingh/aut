@@ -3,9 +3,10 @@ import { pipe } from './pipe'
 
 export { curry, pipe }
 
-type Nil = null | undefined
+type Nullish = null | undefined
 
-const isNil = (val: unknown): val is Nil => val === undefined || val === null
+const isNullish = (val: unknown): val is Nullish =>
+	val === undefined || val === null
 
 export const eq = curry((a: unknown, b: unknown) => a === b)
 
@@ -23,10 +24,11 @@ export const head = <T>(arr: T[]): T | undefined => arr[0]
 export const constant = <T>(val: T) => () => val
 
 export const defaultTo: {
-	<T>(defaultVal: T): (val: T | Nil) => T
-	<T>(defaultVal: T, val: T | Nil): T
+	<T>(defaultVal: T): (val: T | Nullish) => T
+	<T>(defaultVal: T, val: T | Nullish): T
 } = curry((defaultVal: unknown, val: unknown) =>
-	isNil(val) ? defaultVal : val,
+	// TODO: replace with nullish coalescing op when added to babel preset typescript
+	isNullish(val) ? defaultVal : val,
 )
 
 export const seedSingle = (len: number) => {
