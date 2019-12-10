@@ -4,10 +4,7 @@ import { addRuleThumbnails } from './thumbnails'
 import { startAnimations } from './animations'
 import * as rules from './rules'
 
-const main = (
-	canvases: HTMLCanvasElement[],
-	thumbnailsContainer: HTMLElement,
-) => {
+const main: BootFn = (canvases, thumbnailsContainer) => {
 	const cellDim = 2
 	const worldDim = Math.min(
 		Math.floor(window.innerWidth / canvases.length),
