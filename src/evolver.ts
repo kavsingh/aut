@@ -1,20 +1,29 @@
 import { circMod, seedRandom, valueEq } from './util'
 import { EvolutionRule, WorldStateEvolver } from './types'
 
+const evolve = (rule: EvolutionRule, generation: number[]) => {
+	const modLength = circMod(generation.length)
+
+	return generation.map((_, index) =>
+		rule(
+			generation[modLength(index - 1)],
+			generation[index],
+			generation[modLength(index + 1)],
+		),
+	)
+}
+
 export const createEvolver = (
 	rule: EvolutionRule,
 ): WorldStateEvolver => state => {
-	const input = state[state.length - 1]
-	const modLength = circMod(input.length)
-	const next = input.map((_, index) =>
-		rule(
-			input[modLength(index - 1)],
-			input[index],
-			input[modLength(index + 1)],
-		),
-	)
+	const generation = state[state.length - 1]
+	const nextGeneration = evolve(rule, generation)
 
-	return state.concat([valueEq(input, next) ? seedRandom(input.length) : next])
+	return state.concat([
+		valueEq(generation, nextGeneration)
+			? seedRandom(generation.length)
+			: nextGeneration,
+	])
 }
 
 /*
