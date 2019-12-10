@@ -1,6 +1,8 @@
 const path = require('path')
+
 const HtmlPlugin = require('html-webpack-plugin')
 const { default: PrepackPlugin } = require('prepack-webpack-plugin')
+
 const prepackConfig = require('./prepack.config')
 
 const isProd = process.env.NODE_ENV === 'production'

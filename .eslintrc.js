@@ -34,6 +34,18 @@ module.exports = {
 		'import/no-cycle': 'error',
 		'import/no-self-import': 'error',
 		'import/no-useless-path-segments': 'error',
+		'import/order': [
+			'error',
+			{
+				groups: [
+					'builtin',
+					'external',
+					'internal',
+					['parent', 'sibling', 'index'],
+				],
+				'newlines-between': 'always',
+			},
+		],
 		'import/no-extraneous-dependencies': ['error', devDependencies],
 		'prettier/prettier': 'warn',
 	},
