@@ -37,7 +37,7 @@ module.exports = {
 		'import/order': [
 			'error',
 			{
-				groups: [
+				'groups': [
 					'builtin',
 					'external',
 					'internal',
@@ -67,7 +67,7 @@ module.exports = {
 		},
 		{
 			files: ['**/*.test.*'],
-			env: { node: true, 'jest/globals': true },
+			env: { 'node': true, 'jest/globals': true },
 			rules: {
 				'no-console': 'off',
 				'@typescript-eslint/no-explicit-any': 'off',

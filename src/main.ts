@@ -22,11 +22,11 @@ const main: BootFn = (canvases, thumbnailsContainer) => {
 	const thumbnails = addRuleThumbnails(state.rules, thumbnailsContainer)
 
 	thumbnails.forEach(({ element, evolver }) => {
-		element.addEventListener('click', () => (state.evolver = evolver))
+		element.addEventListener('click', () => void (state.evolver = evolver))
 	})
 
 	canvases.forEach(canvas =>
-		canvas.addEventListener('click', () => (state.evolver = undefined)),
+		canvas.addEventListener('click', () => void (state.evolver = undefined)),
 	)
 
 	startAnimations(state, canvases)

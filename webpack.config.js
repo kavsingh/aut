@@ -1,16 +1,18 @@
 const path = require('path')
 
 const HtmlPlugin = require('html-webpack-plugin')
+const HtmlInlineSourcePlugin = require('html-webpack-inline-source-plugin')
+const NoEmitPlugin = require('no-emit-webpack-plugin')
 const { default: PrepackPlugin } = require('prepack-webpack-plugin')
 
 const prepackConfig = require('./prepack.config')
 
-const isProd = process.env.NODE_ENV === 'production'
+const isProduction = process.env.NODE_ENV === 'production'
 const fromRoot = path.resolve.bind(path, __dirname)
 const publicPath = '/'
 
 module.exports = {
-	mode: isProd ? 'production' : 'development',
+	mode: isProduction ? 'production' : 'development',
 	entry: {
 		bundle: ['./src/main.ts'],
 	},
@@ -27,7 +29,7 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.[jt]s?$/,
+				test: /\.ts?$/,
 				exclude: fromRoot('node_modules'),
 				use: [{ loader: 'babel-loader' }],
 			},
@@ -38,11 +40,17 @@ module.exports = {
 			title: 'app',
 			template: fromRoot('src/index.html'),
 			inject: 'head',
+			inlineSource: '.js',
 		}),
-		isProd && new PrepackPlugin({ prepack: prepackConfig }),
+		...(isProduction
+			? [
+					new HtmlInlineSourcePlugin(),
+					new PrepackPlugin({ prepack: prepackConfig }),
+					new NoEmitPlugin(),
+			  ]
+			: []),
 	].filter(Boolean),
 	resolve: {
-		modules: [fromRoot('src'), 'node_modules'],
-		extensions: ['.js', '.ts'],
+		extensions: ['.ts'],
 	},
 }

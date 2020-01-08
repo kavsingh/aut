@@ -71,6 +71,9 @@ describe('Util', () => {
 		expect(eq(1, 2)).toBe(false)
 		expect(eq(NaN, NaN)).toBe(false)
 		expect(eq(1)(3)).toBe(false)
+		expect(eq({}, {})).toBe(false)
+		expect(eq([])([])).toBe(false)
+		expect(eq('a')('a')).toBe(false)
 		expect(eq(1)(1)).toBe(true)
 	})
 

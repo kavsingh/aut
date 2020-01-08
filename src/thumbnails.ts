@@ -3,8 +3,7 @@ import { createCanvasRenderer } from './renderer'
 import { createEvolver } from './evolver'
 import { EvolutionRule } from './types'
 
-const createRuleThumbnail = (rule: EvolutionRule) => {
-	const thumbnailDim = 40
+const createRuleThumbnail = (thumbnailDim: number) => (rule: EvolutionRule) => {
 	const ruleCanvas = document.createElement('canvas')
 	const ruleRenderer = createCanvasRenderer([ruleCanvas], {
 		cellDim: 1,
@@ -24,10 +23,11 @@ const createRuleThumbnail = (rule: EvolutionRule) => {
 export const addRuleThumbnails = (
 	rules: EvolutionRule[],
 	container: HTMLElement,
+	thumbnailDim = 40,
 ) => {
-	const thumbnails = rules.map(createRuleThumbnail)
+	const thumbnails = rules.map(createRuleThumbnail(thumbnailDim))
 
-	thumbnails.forEach(({ element }) => container.appendChild(element))
+	thumbnails.forEach(({ element }) => void container.appendChild(element))
 
 	return thumbnails
 }
