@@ -73,7 +73,7 @@ describe('Util', () => {
 		expect(eq(1)(3)).toBe(false)
 		expect(eq({}, {})).toBe(false)
 		expect(eq([])([])).toBe(false)
-		expect(eq('a')('a')).toBe(false)
+		expect(eq('a')('a')).toBe(true)
 		expect(eq(1)(1)).toBe(true)
 	})
 
