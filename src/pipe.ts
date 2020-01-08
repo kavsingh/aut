@@ -5,8 +5,7 @@ export const pipe: Pipe = (firstFn: any, ...fns: any[]) => (
 ) => fns.reduce((result: any, fn: any) => fn(result), firstFn(...firstArgs))
 
 // Taken from @types/lodash
-// Yes, I am aware that this is ridiculous.
-// But I like type inference and composition, so... here we are.
+// (This is ridiculous)
 interface Pipe {
 	<R1, R2>(f1: () => R1, f2: (a: R1) => R2): () => R2
 	<R1, R2, R3>(f1: () => R1, f2: (a: R1) => R2, f3: (a: R2) => R3): () => R3

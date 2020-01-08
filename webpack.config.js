@@ -29,7 +29,7 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.ts?$/,
+				test: /\.ts$/,
 				exclude: fromRoot('node_modules'),
 				use: [{ loader: 'babel-loader' }],
 			},
@@ -44,13 +44,13 @@ module.exports = {
 			minify: isProduction
 				? {
 						collapseWhitespace: true,
+						minifyCSS: true,
+						minifyJS: true,
 						removeComments: true,
 						removeRedundantAttributes: true,
 						removeScriptTypeAttributes: true,
 						removeStyleLinkTypeAttributes: true,
 						useShortDoctype: true,
-						minifyCSS: true,
-						minifyJS: true,
 				  }
 				: false,
 		}),

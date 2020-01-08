@@ -6,11 +6,13 @@
     "allowUnusedLabels": false,
     "baseUrl": "./",
     "esModuleInterop": true,
-    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "lib": ["esnext", "dom"],
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
@@ -20,7 +22,11 @@
     "noStrictGenericChecks": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "paths": { "~/*": ["src/*"] },
+    "paths": {
+      "~/*": [
+        "src/*"
+      ]
+    },
     "pretty": true,
     "rootDir": "./",
     "skipLibCheck": true,
@@ -30,6 +36,12 @@
     "strictNullChecks": true,
     "target": "esnext"
   },
-  "exclude": ["**/node_modules"],
-  "include": ["./src", "./*.config.ts", "./*.config.js"]
+  "exclude": [
+    "**/node_modules"
+  ],
+  "include": [
+    "./src",
+    "./*.config.ts",
+    "./*.config.js"
+  ]
 }
