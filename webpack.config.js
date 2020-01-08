@@ -63,6 +63,6 @@ module.exports = {
 			: []),
 	].filter(Boolean),
 	resolve: {
-		extensions: ['.ts'],
+		extensions: ['.js', '.ts'],
 	},
 }
