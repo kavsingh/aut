@@ -4,8 +4,9 @@ import { addRuleThumbnails } from './thumbnails'
 import { startAnimations } from './animations'
 import * as rules from './rules'
 
-const main: BootFn = (canvases, thumbnailsContainer) => {
+const main: BootFn = (canvasElements, thumbnailsContainerElement) => {
 	const cellDim = 2
+	const canvases = Array.from(canvasElements)
 	const worldDim = Math.min(
 		Math.floor(window.innerWidth / canvases.length),
 		300,
@@ -19,7 +20,7 @@ const main: BootFn = (canvases, thumbnailsContainer) => {
 		world: [seedSingle(worldDim / cellDim)],
 	}
 
-	const thumbnails = addRuleThumbnails(state.rules, thumbnailsContainer)
+	const thumbnails = addRuleThumbnails(state.rules, thumbnailsContainerElement)
 
 	thumbnails.forEach(({ element, evolver }) => {
 		element.addEventListener('click', () => void (state.evolver = evolver))

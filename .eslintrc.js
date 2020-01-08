@@ -29,6 +29,10 @@ module.exports = {
 		'no-console': 'off',
 		'@typescript-eslint/explicit-function-return-type': 'off',
 		'@typescript-eslint/no-var-requires': 'off',
+		'@typescript-eslint/no-unused-vars': [
+			'error',
+			{ argsIgnorePattern: '^_', varsIgnorePattern: '[iI]gnored' },
+		],
 		'filenames/match-regex': ['error', '^[a-z-.]+$', true],
 		'filenames/match-exported': ['error', 'kebab'],
 		'import/no-cycle': 'error',

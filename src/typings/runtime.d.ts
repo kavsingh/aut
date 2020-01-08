@@ -1,5 +1,5 @@
 type BootFn = (
-	canvases: HTMLCanvasElement[],
+	canvases: NodeListOf<HTMLCanvasElement>,
 	thumbnailsContainer: HTMLElement,
 ) => void
 
