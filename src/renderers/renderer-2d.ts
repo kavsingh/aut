@@ -1,10 +1,10 @@
 import { last, head, groupIndecesBy, eq } from '../util'
-import { RendererFactory } from './types'
+import { CanvasRendererFactory } from './types'
 
 const is2dContext = (context: unknown): context is CanvasRenderingContext2D =>
 	context && context instanceof CanvasRenderingContext2D
 
-export const createRenderer: RendererFactory = (
+export const createRenderer: CanvasRendererFactory = (
 	canvases,
 	{
 		width = 200,

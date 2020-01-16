@@ -1,16 +1,16 @@
 import { WorldState } from '../types'
 
-export interface RendererFactoryOptions {
-	width?: number
-	height?: number
-	cellDim?: number
-	fillColor?: string
-	fillMode?: 'active' | 'inactive'
-}
+type RendererFactory<T> = (
+	renderTargets: T[],
+	options: {
+		width?: number
+		height?: number
+		cellDim?: number
+		fillColor?: string
+		fillMode?: 'active' | 'inactive'
+	},
+) => (state: WorldState) => void
 
-export type Renderer = (state: WorldState) => void
+export type CanvasRendererFactory = RendererFactory<HTMLCanvasElement>
 
-export type RendererFactory = (
-	canvases: HTMLCanvasElement[],
-	options: RendererFactoryOptions,
-) => Renderer
+export type SvgRendererFactory = RendererFactory<SVGElement>

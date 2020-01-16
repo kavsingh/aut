@@ -14,7 +14,7 @@ const mockCanvas = () => {
 	return { canvas, context2d }
 }
 
-describe('Renderer', () => {
+describe('Renderer 2d', () => {
 	it('Should draw state to canvas context', () => {
 		const { canvas, context2d } = mockCanvas()
 		const render = createRenderer([canvas], {
