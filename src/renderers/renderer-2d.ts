@@ -2,10 +2,9 @@ import { last, head, groupIndecesBy, eq } from '../util'
 import { RendererFactory } from './types'
 
 const is2dContext = (context: unknown): context is CanvasRenderingContext2D =>
-	typeof (context as CanvasRenderingContext2D).fillRect === 'function' &&
-	typeof (context as CanvasRenderingContext2D).clearRect === 'function'
+	context && context instanceof CanvasRenderingContext2D
 
-export const create2dRenderer: RendererFactory = (
+export const createRenderer: RendererFactory = (
 	canvases,
 	{
 		width = 200,

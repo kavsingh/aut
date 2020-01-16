@@ -4,4 +4,5 @@ module.exports = {
 	moduleFileExtensions: ['ts', 'js', 'json'],
 	coverageReporters: ['lcov'],
 	coveragePathIgnorePatterns: ['/node_modules/'],
+	setupFiles: ['jest-canvas-mock'],
 }

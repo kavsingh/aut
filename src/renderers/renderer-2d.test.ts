@@ -1,16 +1,15 @@
-import { create2dRenderer } from './renderer-2d'
+import { createRenderer } from './renderer-2d'
 
 const mockCanvas = () => {
-	const context2d = {
+	const context2d = Object.assign(new CanvasRenderingContext2D(), {
 		fillRect: jest.fn(),
 		clearRect: jest.fn(),
-		fillStyle: '',
-	}
-	const canvas: any = {
+	})
+	const canvas = Object.assign(document.createElement('canvas'), {
 		getContext: jest.fn((contextType: string) =>
 			contextType === '2d' ? context2d : null,
 		),
-	}
+	})
 
 	return { canvas, context2d }
 }
@@ -18,7 +17,7 @@ const mockCanvas = () => {
 describe('Renderer', () => {
 	it('Should draw state to canvas context', () => {
 		const { canvas, context2d } = mockCanvas()
-		const render = create2dRenderer([canvas], {
+		const render = createRenderer([canvas], {
 			width: 10,
 			height: 10,
 			cellDim: 1,
@@ -33,7 +32,7 @@ describe('Renderer', () => {
 		const fillCalls = fillRect.mock.calls
 
 		expect(canvas).toEqual(expect.objectContaining({ width: 10, height: 10 }))
-		expect(fillStyle).toBe('#000000')
+		expect(fillStyle).toMatch(/^#(000000|000)$/)
 		expect(clearRect).toHaveBeenCalledTimes(1)
 
 		expect(fillCalls).toHaveLength(2)
@@ -46,7 +45,7 @@ describe('Renderer', () => {
 
 	it('Should draw only visible rows from state', () => {
 		const { canvas, context2d } = mockCanvas()
-		const render = create2dRenderer([canvas], {
+		const render = createRenderer([canvas], {
 			width: 10,
 			height: 4,
 			cellDim: 2,
@@ -76,7 +75,7 @@ describe('Renderer', () => {
 
 	it('Should respect draw options', () => {
 		const { canvas, context2d } = mockCanvas()
-		const render = create2dRenderer([canvas], {
+		const render = createRenderer([canvas], {
 			width: 2,
 			height: 1,
 			cellDim: 1,
@@ -96,7 +95,7 @@ describe('Renderer', () => {
 
 	it('Should not draw if no active cells', () => {
 		const { canvas, context2d } = mockCanvas()
-		const render = create2dRenderer([canvas], {
+		const render = createRenderer([canvas], {
 			width: 1,
 			height: 1,
 			cellDim: 1,
