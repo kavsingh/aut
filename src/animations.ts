@@ -1,6 +1,6 @@
+import { create2dRenderer } from './renderers/renderer-2d'
 import { sample, pipe, constant, defaultTo } from './util'
 import { createEvolver } from './evolver'
-import { createCanvasRenderer } from './renderer'
 import { State } from './types'
 import { rule3 } from './rules'
 
@@ -16,7 +16,7 @@ export const startAnimations = (
 	)
 	const nextEvolver = () => state.evolver || selectRandomEvolver()
 
-	const render = createCanvasRenderer(canvases, {
+	const render = create2dRenderer(canvases, {
 		cellDim: state.cellDim,
 		width: state.worldDim,
 		height: state.worldDim,

@@ -1,11 +1,11 @@
+import { create2dRenderer } from './renderers/renderer-2d'
 import { range, seedRandom } from './util'
-import { createCanvasRenderer } from './renderer'
 import { createEvolver } from './evolver'
 import { EvolutionRule } from './types'
 
 const createRuleThumbnail = (thumbnailDim: number) => (rule: EvolutionRule) => {
 	const ruleCanvas = document.createElement('canvas')
-	const ruleRenderer = createCanvasRenderer([ruleCanvas], {
+	const ruleRenderer = create2dRenderer([ruleCanvas], {
 		cellDim: 1,
 		width: thumbnailDim,
 		height: thumbnailDim,

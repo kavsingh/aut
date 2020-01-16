@@ -1,20 +1,20 @@
-import { last, head, groupIndecesBy, eq } from './util'
-import { WorldState } from './types'
+import { last, head, groupIndecesBy, eq } from '../util'
+import { RendererFactory } from './types'
 
 const is2dContext = (context: unknown): context is CanvasRenderingContext2D =>
 	typeof (context as CanvasRenderingContext2D).fillRect === 'function' &&
 	typeof (context as CanvasRenderingContext2D).clearRect === 'function'
 
-export function createCanvasRenderer(
-	canvases: HTMLCanvasElement[],
+export const create2dRenderer: RendererFactory = (
+	canvases,
 	{
 		width = 200,
 		height = 200,
 		cellDim = 2,
 		fillColor = '#000000',
 		fillMode = 'active',
-	} = {},
-) {
+	},
+) => {
 	const contexts = canvases
 		.map(canvas => canvas.getContext('2d'))
 		.filter(is2dContext)
@@ -53,7 +53,7 @@ export function createCanvasRenderer(
 
 	canvases.forEach(canvas => Object.assign(canvas, { width, height }))
 
-	return (state: WorldState) => {
+	return state => {
 		clear()
 
 		const startIdx = Math.max(0, state.length - maxRows)

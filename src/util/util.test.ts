@@ -13,7 +13,7 @@ import {
 	constant,
 	valueEq,
 	defaultTo,
-} from './util'
+} from '.'
 
 const mockRandom = (fn: (mock: jest.MockContext<any, any>) => unknown) => {
 	const _Math = window.Math // Should be provided by jest

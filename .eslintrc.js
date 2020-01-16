@@ -33,7 +33,7 @@ module.exports = {
 			'error',
 			{ argsIgnorePattern: '^_', varsIgnorePattern: '[iI]gnored' },
 		],
-		'filenames/match-regex': ['error', '^[a-z-.]+$', true],
+		'filenames/match-regex': ['error', '^[a-z-0-9.]+$', true],
 		'filenames/match-exported': ['error', 'kebab'],
 		'import/no-cycle': 'error',
 		'import/no-self-import': 'error',

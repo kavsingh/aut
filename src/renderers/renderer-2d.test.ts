@@ -1,4 +1,4 @@
-import { createCanvasRenderer } from './renderer'
+import { create2dRenderer } from './renderer-2d'
 
 const mockCanvas = () => {
 	const context2d = {
@@ -18,7 +18,7 @@ const mockCanvas = () => {
 describe('Renderer', () => {
 	it('Should draw state to canvas context', () => {
 		const { canvas, context2d } = mockCanvas()
-		const render = createCanvasRenderer([canvas], {
+		const render = create2dRenderer([canvas], {
 			width: 10,
 			height: 10,
 			cellDim: 1,
@@ -46,7 +46,7 @@ describe('Renderer', () => {
 
 	it('Should draw only visible rows from state', () => {
 		const { canvas, context2d } = mockCanvas()
-		const render = createCanvasRenderer([canvas], {
+		const render = create2dRenderer([canvas], {
 			width: 10,
 			height: 4,
 			cellDim: 2,
@@ -76,7 +76,7 @@ describe('Renderer', () => {
 
 	it('Should respect draw options', () => {
 		const { canvas, context2d } = mockCanvas()
-		const render = createCanvasRenderer([canvas], {
+		const render = create2dRenderer([canvas], {
 			width: 2,
 			height: 1,
 			cellDim: 1,
@@ -96,7 +96,7 @@ describe('Renderer', () => {
 
 	it('Should not draw if no active cells', () => {
 		const { canvas, context2d } = mockCanvas()
-		const render = createCanvasRenderer([canvas], {
+		const render = create2dRenderer([canvas], {
 			width: 1,
 			height: 1,
 			cellDim: 1,
