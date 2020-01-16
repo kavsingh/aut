@@ -1,6 +1,8 @@
 import { last, head, groupIndecesBy, eq } from '../util'
 import { SvgRendererFactory } from './types'
 
+export const svgNs = 'http://www.w3.org/2000/svg'
+
 export const createRenderer: SvgRendererFactory = (
 	svgElements,
 	{
@@ -29,10 +31,7 @@ export const createRenderer: SvgRendererFactory = (
 			const end = last(current)
 
 			if (start !== undefined && end !== undefined) {
-				const fillRect = document.createElementNS(
-					'http://www.w3.org/2000/svg',
-					'rect',
-				)
+				const fillRect = document.createElementNS(svgNs, 'rect')
 
 				fillRect.setAttributeNS(null, 'x', `${start * cellDim}`)
 				fillRect.setAttributeNS(null, 'y', `${yOffset}`)
@@ -50,7 +49,7 @@ export const createRenderer: SvgRendererFactory = (
 	}
 
 	svgElements.forEach(element => {
-		element.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+		element.setAttribute('xmlns', svgNs)
 		element.setAttribute('viewBox', `0 0 ${width} ${height}`)
 	})
 

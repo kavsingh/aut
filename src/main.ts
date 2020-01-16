@@ -2,9 +2,14 @@ import { State } from './types'
 import { seedSingle } from './util'
 import { addRuleThumbnails } from './thumbnails'
 import { startAnimations } from './animations'
+import { saveSvgSnapshot } from './snapshot-to-svg'
 import * as rules from './rules'
 
-const main: BootFn = (canvasElements, thumbnailsContainerElement) => {
+const main: BootFn = (
+	canvasElements,
+	thumbnailsContainerElement,
+	snapshotButtonElement,
+) => {
 	const cellDim = 2
 	const canvases = Array.from(canvasElements)
 	const worldDim = Math.min(
@@ -31,6 +36,11 @@ const main: BootFn = (canvasElements, thumbnailsContainerElement) => {
 	)
 
 	startAnimations(state, canvases)
+
+	snapshotButtonElement.addEventListener(
+		'click',
+		() => void saveSvgSnapshot('snapshot.svg', state),
+	)
 }
 
 if (typeof window !== 'undefined') window.bootApp = main
