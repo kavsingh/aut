@@ -14,20 +14,27 @@ export const createRenderer: CanvasRendererFactory = (
 		fillMode = 'active',
 	},
 ) => {
-	const contexts = canvases
+	const [drawingCanvas, ...targetCanvases] = canvases
+	const drawingContext = drawingCanvas.getContext('2d')
+	const targetContexts = targetCanvases
 		.map(canvas => canvas.getContext('2d'))
 		.filter(is2dContext)
+
+	if (!is2dContext(drawingContext)) {
+		throw new Error('could not create drawing context')
+	}
 
 	const maxRows = Math.floor(height / cellDim)
 	const groupFillRanges = groupIndecesBy<number>(
 		eq(fillMode === 'inactive' ? 0 : 1),
 	)
 
-	const clear = () =>
-		contexts.forEach(context => {
+	const clear = () => {
+		;[drawingContext, ...targetContexts].forEach(context => {
 			context.clearRect(0, 0, width, height)
 			context.fillStyle = fillColor
 		})
+	}
 
 	const drawRow = (row: number[], yOffset: number) => {
 		const fillRanges = groupFillRanges(row)
@@ -38,18 +45,17 @@ export const createRenderer: CanvasRendererFactory = (
 			const end = last(current)
 
 			if (start !== undefined && end !== undefined) {
-				contexts.forEach(context => {
-					context.fillRect(
-						start * cellDim,
-						yOffset,
-						current.length * cellDim,
-						cellDim,
-					)
-				})
+				drawingContext.fillRect(
+					start * cellDim,
+					yOffset,
+					current.length * cellDim,
+					cellDim,
+				)
 			}
 		}
 	}
 
+	Object.assign(drawingCanvas, { width, height })
 	canvases.forEach(canvas => Object.assign(canvas, { width, height }))
 
 	return state => {
@@ -60,5 +66,7 @@ export const createRenderer: CanvasRendererFactory = (
 		for (let i = startIdx; i < state.length; i++) {
 			drawRow(state[i], height - (state.length - i) * cellDim)
 		}
+
+		targetContexts.forEach(context => context.drawImage(drawingCanvas, 0, 0))
 	}
 }
