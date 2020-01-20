@@ -1,4 +1,4 @@
-import { createRenderer } from './renderer-2d'
+import { createRenderer } from './renderer-canvas2d'
 
 const getDrawCalls = (canvas: HTMLCanvasElement, type?: string) => {
 	const allDrawCalls = (canvas.getContext('2d') as any).__getDrawCalls() as {

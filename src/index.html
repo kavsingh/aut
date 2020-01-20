@@ -31,6 +31,14 @@
 			cursor: pointer;
 		}
 
+		.worlds > *:nth-child(n) {
+			transform: rotate(180deg);
+		}
+
+		.worlds > *:nth-child(2n) {
+			transform: rotate(0deg);
+		}
+
 		.thumbnails {
 			height: 60px;
 			pointer-events: none;
@@ -38,14 +46,6 @@
 			transform: translateY(-20%);
 			transition: all 200ms ease-out;
 			cursor: pointer;
-		}
-
-		.world:nth-child(n) {
-			transform: rotate(180deg);
-		}
-
-		.world:nth-child(2n) {
-			transform: rotate(0deg);
 		}
 
 		.main:hover .thumbnails {
@@ -83,11 +83,7 @@
 </head>
 <body class="centered-children">
 	<div class="main">
-		<div class="worlds centered-children">
-			<canvas class="world"></canvas>
-			<canvas class="world"></canvas>
-			<canvas class="world"></canvas>
-		</div>
+		<div class="worlds centered-children"></div>
 		<div class="thumbnails centered-children"></div>
 	</div>
 	<div class="snapshot-button" role="button">
@@ -120,10 +116,11 @@
 		</svg>
 	</a>
 	<script>
-		window.bootApp(
-			document.querySelectorAll('.world'),
-			document.querySelector('.thumbnails'),
-			document.querySelector('.snapshot-button'),
-		)
+		window.bootApp({
+			worldCount: 3,
+			worldsContainer: document.querySelector('.worlds'),
+			thumbnailsContainer: document.querySelector('.thumbnails'),
+			snapshotButton: document.querySelector('.snapshot-button'),
+		})
 	</script>
 </body>

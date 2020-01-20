@@ -8,6 +8,8 @@ type Nullish = null | undefined
 const isNullish = (val: unknown): val is Nullish =>
 	val === undefined || val === null
 
+export const noop = (..._args: unknown[]) => undefined
+
 export const eq = curry((a: unknown, b: unknown) => a === b)
 
 export const range = (max: number) => Array.from({ length: max }, (_, i) => i)

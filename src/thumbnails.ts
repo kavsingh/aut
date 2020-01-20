@@ -1,4 +1,4 @@
-import { createRenderer } from './renderers/renderer-2d'
+import { createRenderer } from './renderers/renderer-canvas2d'
 import { range, seedRandom } from './util'
 import { createEvolver } from './evolver'
 import { EvolutionRule } from './types'
