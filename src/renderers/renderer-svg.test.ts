@@ -62,7 +62,7 @@ describe('Renderer Svg', () => {
 
 		render([[1, 0]])
 
-		expect(svg.querySelector('rect').getAttributeNS(null, 'fill')).toEqual(
+		expect(svg.querySelector('rect')?.getAttributeNS(null, 'fill')).toEqual(
 			'#f00',
 		)
 	})
