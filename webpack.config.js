@@ -56,7 +56,7 @@ module.exports = {
 		}),
 		...(isProduction
 			? [
-					new HtmlInlineSourcePlugin(),
+					new HtmlInlineSourcePlugin(HtmlPlugin),
 					new PrepackPlugin({ prepack: prepackConfig }),
 					new NoEmitPlugin(),
 			  ]
