@@ -5,9 +5,6 @@ export { curry, pipe }
 
 type Nullish = null | undefined
 
-const isNullish = (val: unknown): val is Nullish =>
-	val === undefined || val === null
-
 export const noop = (..._args: unknown[]) => undefined
 
 export const eq = curry((a: unknown, b: unknown) => a === b)
@@ -28,10 +25,7 @@ export const constant = <T>(val: T) => () => val
 export const defaultTo: {
 	<T>(defaultVal: T): (val: T | Nullish) => T
 	<T>(defaultVal: T, val: T | Nullish): T
-} = curry((defaultVal: unknown, val: unknown) =>
-	// TODO: replace with nullish coalescing op when added to babel preset typescript
-	isNullish(val) ? defaultVal : val,
-)
+} = curry((defaultVal: unknown, val: unknown) => val ?? defaultVal)
 
 export const seedSingle = (len: number) => {
 	if (!len) return []
