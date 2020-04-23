@@ -19,7 +19,7 @@ export const createRenderer: SvgRendererFactory = (
 	)
 
 	const clear = () =>
-		svgElements.forEach(element => void (element.innerHTML = ''))
+		svgElements.forEach((element) => void (element.innerHTML = ''))
 
 	const drawRow = (row: number[], yOffset: number) => {
 		const fillRanges = groupFillRanges(row)
@@ -43,17 +43,17 @@ export const createRenderer: SvgRendererFactory = (
 			}
 		}
 
-		svgElements.forEach(element => {
+		svgElements.forEach((element) => {
 			element.appendChild(rowFragment.cloneNode(true))
 		})
 	}
 
-	svgElements.forEach(element => {
+	svgElements.forEach((element) => {
 		element.setAttribute('xmlns', svgNs)
 		element.setAttribute('viewBox', `0 0 ${width} ${height}`)
 	})
 
-	return state => {
+	return (state) => {
 		clear()
 
 		const startIdx = Math.max(0, state.length - maxRows)

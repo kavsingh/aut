@@ -17,7 +17,7 @@ export const createRenderer: CanvasRendererFactory = (
 	const [drawingCanvas, ...targetCanvases] = canvases
 	const drawingContext = drawingCanvas.getContext('2d')
 	const targetContexts = targetCanvases
-		.map(canvas => canvas.getContext('2d'))
+		.map((canvas) => canvas.getContext('2d'))
 		.filter(is2dContext)
 
 	if (!is2dContext(drawingContext)) {
@@ -30,7 +30,7 @@ export const createRenderer: CanvasRendererFactory = (
 	)
 
 	const clear = () => {
-		;[drawingContext, ...targetContexts].forEach(context => {
+		;[drawingContext, ...targetContexts].forEach((context) => {
 			context.clearRect(0, 0, width, height)
 			context.fillStyle = fillColor
 		})
@@ -56,9 +56,9 @@ export const createRenderer: CanvasRendererFactory = (
 	}
 
 	Object.assign(drawingCanvas, { width, height })
-	canvases.forEach(canvas => Object.assign(canvas, { width, height }))
+	canvases.forEach((canvas) => Object.assign(canvas, { width, height }))
 
-	return state => {
+	return (state) => {
 		clear()
 
 		const startIdx = Math.max(0, state.length - maxRows)
@@ -67,6 +67,6 @@ export const createRenderer: CanvasRendererFactory = (
 			drawRow(state[i], height - (state.length - i) * cellDim)
 		}
 
-		targetContexts.forEach(context => context.drawImage(drawingCanvas, 0, 0))
+		targetContexts.forEach((context) => context.drawImage(drawingCanvas, 0, 0))
 	}
 }

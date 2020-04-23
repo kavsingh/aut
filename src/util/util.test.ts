@@ -60,9 +60,9 @@ describe('Util', () => {
 
 		const result = seedRandom(1000)
 
-		expect(result.some(r => r !== 1 && r !== 0)).toBe(false)
-		expect(result.filter(r => r === 0)).toHaveLength(500)
-		expect(result.filter(r => r === 1)).toHaveLength(500)
+		expect(result.some((r) => r !== 1 && r !== 0)).toBe(false)
+		expect(result.filter((r) => r === 0)).toHaveLength(500)
+		expect(result.filter((r) => r === 1)).toHaveLength(500)
 
 		restoreRandom()
 	})

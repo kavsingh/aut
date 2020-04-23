@@ -19,7 +19,7 @@ const appendElementsToContainer = (container: HTMLElement) => (
 ) => {
 	const fragment = document.createDocumentFragment()
 
-	elements.forEach(element => fragment.append(element))
+	elements.forEach((element) => fragment.append(element))
 
 	container.appendChild(fragment)
 }

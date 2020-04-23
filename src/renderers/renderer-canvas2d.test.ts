@@ -5,7 +5,7 @@ const getDrawCalls = (canvas: HTMLCanvasElement, type?: string) => {
 		type: string
 	}[]
 
-	return type ? allDrawCalls.filter(call => call.type === type) : allDrawCalls
+	return type ? allDrawCalls.filter((call) => call.type === type) : allDrawCalls
 }
 
 describe('Renderer 2d', () => {

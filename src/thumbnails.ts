@@ -11,7 +11,7 @@ const createRuleThumbnail = (thumbnailDim: number) => (rule: EvolutionRule) => {
 		height: thumbnailDim,
 	})
 	const evolver = createEvolver(rule)
-	const state = range(thumbnailDim).reduce(acc => evolver(acc), [
+	const state = range(thumbnailDim).reduce((acc) => evolver(acc), [
 		seedRandom(thumbnailDim),
 	])
 

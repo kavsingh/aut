@@ -39,10 +39,7 @@ export const seedSingle = (len: number) => {
 	const zeros = range(Math.floor(len / 2)).map(() => 0)
 
 	return len % 2 === 0
-		? zeros
-				.slice(0, -1)
-				.concat(1)
-				.concat(zeros)
+		? zeros.slice(0, -1).concat(1).concat(zeros)
 		: zeros.concat(1).concat(zeros)
 }
 
@@ -85,7 +82,7 @@ export const valueEq = curry((a: unknown, b: unknown): boolean => {
 
 		return aKeys.length !== bKeys.length
 			? false
-			: aKeys.every(key => valueEq(a[key], b[key]))
+			: aKeys.every((key) => valueEq(a[key], b[key]))
 	}
 
 	return false

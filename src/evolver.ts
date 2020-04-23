@@ -13,9 +13,9 @@ const evolve = (rule: EvolutionRule, generation: number[]) => {
 	)
 }
 
-export const createEvolver = (
-	rule: EvolutionRule,
-): WorldStateEvolver => state => {
+export const createEvolver = (rule: EvolutionRule): WorldStateEvolver => (
+	state,
+) => {
 	const generation = state[state.length - 1]
 	const nextGeneration = evolve(rule, generation)
 
