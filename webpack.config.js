@@ -7,12 +7,11 @@ const { default: PrepackPlugin } = require('prepack-webpack-plugin')
 
 const prepackConfig = require('./prepack.config')
 
-const isProduction = process.env.NODE_ENV === 'production'
 const fromRoot = path.resolve.bind(path, __dirname)
 const publicPath = '/'
 
-module.exports = {
-	mode: isProduction ? 'production' : 'development',
+module.exports = ({ production }) => ({
+	mode: production ? 'production' : 'development',
 	entry: {
 		bundle: ['./src/main.ts'],
 	},
@@ -41,7 +40,8 @@ module.exports = {
 			template: fromRoot('src/index.html'),
 			inject: 'head',
 			inlineSource: '.js',
-			minify: isProduction
+			scriptLoading: 'blocking',
+			minify: production
 				? {
 						collapseWhitespace: true,
 						minifyCSS: true,
@@ -54,7 +54,7 @@ module.exports = {
 				  }
 				: false,
 		}),
-		...(isProduction
+		...(production
 			? [
 					new HtmlInlineSourcePlugin(HtmlPlugin),
 					new PrepackPlugin({ prepack: prepackConfig }),
@@ -65,4 +65,4 @@ module.exports = {
 	resolve: {
 		extensions: ['.js', '.ts'],
 	},
-}
+})

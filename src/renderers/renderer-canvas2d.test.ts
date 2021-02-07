@@ -85,7 +85,7 @@ describe('Renderer 2d', () => {
 
 		const fillRectCalls = getDrawCalls(targetCanvas, 'fillRect')
 
-		expect(targetCanvas.getContext('2d')?.fillStyle).toBe('#f00')
+		expect(targetCanvas.getContext('2d')?.fillStyle).toBe('#ff0000')
 		expect(fillRectCalls).toHaveLength(1)
 		expect(fillRectCalls[0]).toEqual(
 			expect.objectContaining({ props: { width: 1, height: 1, x: 1, y: 0 } }),
