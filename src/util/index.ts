@@ -1,11 +1,6 @@
-import { curry } from './curry'
-import { pipe } from './pipe'
-
-export { curry, pipe }
+import { curry } from '@kavsingh/curry-pipe'
 
 type Nullish = null | undefined
-
-export const noop = (..._args: unknown[]) => undefined
 
 export const eq = curry((a: unknown, b: unknown) => a === b)
 
@@ -20,7 +15,12 @@ export const last = <T>(arr: T[]): T | undefined => arr[arr.length - 1]
 
 export const head = <T>(arr: T[]): T | undefined => arr[0]
 
-export const constant = <T>(val: T) => () => val
+export const constant =
+	<T>(val: T) =>
+	(..._args: unknown[]) =>
+		val
+
+export const noop = constant(undefined)
 
 export const defaultTo: {
 	<T>(defaultVal: T): (val: T | Nullish) => T
@@ -60,6 +60,9 @@ export const groupIndecesBy: {
 	return groups
 })
 
+export const isFiniteNumber = (value: unknown): value is number =>
+	Number.isFinite(value)
+
 const isValueNaN = (value: unknown): value is number =>
 	Number.isNaN(value as number)
 
@@ -72,7 +75,8 @@ export const valueEq = curry((a: unknown, b: unknown): boolean => {
 	if (isValueNaN(a) && isValueNaN(b)) return true
 
 	if (isTypeofObject(a) && isTypeofObject(b)) {
-		const [aKeys, bKeys] = [a, b].map(Object.keys)
+		const aKeys = Object.keys(a)
+		const bKeys = Object.keys(b)
 
 		return aKeys.length !== bKeys.length
 			? false

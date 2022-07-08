@@ -1,7 +1,7 @@
 const path = require('path')
 
-const HtmlPlugin = require('html-webpack-plugin')
 const HtmlInlineSourcePlugin = require('html-webpack-inline-source-plugin')
+const HtmlPlugin = require('html-webpack-plugin')
 const NoEmitPlugin = require('no-emit-webpack-plugin')
 const { default: PrepackPlugin } = require('prepack-webpack-plugin')
 

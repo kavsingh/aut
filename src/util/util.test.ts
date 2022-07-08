@@ -1,46 +1,35 @@
 import {
-	curry,
 	last,
 	head,
 	range,
 	circMod,
 	seedSingle,
 	seedRandom,
-	pipe,
 	groupIndecesBy,
 	eq,
 	sample,
 	constant,
 	valueEq,
 	defaultTo,
+	isFiniteNumber,
 } from '.'
 
-const mockRandom = (fn: (mock: jest.MockContext<any, any>) => unknown) => {
-	const _Math = window.Math // Should be provided by jest
+const mockRandom = (fn: (mock: jest.MockContext<any, any>) => number) => {
+	const _Math = globalThis.Math
 	const random = jest.fn()
-	const mockMath = Object.create(_Math)
+	const mockMath: typeof _Math = Object.create(_Math)
 
 	mockMath.random = (...args: Parameters<typeof Math.random>) => {
 		random(...args)
 		return fn(random.mock)
 	}
 
-	window.Math = mockMath
+	globalThis.Math = mockMath
 
-	return () => (window.Math = _Math)
+	return () => (globalThis.Math = _Math)
 }
 
 describe('Util', () => {
-	it('Should curry a function', () => {
-		const add = curry((a: number, b: number, c: number) => a + b + c)
-
-		expect(add(1, 2, 3)).toBe(6)
-		expect(add(1)(2, 3)).toBe(6)
-		expect(add(1, 2)(3)).toBe(6)
-		expect(add(1, 2)()(3)).toBe(6)
-		expect(typeof add(1)(2)).toBe('function')
-	})
-
 	it('Should sample a random value from array', () => {
 		const source = [1, 2, 3, 4]
 		const restoreRandom = mockRandom(
@@ -119,18 +108,12 @@ describe('Util', () => {
 		expect(seedSingle(0)).toEqual([])
 	})
 
-	it('Should compose functions left to right with first fn of any arity', () => {
-		const add = (a: number, b: number) => a + b
-		const double = (x: number) => x * 2
-		const addThenDouble = pipe(add, double)
-
-		expect(addThenDouble(1, 2)).toBe(6)
-	})
-
 	it('Should create a function that always returns the same value', () => {
 		const byRef = {}
+		const getRef = constant(byRef)
 
-		expect(constant(byRef)()).toBe(byRef)
+		expect(getRef()).toBe(byRef)
+		expect(getRef()).toBe(byRef)
 	})
 
 	it('Should return a default value for nullish values', () => {
@@ -160,15 +143,37 @@ describe('Util', () => {
 		expect(valueEq(1, NaN)).toBe(false)
 		expect(valueEq(1, 1)).toBe(true)
 		expect(valueEq('1', '1')).toBe(true)
-		expect(valueEq(sameRef, sameRef)).toBe(true)
-		expect(valueEq([], [])).toBe(true)
-		expect(valueEq([1, 2], [1, 2])).toBe(true)
-		expect(valueEq([2, 1], [1, 2])).toBe(false)
-		expect(valueEq([1, 2, 3], [1, 2])).toBe(false)
-		expect(valueEq({ a: 1, b: 2 }, { b: 2, a: 1 })).toBe(true)
-		expect(valueEq({ a: 1, b: 2 }, { b: 2, c: 3, a: 1 })).toBe(false)
+		expect(valueEq(sameRef)(sameRef)).toBe(true)
+		expect(valueEq([])([])).toBe(true)
+		expect(valueEq([1, 2])([1, 2])).toBe(true)
+		expect(valueEq([2, 1])([1, 2])).toBe(false)
+		expect(valueEq([1, 2, 3])([1, 2])).toBe(false)
+		expect(valueEq({ a: 1, b: 2 })({ b: 2, a: 1 })).toBe(true)
+		expect(valueEq({ a: 1, b: 2 })({ b: 2, c: 3, a: 1 })).toBe(false)
 		expect(
-			valueEq({ a: 1, b: [1, { c: 2 }] }, { b: [1, { c: 2 }], a: 1 }),
+			valueEq({ a: 1, b: [1, { c: 2 }] })({ b: [1, { c: 2 }], a: 1 }),
 		).toBe(true)
+	})
+
+	it.each([
+		[0, true],
+		[+0, true],
+		[-0, true],
+		[-1, true],
+		[1, true],
+		[Number.MAX_SAFE_INTEGER, true],
+		[Number.MAX_VALUE, true],
+		[Number.MIN_SAFE_INTEGER, true],
+		[Number.MIN_VALUE, true],
+		[Infinity, false],
+		[-Infinity, false],
+		[NaN, false],
+		[-NaN, false],
+		[{}, false],
+		[[], false],
+		['', false],
+		[true, false],
+	])('Should determine if %s is finite with typeguard', (value, expected) => {
+		expect(isFiniteNumber(value)).toBe(expected)
 	})
 })

@@ -19,10 +19,10 @@ describe('Renderer Svg', () => {
 		expect(svg.getAttribute('xmlns')).toBe('http://www.w3.org/2000/svg')
 		expect(svg.getAttribute('viewBox')).toBe('0 0 10 10')
 		expect(rects).toHaveLength(2)
-		expect(rects[0].getAttributeNS(null, 'x')).toBe('0')
-		expect(rects[0].getAttributeNS(null, 'y')).toBe('8')
-		expect(rects[0].getAttributeNS(null, 'width')).toBe('1')
-		expect(rects[0].getAttributeNS(null, 'height')).toBe('1')
+		expect(rects[0]?.getAttributeNS(null, 'x')).toBe('0')
+		expect(rects[0]?.getAttributeNS(null, 'y')).toBe('8')
+		expect(rects[0]?.getAttributeNS(null, 'width')).toBe('1')
+		expect(rects[0]?.getAttributeNS(null, 'height')).toBe('1')
 	})
 
 	it('Should draw only visible rows from state', () => {

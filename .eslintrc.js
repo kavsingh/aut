@@ -10,53 +10,95 @@ const devDependencies = {
 	peerDependencies: false,
 }
 
+const testFilePatterns = (extensions = '*') =>
+	['**/*.test', '**/*.mock', '**/__test__/**/*', '**/__mocks__/**/*'].map(
+		(pattern) => `${pattern}.${extensions}`,
+	)
+
 module.exports = {
-	parser: '@typescript-eslint/parser',
+	root: true,
 	env: { es6: true, node: true, browser: false },
-	plugins: ['@typescript-eslint', 'filenames', 'import', 'jest', 'prettier'],
+	settings: {
+		'import/parsers': { '@typescript-eslint/parser': ['.ts'] },
+		'import/resolver': {
+			'eslint-import-resolver-typescript': { project: './tsconfig.json' },
+		},
+	},
+	plugins: ['filenames'],
 	extends: [
 		'eslint:recommended',
-		'plugin:@typescript-eslint/recommended',
-		'plugin:@typescript-eslint/eslint-recommended',
 		'plugin:import/recommended',
 		'plugin:import/typescript',
-		'plugin:jest/recommended',
-		'plugin:jest/style',
-		'prettier',
-		'prettier/@typescript-eslint',
+		'plugin:prettier/recommended',
 	],
 	rules: {
+		'curly': ['warn', 'multi-line', 'consistent'],
 		'no-console': 'off',
-		'@typescript-eslint/explicit-function-return-type': 'off',
-		'@typescript-eslint/explicit-module-boundary-types': 'off',
-		'@typescript-eslint/no-var-requires': 'off',
-		'@typescript-eslint/no-unused-vars': [
-			'error',
-			{ argsIgnorePattern: '^_', varsIgnorePattern: '[iI]gnored' },
-		],
-		'filenames/match-regex': ['error', '^[a-z-0-9.]+$', true],
+		'no-throw-literal': 'error',
+		'filenames/match-regex': ['error', '^[a-z0-9-.]+$', true],
 		'filenames/match-exported': ['error', 'kebab'],
 		'import/no-cycle': 'error',
 		'import/no-self-import': 'error',
+		'import/no-unused-modules': 'error',
 		'import/no-useless-path-segments': 'error',
+		'import/no-extraneous-dependencies': ['error', devDependencies],
 		'import/order': [
-			'error',
+			'warn',
 			{
 				'groups': [
 					'builtin',
 					'external',
 					'internal',
 					['parent', 'sibling', 'index'],
+					'type',
 				],
+				'pathGroups': [{ pattern: '~/**', group: 'internal' }],
+				'pathGroupsExcludedImportTypes': ['type'],
+				'alphabetize': { order: 'asc' },
 				'newlines-between': 'always',
 			},
 		],
-		'import/no-extraneous-dependencies': ['error', devDependencies],
 		'prettier/prettier': 'warn',
 	},
 	overrides: [
 		{
-			files: ['*.config.*'],
+			files: ['*.js'],
+			parser: '@babel/eslint-parser',
+		},
+		{
+			files: ['*.ts'],
+			parser: '@typescript-eslint/parser',
+			parserOptions: { project: './tsconfig.json' },
+			extends: [
+				'plugin:@typescript-eslint/recommended',
+				'plugin:@typescript-eslint/recommended-requiring-type-checking',
+			],
+			rules: {
+				'camelcase': 'off',
+				'no-shadow': 'off',
+				'no-throw-literal': 'off',
+				'no-unused-vars': 'off',
+				'@typescript-eslint/consistent-type-imports': [
+					'error',
+					{ disallowTypeAnnotations: false },
+				],
+				'@typescript-eslint/member-ordering': ['warn'],
+				'@typescript-eslint/no-shadow': [
+					'error',
+					{
+						ignoreTypeValueShadow: false,
+						ignoreFunctionTypeParameterNameValueShadow: true,
+					},
+				],
+				'@typescript-eslint/no-throw-literal': 'error',
+				'@typescript-eslint/no-unused-vars': [
+					'error',
+					{ argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+				],
+			},
+		},
+		{
+			files: ['./*'],
 			rules: {
 				'filenames/match-exported': 'off',
 			},
@@ -66,18 +108,27 @@ module.exports = {
 			env: { node: false, browser: true },
 			rules: {
 				'no-console': 'error',
-				'@typescript-eslint/no-var-requires': 'error',
 				'import/no-extraneous-dependencies': ['error', srcDependencies],
 			},
 		},
 		{
-			files: ['**/*.test.*'],
-			env: { 'node': true, 'jest/globals': true },
+			files: testFilePatterns(),
+			env: { node: true },
+			extends: ['plugin:testing-library/dom'],
 			rules: {
 				'no-console': 'off',
+				'import/no-extraneous-dependencies': ['error', devDependencies],
+				'filenames/match-exported': ['error', 'kebab', '\\.test$'],
+			},
+		},
+		{
+			files: testFilePatterns('ts'),
+			rules: {
 				'@typescript-eslint/no-explicit-any': 'off',
 				'@typescript-eslint/no-non-null-assertion': 'off',
-				'import/no-extraneous-dependencies': ['error', devDependencies],
+				'@typescript-eslint/no-unsafe-assignment': 'off',
+				'@typescript-eslint/no-unsafe-call': 'off',
+				'@typescript-eslint/unbound-method': 'off',
 			},
 		},
 	],

@@ -1,30 +1,36 @@
-import { circMod, seedRandom, valueEq } from './util'
-import { EvolutionRule, WorldStateEvolver } from './types'
+import { circMod, isFiniteNumber, seedRandom, valueEq } from './util'
+
+import type { EvolutionRule, WorldStateEvolver } from './types'
 
 const evolve = (rule: EvolutionRule, generation: number[]) => {
 	const modLength = circMod(generation.length)
 
-	return generation.map((_, index) =>
-		rule(
-			generation[modLength(index - 1)],
-			generation[index],
-			generation[modLength(index + 1)],
-		),
-	)
+	return generation.map((_, index) => {
+		const a = generation[modLength(index - 1)]
+		const b = generation[index]
+		const c = generation[modLength(index + 1)]
+
+		return isFiniteNumber(a) && isFiniteNumber(b) && isFiniteNumber(c)
+			? rule(a, b, c)
+			: 0
+	})
 }
 
-export const createEvolver = (rule: EvolutionRule): WorldStateEvolver => (
-	state,
-) => {
-	const generation = state[state.length - 1]
-	const nextGeneration = evolve(rule, generation)
+export const createEvolver =
+	(rule: EvolutionRule): WorldStateEvolver =>
+	(state) => {
+		const generation = state[state.length - 1]
 
-	return state.concat([
-		valueEq(generation, nextGeneration)
-			? seedRandom(generation.length)
-			: nextGeneration,
-	])
-}
+		if (!generation) return state
+
+		const nextGeneration = evolve(rule, generation)
+
+		return state.concat([
+			valueEq(generation, nextGeneration)
+				? seedRandom(generation.length)
+				: nextGeneration,
+		])
+	}
 
 /*
     codifies rules as described in http://atlas.wolfram.com/01/01/
@@ -42,5 +48,7 @@ export const createEvolver = (rule: EvolutionRule): WorldStateEvolver => (
 
     the rule is codified by createRule(['100', '101'])
 */
-export const createRule = (patterns: string[]): EvolutionRule => (a, b, c) =>
-	patterns.includes(`${a}${b}${c}`) ? 1 : 0
+export const createRule =
+	(patterns: string[]): EvolutionRule =>
+	(a, b, c) =>
+		patterns.includes(`${a}${b}${c}`) ? 1 : 0

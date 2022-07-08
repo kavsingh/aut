@@ -1,9 +1,9 @@
 import { createRenderer } from './renderer-canvas2d'
 
 const getDrawCalls = (canvas: HTMLCanvasElement, type?: string) => {
-	const allDrawCalls = (canvas.getContext('2d') as any).__getDrawCalls() as {
-		type: string
-	}[]
+	const allDrawCalls = (
+		canvas.getContext('2d') as MockCanvasContext2d
+	).__getDrawCalls()
 
 	return type ? allDrawCalls.filter((call) => call.type === type) : allDrawCalls
 }
@@ -26,7 +26,7 @@ describe('Renderer 2d', () => {
 		const clearRectCalls = getDrawCalls(targetCanvas, 'clearRect')
 		const fillRectCalls = getDrawCalls(targetCanvas, 'fillRect')
 
-		expect(drawCalls[0].type).toBe('clearRect')
+		expect(drawCalls[0]?.type).toBe('clearRect')
 		expect(clearRectCalls).toHaveLength(1)
 		expect(fillRectCalls).toHaveLength(2)
 		// First active, second row from bottom (state is 2 rows)
@@ -132,3 +132,7 @@ describe('Renderer 2d', () => {
 		)
 	})
 })
+
+type MockCanvasContext2d = CanvasRenderingContext2D & {
+	__getDrawCalls: () => { type: string }[]
+}

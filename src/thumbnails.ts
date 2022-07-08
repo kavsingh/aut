@@ -1,7 +1,8 @@
+import { createEvolver } from './evolver'
 import { createRenderer } from './renderers/renderer-canvas2d'
 import { range, seedRandom } from './util'
-import { createEvolver } from './evolver'
-import { EvolutionRule } from './types'
+
+import type { EvolutionRule } from './types'
 
 const createRuleThumbnail = (thumbnailDim: number) => (rule: EvolutionRule) => {
 	const ruleCanvas = document.createElement('canvas')
@@ -11,9 +12,10 @@ const createRuleThumbnail = (thumbnailDim: number) => (rule: EvolutionRule) => {
 		height: thumbnailDim,
 	})
 	const evolver = createEvolver(rule)
-	const state = range(thumbnailDim).reduce((acc) => evolver(acc), [
-		seedRandom(thumbnailDim),
-	])
+	const state = range(thumbnailDim).reduce(
+		(acc) => evolver(acc),
+		[seedRandom(thumbnailDim)],
+	)
 
 	ruleRenderer(state)
 

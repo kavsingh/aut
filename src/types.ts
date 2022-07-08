@@ -7,5 +7,5 @@ export interface State {
 	worldDim: number
 	rules: EvolutionRule[]
 	world: WorldState
-	evolver?: WorldStateEvolver
+	evolver: WorldStateEvolver | undefined
 }

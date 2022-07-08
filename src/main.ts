@@ -1,9 +1,10 @@
-import { State } from './types'
-import { seedSingle } from './util'
 import * as rules from './rules'
-import { createWorldsForType, startWorldAnimations } from './worlds'
-import { addRuleThumbnails } from './thumbnails'
 import { saveSvgSnapshot } from './snapshot-to-svg'
+import { addRuleThumbnails } from './thumbnails'
+import { seedSingle } from './util'
+import { createWorldsForType, startWorldAnimations } from './worlds'
+
+import type { State } from './types'
 
 const main: BootFn = ({
 	worldCount,

@@ -1,28 +1,32 @@
-import { RendererFactoryOptions, RenderFn } from './renderers/types'
+import { pipe } from '@kavsingh/curry-pipe'
+
+import { createEvolver } from './evolver'
 import { createRenderer as createCanvas2dRenderer } from './renderers/renderer-canvas2d'
 import {
 	createRenderer as createSvgRenderer,
 	svgNs,
 } from './renderers/renderer-svg'
-import { sample, pipe, constant, defaultTo, range, noop } from './util'
-import { createEvolver } from './evolver'
-import { State } from './types'
 import { rule3 } from './rules'
+import { sample, constant, defaultTo, range, noop } from './util'
+
+import type { RendererFactoryOptions, RenderFn } from './renderers/types'
+import type { State } from './types'
 
 export type RenderType = 'svg' | 'canvas2d'
 
-const createNElements = (count: number) => <R>(createFn: () => R) =>
-	range(count).map(createFn)
+const createNElements =
+	(count: number) =>
+	<R>(createFn: () => R) =>
+		range(count).map(createFn)
 
-const appendElementsToContainer = (container: HTMLElement) => (
-	elements: Element[],
-) => {
-	const fragment = document.createDocumentFragment()
+const appendElementsToContainer =
+	(container: HTMLElement) => (elements: Element[]) => {
+		const fragment = document.createDocumentFragment()
 
-	elements.forEach((element) => fragment.append(element))
+		elements.forEach((element) => fragment.append(element))
 
-	container.appendChild(fragment)
-}
+		container.appendChild(fragment)
+	}
 
 export const createWorldsForType = (
 	type: RenderType,

@@ -1,5 +1,6 @@
 import { svgNs, createRenderer } from './renderers/renderer-svg'
-import { State } from './types'
+
+import type { State } from './types'
 
 // ganked from https://stackoverflow.com/a/38019175
 

@@ -1,5 +1,6 @@
 import { last, head, groupIndecesBy, eq } from '../util'
-import { CanvasRendererFactory } from './types'
+
+import type { CanvasRendererFactory } from './types'
 
 const is2dContext = (context: unknown): context is CanvasRenderingContext2D =>
 	context && context instanceof CanvasRenderingContext2D

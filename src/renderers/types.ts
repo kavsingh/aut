@@ -1,4 +1,4 @@
-import { WorldState } from '../types'
+import type { WorldState } from '../types'
 
 export type RenderFn = (state: WorldState) => void
 
