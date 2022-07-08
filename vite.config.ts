@@ -2,9 +2,10 @@
 
 import path from 'path'
 
-import legacyPlugin from '@vitejs/plugin-legacy'
 import { defineConfig } from 'vite'
 import checkerPlugin from 'vite-plugin-checker'
+import { createHtmlPlugin } from 'vite-plugin-html'
+import { viteSingleFile } from 'vite-plugin-singlefile'
 
 const checker = checkerPlugin({
 	overlay: { initialIsOpen: false },
@@ -17,7 +18,7 @@ const checker = checkerPlugin({
 
 export default defineConfig({
 	build: { sourcemap: true },
-	plugins: [checker, legacyPlugin()],
+	plugins: [checker, viteSingleFile(), createHtmlPlugin()],
 	resolve: { alias: { '~': path.resolve(__dirname, './src') } },
 	test: {
 		include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}'],
