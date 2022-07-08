@@ -12,22 +12,6 @@ import { sample, constant, defaultTo, range, noop } from './util'
 import type { RendererFactoryOptions, RenderFn } from './renderers/types'
 import type { State } from './types'
 
-export type RenderType = 'svg' | 'canvas2d'
-
-const createNElements =
-	(count: number) =>
-	<R>(createFn: () => R) =>
-		range(count).map(createFn)
-
-const appendElementsToContainer =
-	(container: HTMLElement) => (elements: Element[]) => {
-		const fragment = document.createDocumentFragment()
-
-		elements.forEach((element) => fragment.append(element))
-
-		container.appendChild(fragment)
-	}
-
 export const createWorldsForType = (
 	type: RenderType,
 	container: HTMLElement,
@@ -102,3 +86,19 @@ export const startWorldAnimations = (
 	setInterval(update, 14)
 	window.requestAnimationFrame(onFrame)
 }
+
+export type RenderType = 'svg' | 'canvas2d'
+
+const createNElements =
+	(count: number) =>
+	<R>(createFn: () => R) =>
+		range(count).map(createFn)
+
+const appendElementsToContainer =
+	(container: HTMLElement) => (elements: Element[]) => {
+		const fragment = document.createDocumentFragment()
+
+		elements.forEach((element) => fragment.append(element))
+
+		container.appendChild(fragment)
+	}

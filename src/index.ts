@@ -6,11 +6,16 @@ import { createWorldsForType, startWorldAnimations } from './worlds'
 
 import type { State } from './types'
 
-const main: BootFn = ({
+const app = ({
 	worldCount,
 	worldsContainer,
 	thumbnailsContainer,
 	snapshotButton,
+}: {
+	worldCount: number
+	worldsContainer: HTMLElement
+	thumbnailsContainer: HTMLElement
+	snapshotButton: HTMLElement
 }) => {
 	const cellDim = 2
 	const worldDim = Math.min(Math.floor(window.innerWidth / worldCount), 300)
@@ -49,6 +54,14 @@ const main: BootFn = ({
 	startWorldAnimations(state, { worldCount, renderWorld })
 }
 
-if (typeof window !== 'undefined') window.bootApp = main
+const worldsContainer = document.querySelector<HTMLElement>('.worlds')
+const thumbnailsContainer = document.querySelector<HTMLElement>('.thumbnails')
+const snapshotButton = document.querySelector<HTMLElement>('.snapshot-button')
 
-export default main
+if (!(worldsContainer && thumbnailsContainer && snapshotButton)) {
+	throw new Error(
+		'missing dom, expected .worlds, .thumbnails, .snapshot-button',
+	)
+}
+
+app({ worldsContainer, thumbnailsContainer, snapshotButton, worldCount: 3 })

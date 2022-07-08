@@ -1,12 +1,6 @@
+import { describe, it, expect } from 'vitest'
+
 import { createRenderer } from './renderer-canvas2d'
-
-const getDrawCalls = (canvas: HTMLCanvasElement, type?: string) => {
-	const allDrawCalls = (
-		canvas.getContext('2d') as MockCanvasContext2d
-	).__getDrawCalls()
-
-	return type ? allDrawCalls.filter((call) => call.type === type) : allDrawCalls
-}
 
 describe('Renderer 2d', () => {
 	it('Should draw state to canvas context', () => {
@@ -132,6 +126,14 @@ describe('Renderer 2d', () => {
 		)
 	})
 })
+
+const getDrawCalls = (canvas: HTMLCanvasElement, type?: string) => {
+	const allDrawCalls = (
+		canvas.getContext('2d') as MockCanvasContext2d
+	).__getDrawCalls()
+
+	return type ? allDrawCalls.filter((call) => call.type === type) : allDrawCalls
+}
 
 type MockCanvasContext2d = CanvasRenderingContext2D & {
 	__getDrawCalls: () => { type: string }[]

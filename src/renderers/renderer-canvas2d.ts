@@ -2,9 +2,6 @@ import { last, head, groupIndecesBy, eq } from '../util'
 
 import type { CanvasRendererFactory } from './types'
 
-const is2dContext = (context: unknown): context is CanvasRenderingContext2D =>
-	context && context instanceof CanvasRenderingContext2D
-
 export const createRenderer: CanvasRendererFactory = (
 	canvases,
 	{
@@ -16,7 +13,10 @@ export const createRenderer: CanvasRendererFactory = (
 	},
 ) => {
 	const [drawingCanvas, ...targetCanvases] = canvases
-	const drawingContext = drawingCanvas.getContext('2d')
+
+	if (!drawingCanvas) throw new Error('no canvas provided')
+
+	const drawingContext = drawingCanvas?.getContext('2d')
 	const targetContexts = targetCanvases
 		.map((canvas) => canvas.getContext('2d'))
 		.filter(is2dContext)
@@ -25,13 +25,14 @@ export const createRenderer: CanvasRendererFactory = (
 		throw new Error('could not create drawing context')
 	}
 
+	const allContexts = [drawingContext, ...targetContexts]
 	const maxRows = Math.floor(height / cellDim)
 	const groupFillRanges = groupIndecesBy<number>(
 		eq(fillMode === 'inactive' ? 0 : 1),
 	)
 
 	const clear = () => {
-		;[drawingContext, ...targetContexts].forEach((context) => {
+		allContexts.forEach((context) => {
 			context.clearRect(0, 0, width, height)
 			context.fillStyle = fillColor
 		})
@@ -42,6 +43,9 @@ export const createRenderer: CanvasRendererFactory = (
 
 		for (let i = 0; i < fillRanges.length; i++) {
 			const current = fillRanges[i]
+
+			if (!current) break
+
 			const start = head(current)
 			const end = last(current)
 
@@ -65,9 +69,14 @@ export const createRenderer: CanvasRendererFactory = (
 		const startIdx = Math.max(0, state.length - maxRows)
 
 		for (let i = startIdx; i < state.length; i++) {
-			drawRow(state[i], height - (state.length - i) * cellDim)
+			const row = state[i]
+
+			if (row) drawRow(row, height - (state.length - i) * cellDim)
 		}
 
 		targetContexts.forEach((context) => context.drawImage(drawingCanvas, 0, 0))
 	}
 }
+
+const is2dContext = (context: unknown): context is CanvasRenderingContext2D =>
+	!!context && context instanceof CanvasRenderingContext2D

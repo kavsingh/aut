@@ -1,3 +1,5 @@
+import { describe, it, expect, vi } from 'vitest'
+
 import {
 	last,
 	head,
@@ -12,11 +14,13 @@ import {
 	valueEq,
 	defaultTo,
 	isFiniteNumber,
-} from '.'
+} from './index'
 
-const mockRandom = (fn: (mock: jest.MockContext<any, any>) => number) => {
+import type { MockContext } from 'vitest'
+
+const mockRandom = (fn: (mock: MockContext<any, any>) => number) => {
 	const _Math = globalThis.Math
-	const random = jest.fn()
+	const random = vi.fn()
 	const mockMath: typeof _Math = Object.create(_Math)
 
 	mockMath.random = (...args: Parameters<typeof Math.random>) => {

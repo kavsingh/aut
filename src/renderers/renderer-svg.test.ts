@@ -1,3 +1,5 @@
+import { describe, it, expect } from 'vitest'
+
 import { createRenderer } from './renderer-svg'
 
 describe('Renderer Svg', () => {

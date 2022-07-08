@@ -28,6 +28,9 @@ export const createRenderer: SvgRendererFactory = (
 
 		for (let i = 0; i < fillRanges.length; i++) {
 			const current = fillRanges[i]
+
+			if (!current) continue
+
 			const start = head(current)
 			const end = last(current)
 
@@ -60,7 +63,9 @@ export const createRenderer: SvgRendererFactory = (
 		const startIdx = Math.max(0, state.length - maxRows)
 
 		for (let i = startIdx; i < state.length; i++) {
-			drawRow(state[i], height - (state.length - i) * cellDim)
+			const row = state[i]
+
+			if (row) drawRow(row, height - (state.length - i) * cellDim)
 		}
 	}
 }

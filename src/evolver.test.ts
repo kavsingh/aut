@@ -1,3 +1,5 @@
+import { describe, it, expect, vi } from 'vitest'
+
 import { createRule, createEvolver } from './evolver'
 import * as util from './util'
 
@@ -39,7 +41,7 @@ describe('Evolver', () => {
 	})
 
 	it('should not perpetuate identical generations', () => {
-		jest.spyOn(util, 'seedRandom').mockImplementationOnce(() => [0, 1, 0])
+		vi.spyOn(util, 'seedRandom').mockImplementationOnce(() => [0, 1, 0])
 
 		const evolve = createEvolver(createRule([]))
 
@@ -47,6 +49,5 @@ describe('Evolver', () => {
 			[0, 0, 0],
 			[0, 1, 0],
 		])
-		;(util.seedRandom as jest.Mock).mockRestore()
 	})
 })

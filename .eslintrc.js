@@ -62,10 +62,6 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['*.js'],
-			parser: '@babel/eslint-parser',
-		},
-		{
 			files: ['*.ts'],
 			parser: '@typescript-eslint/parser',
 			parserOptions: { project: './tsconfig.json' },
