@@ -3,6 +3,7 @@
 import { defineConfig } from "vite"
 import { checker as checkerPlugin } from "vite-plugin-checker"
 import deadFilePlugin from "vite-plugin-deadfile"
+import glslPlugin from "vite-plugin-glsl"
 import { createHtmlPlugin } from "vite-plugin-html"
 import { viteSingleFile } from "vite-plugin-singlefile"
 import solidPlugin from "vite-plugin-solid"
@@ -13,6 +14,7 @@ export default defineConfig(({ mode }) => {
 		plugins: [
 			tsConfigPaths(),
 			solidPlugin(),
+			glslPlugin(),
 			checker(mode),
 			viteSingleFile(),
 			createHtmlPlugin(),

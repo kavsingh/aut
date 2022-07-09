@@ -38,7 +38,7 @@ export default function Scrolls() {
 	onMount(() => {
 		if (!worldsContainer) return
 
-		worldsApi = createWorldsForType("canvas2d", worldsContainer, {
+		worldsApi = createWorldsForType("webgl2", worldsContainer, {
 			count: worldCount,
 			rendererOptions: { cellDim, width: worldDim, height: worldDim },
 		})

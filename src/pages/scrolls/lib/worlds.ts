@@ -8,6 +8,7 @@ import {
 	createRenderer as createSvgRenderer,
 	svgNs,
 } from "#renderers/renderer-svg"
+import { createRenderer as createWebgl2Renderer } from "#renderers/renderer-webgl2"
 
 import type Audio from "#audio"
 import type { RendererFactoryOptions, RenderFn } from "#renderers/types"
@@ -37,6 +38,17 @@ export function createWorldsForType(
 				type,
 				elements,
 				render: createCanvas2dRenderer(elements, rendererOptions),
+			}
+		}
+		case "webgl2": {
+			const elements = createElements(() => document.createElement("canvas"))
+
+			appendElements(elements)
+
+			return {
+				type,
+				elements,
+				render: createWebgl2Renderer(elements, rendererOptions),
 			}
 		}
 		case "svg": {
@@ -104,7 +116,7 @@ export function startWorldAnimations(
 	}
 }
 
-export type RenderType = "svg" | "canvas2d"
+export type RenderType = "svg" | "canvas2d" | "webgl2"
 
 function createNElements(n: number) {
 	return function create<R>(createFn: () => R) {

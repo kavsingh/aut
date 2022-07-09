@@ -19,6 +19,7 @@
 	"dependencies": {
 		"@kavsingh/curry-pipe": "0.3.0",
 		"@solidjs/router": "0.14.5",
+		"gl-matrix": "3.4.3",
 		"solid-js": "1.8.22",
 		"tailwind-variants": "0.2.1"
 	},
@@ -55,6 +56,7 @@
 		"vite": "5.4.5",
 		"vite-plugin-checker": "0.8.0",
 		"vite-plugin-deadfile": "1.3.0",
+		"vite-plugin-glsl": "1.3.0",
 		"vite-plugin-html": "3.2.2",
 		"vite-plugin-singlefile": "2.0.2",
 		"vite-plugin-solid": "2.10.2",

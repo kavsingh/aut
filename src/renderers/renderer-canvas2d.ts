@@ -66,8 +66,10 @@ export const createRenderer: CanvasRendererFactory = (
 	}
 }
 
-export type CanvasRendererFactory = RendererFactory<HTMLCanvasElement>
-
-function is2dContext(context: unknown): context is CanvasRenderingContext2D {
+export function is2dContext(
+	context: unknown,
+): context is CanvasRenderingContext2D {
 	return !!context && context instanceof CanvasRenderingContext2D
 }
+
+export type CanvasRendererFactory = RendererFactory<HTMLCanvasElement>

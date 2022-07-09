@@ -53,5 +53,8 @@
 	},
 	"[toml]": {
 		"editor.defaultFormatter": "tamasfe.even-better-toml"
+	},
+	"[glsl]": {
+		"editor.defaultFormatter": "circledev.glsl-canvas"
 	}
 }
