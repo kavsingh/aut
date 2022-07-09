@@ -21,7 +21,7 @@
 		"@kavsingh/curry-pipe": "0.1.4"
 	},
 	"devDependencies": {
-		"@testing-library/dom": "8.14.0",
+		"@testing-library/dom": "8.14.1",
 		"@testing-library/user-event": "14.2.1",
 		"@tsconfig/node18-strictest": "1.0.0",
 		"@types/node": "18.0.3",
