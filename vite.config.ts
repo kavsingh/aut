@@ -18,7 +18,10 @@ const checker = checkerPlugin({
 
 export default defineConfig({
 	build: { sourcemap: true },
-	plugins: [checker, viteSingleFile(), createHtmlPlugin()],
+	plugins:
+		process.env['NODE_ENV'] === 'test'
+			? []
+			: [checker, viteSingleFile(), createHtmlPlugin()],
 	resolve: { alias: { '~': path.resolve(__dirname, './src') } },
 	test: {
 		include: ['src/**/*.test.ts'],

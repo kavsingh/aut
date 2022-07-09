@@ -27,31 +27,6 @@ describe('Renderer Svg', () => {
 		expect(rects[0]?.getAttributeNS(null, 'height')).toBe('1')
 	})
 
-	it('Should draw only visible rows from state', () => {
-		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-		const render = createRenderer([svg], {
-			width: 10,
-			height: 4,
-			cellDim: 2,
-		})
-
-		render([
-			[0, 0, 0],
-			[0, 0, 0],
-			[0, 0, 0],
-			[0, 0, 0],
-			[1, 0, 0],
-			[0, 1, 1],
-		])
-
-		const rects = Array.from(svg.querySelectorAll('rect'))
-
-		// Draw only visible state
-		// height 4, cell height 2 => 2 rows visible
-		// last visible row has 2 adjacent active slots, so draw once
-		expect(rects).toHaveLength(2)
-	})
-
 	it('Should respect draw options', () => {
 		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
 		const render = createRenderer([svg], {

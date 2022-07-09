@@ -18,21 +18,34 @@ describe('Evolver', () => {
 	})
 
 	it('Should create a function that evolves state', () => {
-		const initState = [[0, 0, 1, 0, 0, 0, 1, 1, 0]]
+		const initState = [
+			[0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 1, 0, 0, 0, 1, 1, 0],
+		]
 
 		const evolve1 = createEvolver(createRule(['001', '110']))
-		const expectedState1 = initState.concat([[0, 1, 0, 0, 0, 1, 0, 1, 0]])
-		const expectedState1Stage2 = expectedState1.concat([
+		const expectedState1 = [
+			[0, 0, 1, 0, 0, 0, 1, 1, 0],
+			[0, 1, 0, 0, 0, 1, 0, 1, 0],
+		]
+		const expectedState1Stage2 = [
+			[0, 1, 0, 0, 0, 1, 0, 1, 0],
 			[1, 0, 0, 0, 1, 0, 0, 0, 0],
-		])
+		]
 
 		const evolve2 = createEvolver(createRule([]))
-		const expectedState2 = initState.concat([[0, 0, 0, 0, 0, 0, 0, 0, 0]])
+		const expectedState2 = [
+			[0, 0, 1, 0, 0, 0, 1, 1, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0],
+		]
 
 		const evolve3 = createEvolver(
 			createRule(['000', '001', '010', '011', '100', '101', '110', '111']),
 		)
-		const expectedState3 = initState.concat([[1, 1, 1, 1, 1, 1, 1, 1, 1]])
+		const expectedState3 = [
+			[0, 0, 1, 0, 0, 0, 1, 1, 0],
+			[1, 1, 1, 1, 1, 1, 1, 1, 1],
+		]
 
 		expect(evolve1(initState)).toEqual(expectedState1)
 		expect(evolve1(expectedState1)).toEqual(expectedState1Stage2)
@@ -45,7 +58,12 @@ describe('Evolver', () => {
 
 		const evolve = createEvolver(createRule([]))
 
-		expect(evolve([[0, 0, 0]])).toEqual([
+		expect(
+			evolve([
+				[0, 0, 0],
+				[0, 0, 0],
+			]),
+		).toEqual([
 			[0, 0, 0],
 			[0, 1, 0],
 		])

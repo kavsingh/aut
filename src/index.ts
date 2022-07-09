@@ -1,7 +1,7 @@
 import * as rules from './rules'
 import { saveSvgSnapshot } from './snapshot-to-svg'
 import { addRuleThumbnails } from './thumbnails'
-import { getCssValue, seedSingle } from './util'
+import { generateInitialWorld, getCssValue } from './util'
 import { createWorldsForType, startWorldAnimations } from './worlds'
 
 import type { State } from './types'
@@ -19,12 +19,13 @@ const app = ({
 }) => {
 	const cellDim = 2
 	const worldDim = Math.min(Math.floor(window.innerWidth / worldCount), 300)
+	const generationSize = Math.floor(worldDim / cellDim)
 	const state: State = {
 		cellDim,
 		worldDim,
 		rules: Object.values(rules),
 		evolver: undefined,
-		world: [seedSingle(worldDim / cellDim)],
+		world: generateInitialWorld(generationSize, generationSize),
 	}
 
 	const thumbnails = addRuleThumbnails(state.rules, thumbnailsContainer)

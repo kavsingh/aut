@@ -26,7 +26,6 @@ export const createRenderer: CanvasRendererFactory = (
 	}
 
 	const allContexts = [drawingContext, ...targetContexts]
-	const maxRows = Math.floor(height / cellDim)
 	const groupFillRanges = groupIndecesBy<number>(
 		eq(fillMode === 'inactive' ? 0 : 1),
 	)
@@ -66,9 +65,7 @@ export const createRenderer: CanvasRendererFactory = (
 	return (state) => {
 		clear()
 
-		const startIdx = Math.max(0, state.length - maxRows)
-
-		for (let i = startIdx; i < state.length; i++) {
+		for (let i = 0; i < state.length; i++) {
 			const row = state[i]
 
 			if (row) drawRow(row, height - (state.length - i) * cellDim)

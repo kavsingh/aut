@@ -34,37 +34,6 @@ describe('Renderer 2d', () => {
 		)
 	})
 
-	it('Should draw only visible rows from state', () => {
-		const targetCanvas = document.createElement('canvas')
-		const render = createRenderer([targetCanvas], {
-			width: 10,
-			height: 4,
-			cellDim: 2,
-		})
-
-		render([
-			[0, 0, 0],
-			[0, 0, 0],
-			[0, 0, 0],
-			[0, 0, 0],
-			[1, 0, 0],
-			[0, 1, 1],
-		])
-
-		const fillRectCalls = getDrawCalls(targetCanvas, 'fillRect')
-
-		// Draw only visible state
-		// height 4, cell height 2 => 2 rows visible
-		// last visible row has 2 adjacent active slots, so draw once
-		expect(fillRectCalls).toHaveLength(2)
-		expect(fillRectCalls[0]).toEqual(
-			expect.objectContaining({ props: { width: 2, height: 2, x: 0, y: 0 } }),
-		)
-		expect(fillRectCalls[1]).toEqual(
-			expect.objectContaining({ props: { width: 4, height: 2, x: 2, y: 2 } }),
-		)
-	})
-
 	it('Should respect draw options', () => {
 		const targetCanvas = document.createElement('canvas')
 		const render = createRenderer([targetCanvas], {

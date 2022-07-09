@@ -1,4 +1,4 @@
-import { circMod, isFiniteNumber, seedRandom, valueEq } from './util'
+import { circMod, isFiniteNumber, last, seedRandom, valueEq } from './util'
 
 import type { EvolutionRule, WorldStateEvolver } from './types'
 
@@ -18,18 +18,22 @@ const evolve = (rule: EvolutionRule, generation: number[]) => {
 
 export const createEvolver =
 	(rule: EvolutionRule): WorldStateEvolver =>
-	(state) => {
-		const generation = state[state.length - 1]
+	(world) => {
+		const currentGeneration = last(world)
 
-		if (!generation) return state
+		if (!currentGeneration) return world
 
-		const nextGeneration = evolve(rule, generation)
-
-		return state.concat([
-			valueEq(generation, nextGeneration)
-				? seedRandom(generation.length)
+		const maxGenerations = world.length
+		const nextGeneration = evolve(rule, currentGeneration)
+		const nextWorld = world.concat([
+			valueEq(currentGeneration, nextGeneration)
+				? seedRandom(currentGeneration.length)
 				: nextGeneration,
 		])
+
+		if (nextWorld.length > maxGenerations) nextWorld.shift()
+
+		return nextWorld
 	}
 
 /*
