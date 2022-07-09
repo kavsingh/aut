@@ -25,7 +25,7 @@ specifiers:
   vite-plugin-checker: 0.4.8
   vite-plugin-html: 3.2.0
   vite-plugin-singlefile: 0.10.0
-  vitest: 0.17.1
+  vitest: 0.18.0
 
 dependencies:
   '@kavsingh/curry-pipe': 0.1.4
@@ -54,7 +54,7 @@ devDependencies:
   vite-plugin-checker: 0.4.8_vite@2.9.14
   vite-plugin-html: 3.2.0_vite@2.9.14
   vite-plugin-singlefile: 0.10.0_vite@2.9.14
-  vitest: 0.17.1_c8@7.11.3+jsdom@20.0.0
+  vitest: 0.18.0_c8@7.11.3+jsdom@20.0.0
 
 packages:
 
@@ -3122,8 +3122,8 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitest/0.17.1_c8@7.11.3+jsdom@20.0.0:
-    resolution: {integrity: sha512-d6NsFC6FPmZ5XdiSYfW5rwJ/b8060wqe2steNNlVbhO69HWma6CucIm5g7PXlCSkmKvrdEbUsZHPAarlH83VGw==}
+  /vitest/0.18.0_c8@7.11.3+jsdom@20.0.0:
+    resolution: {integrity: sha512-ryAtlh5Gvg3+aLNuOQ8YOHxgQCCu46jx40X5MBL0K0/ejB9i5zsr8fV8LTGXbXex80UMHlzceI9F+ouGaiR+mQ==}
     engines: {node: '>=v14.16.0'}
     hasBin: true
     peerDependencies:

@@ -7,9 +7,11 @@ import type { PredicateFn } from './types'
 export const sample = <T>(arr: T[]): T | undefined =>
 	arr[Math.floor(Math.random() * arr.length)]
 
-export const last = <T>(arr: T[]): T | undefined => arr[arr.length - 1]
+export const head = <T>([x]: T[]) => x
 
-export const head = <T>(arr: T[]): T | undefined => arr[0]
+export const tail = <T>([_x, ...xs]: T[]) => xs
+
+export const last = <T>(arr: T[]) => arr.at(-1)
 
 export const seedSingle = (len: number) => {
 	if (!len) return []
