@@ -21,7 +21,8 @@ export default defineConfig({
 	plugins: [checker, viteSingleFile(), createHtmlPlugin()],
 	resolve: { alias: { '~': path.resolve(__dirname, './src') } },
 	test: {
-		include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}'],
+		include: ['src/**/*.test.ts'],
+		includeSource: ['src/**/*.ts'],
 		environment: 'jsdom',
 		setupFiles: ['./vitest.setup.ts'],
 	},

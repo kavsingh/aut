@@ -10,11 +10,7 @@ export interface RendererFactoryOptions {
 	fillMode?: 'active' | 'inactive'
 }
 
-type RendererFactory<T> = (
+export type RendererFactory<T> = (
 	renderTargets: T[],
 	options: RendererFactoryOptions,
 ) => RenderFn
-
-export type CanvasRendererFactory = RendererFactory<HTMLCanvasElement>
-
-export type SvgRendererFactory = RendererFactory<SVGElement>

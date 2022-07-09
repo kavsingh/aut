@@ -1,6 +1,6 @@
 import { last, head, groupIndecesBy, eq } from '../util'
 
-import type { SvgRendererFactory } from './types'
+import type { RendererFactory } from './types'
 
 export const svgNs = 'http://www.w3.org/2000/svg'
 
@@ -69,3 +69,5 @@ export const createRenderer: SvgRendererFactory = (
 		}
 	}
 }
+
+export type SvgRendererFactory = RendererFactory<SVGElement>

@@ -1,6 +1,6 @@
 import { last, head, groupIndecesBy, eq } from '../util'
 
-import type { CanvasRendererFactory } from './types'
+import type { RendererFactory } from './types'
 
 export const createRenderer: CanvasRendererFactory = (
 	canvases,
@@ -77,6 +77,8 @@ export const createRenderer: CanvasRendererFactory = (
 		targetContexts.forEach((context) => context.drawImage(drawingCanvas, 0, 0))
 	}
 }
+
+export type CanvasRendererFactory = RendererFactory<HTMLCanvasElement>
 
 const is2dContext = (context: unknown): context is CanvasRenderingContext2D =>
 	!!context && context instanceof CanvasRenderingContext2D
