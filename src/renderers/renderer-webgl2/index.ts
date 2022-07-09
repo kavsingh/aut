@@ -1,4 +1,4 @@
-import { RendererFactory } from '../types'
+import type { RendererFactory } from '../types'
 
 export const isWebGl2Context = (
 	context: unknown,
@@ -16,22 +16,22 @@ export const createRenderer: RendererFactory = (
 	},
 ) => {
 	const contexts = canvases
-		.map(canvas => canvas.getContext('webgl2'))
+		.map((canvas) => canvas.getContext('webgl2'))
 		.filter(isWebGl2Context)
 
 	// const maxRows = Math.floor(height / cellDim)
 
 	const clear = () =>
-		contexts.forEach(context => {
+		contexts.forEach((context) => {
 			context.clearColor(0, 0, 0, 0)
 			context.clear(context.COLOR_BUFFER_BIT)
 
 			context.drawArrays
 		})
 
-	canvases.forEach(canvas => Object.assign(canvas, { width, height }))
+	canvases.forEach((canvas) => Object.assign(canvas, { width, height }))
 
-	return _state => {
+	return (_state) => {
 		clear()
 	}
 }
