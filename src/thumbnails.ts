@@ -1,33 +1,40 @@
 import { createEvolver } from './evolver'
 import { createRenderer } from './renderers/renderer-canvas2d'
-import { range, seedRandom } from './util'
+import { getCssValue, range, seedRandom } from './util'
 
 import type { EvolutionRule } from './types'
 
-const createRuleThumbnail = (thumbnailDim: number) => (rule: EvolutionRule) => {
-	const ruleCanvas = document.createElement('canvas')
-	const ruleRenderer = createRenderer([ruleCanvas], {
-		cellDim: 1,
-		width: thumbnailDim,
-		height: thumbnailDim,
-	})
-	const evolver = createEvolver(rule)
-	const state = range(thumbnailDim).reduce(
-		(acc) => evolver(acc),
-		[seedRandom(thumbnailDim)],
-	)
+const createRuleThumbnail =
+	(thumbnailDim: number, fillColor: string) => (rule: EvolutionRule) => {
+		const ruleCanvas = document.createElement('canvas')
+		const ruleRenderer = createRenderer([ruleCanvas], {
+			fillColor,
+			cellDim: 1,
+			width: thumbnailDim,
+			height: thumbnailDim,
+		})
+		const evolver = createEvolver(rule)
+		const state = range(thumbnailDim).reduce(
+			(acc) => evolver(acc),
+			[seedRandom(thumbnailDim)],
+		)
 
-	ruleRenderer(state)
+		ruleRenderer(state)
 
-	return { evolver, element: ruleCanvas }
-}
+		return { evolver, element: ruleCanvas }
+	}
 
 export const addRuleThumbnails = (
 	rules: EvolutionRule[],
 	container: HTMLElement,
 	thumbnailDim = 40,
 ) => {
-	const thumbnails = rules.map(createRuleThumbnail(thumbnailDim))
+	const thumbnails = rules.map(
+		createRuleThumbnail(
+			thumbnailDim,
+			getCssValue(container, '--color-line-600'),
+		),
+	)
 
 	thumbnails.forEach(({ element }) => void container.appendChild(element))
 

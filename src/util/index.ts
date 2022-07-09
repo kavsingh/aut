@@ -2,6 +2,12 @@ import { curry } from '@kavsingh/curry-pipe'
 
 type Nullish = null | undefined
 
+export const getCssValue = curry((el: HTMLElement, cssVar: string) =>
+	typeof window !== 'undefined'
+		? getComputedStyle(el).getPropertyValue(cssVar) ?? '#000'
+		: '#000',
+)
+
 export const eq = curry((a: unknown, b: unknown) => a === b)
 
 export const range = (max: number) => Array.from({ length: max }, (_, i) => i)

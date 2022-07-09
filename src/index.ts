@@ -1,7 +1,7 @@
 import * as rules from './rules'
 import { saveSvgSnapshot } from './snapshot-to-svg'
 import { addRuleThumbnails } from './thumbnails'
-import { seedSingle } from './util'
+import { getCssValue, seedSingle } from './util'
 import { createWorldsForType, startWorldAnimations } from './worlds'
 
 import type { State } from './types'
@@ -33,7 +33,12 @@ const app = ({
 		worldsContainer,
 		{
 			count: worldCount,
-			rendererOptions: { cellDim, width: worldDim, height: worldDim },
+			rendererOptions: {
+				cellDim,
+				width: worldDim,
+				height: worldDim,
+				fillColor: getCssValue(worldsContainer, '--color-line-600'),
+			},
 		},
 	)
 
