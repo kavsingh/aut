@@ -56,6 +56,20 @@ const app = ({
 		() => void saveSvgSnapshot('snapshot.svg', state),
 	)
 
+	document.addEventListener(
+		'dblclick',
+		(event) => {
+			event.preventDefault()
+
+			if (!document.fullscreenElement) {
+				void document.documentElement.requestFullscreen()
+			} else if (document.exitFullscreen) {
+				void document.exitFullscreen()
+			}
+		},
+		false,
+	)
+
 	startWorldAnimations(state, { worldCount, renderWorld })
 }
 
