@@ -1,3 +1,4 @@
+import { loadImpulse } from './impulses'
 import { processWorld } from './process-world'
 
 import type { WorldState } from '~/types'
@@ -13,15 +14,21 @@ export const createAudio = (): AudioApi => {
 	const lfoGain = audioContext.createGain()
 	const lowGain = audioContext.createGain()
 	const highGain = audioContext.createGain()
+	const wet = audioContext.createGain()
+	const dry = audioContext.createGain()
 	const out = audioContext.createGain()
+	const reverb = audioContext.createConvolver()
 	let oscillatorsStarted = false
 
 	lfo.connect(lfoGain)
 	lowOsc.connect(lowGain)
 	highOsc.connect(highGain)
-	lowGain.connect(out)
-	highGain.connect(out)
+	lowGain.connect(reverb).connect(dry)
+	highGain.connect(reverb).connect(dry)
+	reverb.connect(wet)
 	lfoGain.connect(highGain.gain)
+	wet.connect(out)
+	dry.connect(out)
 	out.connect(audioContext.destination)
 
 	lfo.type = 'triangle'
@@ -32,8 +39,14 @@ export const createAudio = (): AudioApi => {
 	lowOsc.frequency.setValueAtTime(120, audioContext.currentTime)
 	highOsc.frequency.setValueAtTime(300, audioContext.currentTime)
 
-	lfoGain.gain.setValueAtTime(0.08, audioContext.currentTime)
-	out.gain.setValueAtTime(0.5, audioContext.currentTime)
+	lfoGain.gain.setValueAtTime(0.01, audioContext.currentTime)
+	wet.gain.setValueAtTime(0.5, audioContext.currentTime)
+	dry.gain.setValueAtTime(0.5, audioContext.currentTime)
+	out.gain.setValueAtTime(0.001, audioContext.currentTime)
+
+	void loadImpulse(audioContext, 'star').then(
+		(buffer) => (reverb.buffer = buffer),
+	)
 
 	const start: AudioApi['start'] = async () => {
 		if (audioContext.state !== 'running') {
@@ -46,7 +59,6 @@ export const createAudio = (): AudioApi => {
 				oscillatorsStarted = true
 			}
 
-			out.gain.setValueAtTime(0.001, audioContext.currentTime)
 			out.gain.exponentialRampToValueAtTime(1.0, audioContext.currentTime + 2)
 		}
 	}
@@ -68,7 +80,7 @@ export const createAudio = (): AudioApi => {
 		const { inactiveRatio, activeRatio, movement } = processWorld(world)
 
 		lowGain.gain.exponentialRampToValueAtTime(inactiveRatio * 0.5, time)
-		highGain.gain.exponentialRampToValueAtTime(activeRatio ** 2 * 0.1, time)
+		highGain.gain.exponentialRampToValueAtTime(activeRatio ** 2 * 0.05, time)
 		lfo.frequency.linearRampToValueAtTime(movement ** 4 * 40, time)
 	}
 
