@@ -1,3 +1,4 @@
+import { createAudio } from './audio'
 import * as rules from './rules'
 import { saveSvgSnapshot } from './snapshot-to-svg'
 import { addRuleThumbnails } from './thumbnails'
@@ -11,11 +12,13 @@ const app = ({
 	worldsContainer,
 	thumbnailsContainer,
 	snapshotButton,
+	audioButton,
 }: {
 	worldCount: number
 	worldsContainer: HTMLElement
 	thumbnailsContainer: HTMLElement
 	snapshotButton: HTMLElement
+	audioButton: HTMLElement
 }) => {
 	const cellDim = 2
 	const worldDim = Math.min(Math.floor(window.innerWidth / worldCount), 300)
@@ -28,6 +31,7 @@ const app = ({
 		world: generateInitialWorld(generationSize, generationSize),
 	}
 
+	const audio = createAudio()
 	const thumbnails = addRuleThumbnails(state.rules, thumbnailsContainer)
 	const { render: renderWorld } = createWorldsForType(
 		'canvas2d',
@@ -57,9 +61,13 @@ const app = ({
 		() => void saveSvgSnapshot('snapshot.svg', state),
 	)
 
+	audioButton.addEventListener('click', audio.toggle)
+
 	document.addEventListener(
 		'dblclick',
 		(event) => {
+			if (event.target !== document.body) return
+
 			event.preventDefault()
 
 			if (!document.fullscreenElement) {
@@ -71,17 +79,26 @@ const app = ({
 		false,
 	)
 
-	startWorldAnimations(state, { worldCount, renderWorld })
+	startWorldAnimations(state, { worldCount, renderWorld, audio })
 }
 
 const worldsContainer = document.querySelector<HTMLElement>('.worlds')
 const thumbnailsContainer = document.querySelector<HTMLElement>('.thumbnails')
 const snapshotButton = document.querySelector<HTMLElement>('.snapshot-button')
+const audioButton = document.querySelector<HTMLElement>('.audio-button')
 
-if (!(worldsContainer && thumbnailsContainer && snapshotButton)) {
+if (
+	!(worldsContainer && thumbnailsContainer && snapshotButton && audioButton)
+) {
 	throw new Error(
-		'missing dom, expected .worlds, .thumbnails, .snapshot-button',
+		'missing dom, expected .worlds, .thumbnails, .snapshot-button, .audio-button',
 	)
 }
 
-app({ worldsContainer, thumbnailsContainer, snapshotButton, worldCount: 3 })
+app({
+	worldsContainer,
+	thumbnailsContainer,
+	snapshotButton,
+	audioButton,
+	worldCount: 3,
+})
