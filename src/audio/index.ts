@@ -10,38 +10,50 @@ export const createAudio = (): AudioApi => {
 
 	const lfo = audioContext.createOscillator()
 	const lowOsc = audioContext.createOscillator()
+	const midOsc = audioContext.createOscillator()
 	const highOsc = audioContext.createOscillator()
 	const lfoGain = audioContext.createGain()
 	const lowGain = audioContext.createGain()
+	const midGain = audioContext.createGain()
 	const highGain = audioContext.createGain()
 	const wet = audioContext.createGain()
 	const dry = audioContext.createGain()
 	const out = audioContext.createGain()
 	const reverb = audioContext.createConvolver()
+	const compressor = audioContext.createDynamicsCompressor()
 	let oscillatorsStarted = false
 
 	lfo.connect(lfoGain)
 	lowOsc.connect(lowGain)
+	midOsc.connect(midGain)
 	highOsc.connect(highGain)
 	lowGain.connect(reverb).connect(dry)
+	midGain.connect(reverb).connect(dry)
 	highGain.connect(reverb).connect(dry)
 	reverb.connect(wet)
 	lfoGain.connect(highGain.gain)
+	lfoGain.connect(lowGain.gain)
 	wet.connect(out)
 	dry.connect(out)
-	out.connect(audioContext.destination)
+	out.connect(compressor)
+	compressor.connect(audioContext.destination)
 
 	lfo.type = 'triangle'
 	lowOsc.type = 'sine'
+	midOsc.type = 'triangle'
 	highOsc.type = 'triangle'
 
 	lfo.frequency.setValueAtTime(0.01, audioContext.currentTime)
-	lowOsc.frequency.setValueAtTime(120, audioContext.currentTime)
-	highOsc.frequency.setValueAtTime(300, audioContext.currentTime)
+	lowOsc.frequency.setValueAtTime(60, audioContext.currentTime)
+	midOsc.frequency.setValueAtTime(120, audioContext.currentTime)
+	highOsc.frequency.setValueAtTime(320, audioContext.currentTime)
 
+	midGain.gain.setValueAtTime(0.01, audioContext.currentTime)
 	lfoGain.gain.setValueAtTime(0.01, audioContext.currentTime)
-	wet.gain.setValueAtTime(0.5, audioContext.currentTime)
-	dry.gain.setValueAtTime(0.5, audioContext.currentTime)
+	wet.gain.setValueAtTime(0.6, audioContext.currentTime)
+	dry.gain.setValueAtTime(0.4, audioContext.currentTime)
+	compressor.threshold.setValueAtTime(0.4, audioContext.currentTime)
+	compressor.ratio.setValueAtTime(1.2, audioContext.currentTime)
 	out.gain.setValueAtTime(0.001, audioContext.currentTime)
 
 	void loadImpulse(audioContext, 'star').then(
@@ -55,6 +67,7 @@ export const createAudio = (): AudioApi => {
 			if (!oscillatorsStarted) {
 				lfo.start()
 				lowOsc.start()
+				midOsc.start()
 				highOsc.start()
 				oscillatorsStarted = true
 			}
@@ -79,8 +92,8 @@ export const createAudio = (): AudioApi => {
 		const time = audioContext.currentTime + 0.06
 		const { inactiveRatio, activeRatio, movement } = processWorld(world)
 
-		lowGain.gain.exponentialRampToValueAtTime(inactiveRatio * 0.5, time)
-		highGain.gain.exponentialRampToValueAtTime(activeRatio ** 2 * 0.05, time)
+		lowGain.gain.exponentialRampToValueAtTime(inactiveRatio * 0.3, time)
+		highGain.gain.exponentialRampToValueAtTime(activeRatio ** 2 * 0.1, time)
 		lfo.frequency.linearRampToValueAtTime(movement ** 4 * 40, time)
 	}
 
