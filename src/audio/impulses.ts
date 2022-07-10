@@ -1,4 +1,5 @@
 import impulseStar from './star.wav'
+import impulseWide from './wide.wav'
 
 export const loadImpulse = async (
 	audioContext: AudioContext,
@@ -14,4 +15,5 @@ export type ImpulseName = keyof typeof impulseUrls
 
 const impulseUrls = {
 	star: impulseStar,
+	wide: impulseWide,
 }
