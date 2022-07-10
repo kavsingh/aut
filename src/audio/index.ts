@@ -1,3 +1,5 @@
+import { processWorld } from './process-world'
+
 import type { WorldState } from '~/types'
 
 export const createAudio = (): AudioApi => {
@@ -48,28 +50,7 @@ export const createAudio = (): AudioApi => {
 	}
 
 	const update: AudioApi['update'] = (world) => {
-		// for loops fast
-		let activeCount = 0
-		let inactiveCount = 0
-		let totalCount = 0
-
-		for (let i = 0; i < world.length; i++) {
-			const generation = world[i]
-
-			if (!generation) continue
-			for (let j = 0; j < world.length; j++) {
-				const val = generation[j]
-
-				if (typeof val !== 'number') continue
-
-				totalCount++
-				if (val) activeCount++
-				else inactiveCount++
-			}
-		}
-
-		const activeRatio = activeCount / totalCount
-		const inactiveRatio = inactiveCount / totalCount
+		const { inactiveRatio, activeRatio } = processWorld(world)
 
 		lowGain.gain.linearRampToValueAtTime(
 			inactiveRatio,
