@@ -26,16 +26,15 @@ export const createEvolver =
 
 		const maxGenerations = world.length
 		const nextGeneration = evolve(rule, currentGeneration)
-
-		world.push(
+		const nextWorld = world.concat([
 			valueEq(currentGeneration, nextGeneration)
 				? seedRandom(currentGeneration.length)
 				: nextGeneration,
-		)
+		])
 
-		if (world.length > maxGenerations) world.shift()
+		if (nextWorld.length > maxGenerations) nextWorld.shift()
 
-		return world
+		return nextWorld
 	}
 
 /*
