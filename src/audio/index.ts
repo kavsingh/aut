@@ -7,26 +7,40 @@ export const createAudio = (): AudioApi => {
 
 	void audioContext.suspend()
 
+	const lfo = audioContext.createOscillator()
 	const lowOsc = audioContext.createOscillator()
 	const highOsc = audioContext.createOscillator()
+	const lfoGain = audioContext.createGain()
 	const lowGain = audioContext.createGain()
 	const highGain = audioContext.createGain()
 	const out = audioContext.createGain()
 	let oscillatorsStarted = false
 
+	lfo.connect(lfoGain)
 	lowOsc.connect(lowGain)
 	highOsc.connect(highGain)
 	lowGain.connect(out)
 	highGain.connect(out)
+	lfoGain.connect(highGain.gain)
 	out.connect(audioContext.destination)
+
+	lfo.type = 'triangle'
+	lowOsc.type = 'sine'
+	highOsc.type = 'triangle'
+
+	lfo.frequency.setValueAtTime(0.01, audioContext.currentTime)
+	lowOsc.frequency.setValueAtTime(120, audioContext.currentTime)
+	highOsc.frequency.setValueAtTime(300, audioContext.currentTime)
+
+	lfoGain.gain.setValueAtTime(0.08, audioContext.currentTime)
+	out.gain.setValueAtTime(0.5, audioContext.currentTime)
 
 	const start: AudioApi['start'] = async () => {
 		if (audioContext.state !== 'running') {
 			await audioContext.resume()
 
 			if (!oscillatorsStarted) {
-				lowOsc.frequency.setValueAtTime(100, audioContext.currentTime)
-				highOsc.frequency.setValueAtTime(300, audioContext.currentTime)
+				lfo.start()
 				lowOsc.start()
 				highOsc.start()
 				oscillatorsStarted = true
@@ -50,16 +64,12 @@ export const createAudio = (): AudioApi => {
 	}
 
 	const update: AudioApi['update'] = (world) => {
-		const { inactiveRatio, activeRatio } = processWorld(world)
+		const time = audioContext.currentTime + 0.06
+		const { inactiveRatio, activeRatio, movement } = processWorld(world)
 
-		lowGain.gain.linearRampToValueAtTime(
-			inactiveRatio,
-			audioContext.currentTime + 0.06,
-		)
-		highGain.gain.linearRampToValueAtTime(
-			activeRatio ** 2,
-			audioContext.currentTime + 0.06,
-		)
+		lowGain.gain.exponentialRampToValueAtTime(inactiveRatio * 0.5, time)
+		highGain.gain.exponentialRampToValueAtTime(activeRatio ** 2 * 0.1, time)
+		lfo.frequency.linearRampToValueAtTime(movement ** 4 * 40, time)
 	}
 
 	return { start, stop, toggle, update }

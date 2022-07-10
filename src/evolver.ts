@@ -16,6 +16,7 @@ const evolve = (rule: EvolutionRule, generation: number[]) => {
 	})
 }
 
+// ⚠️ mutates state
 export const createEvolver =
 	(rule: EvolutionRule): WorldStateEvolver =>
 	(world) => {
@@ -25,15 +26,16 @@ export const createEvolver =
 
 		const maxGenerations = world.length
 		const nextGeneration = evolve(rule, currentGeneration)
-		const nextWorld = world.concat([
+
+		world.push(
 			valueEq(currentGeneration, nextGeneration)
 				? seedRandom(currentGeneration.length)
 				: nextGeneration,
-		])
+		)
 
-		if (nextWorld.length > maxGenerations) nextWorld.shift()
+		if (world.length > maxGenerations) world.shift()
 
-		return nextWorld
+		return world
 	}
 
 /*
@@ -52,7 +54,8 @@ export const createEvolver =
 
     the rule is codified by createRule(['100', '101'])
 */
-export const createRule =
-	(patterns: string[]): EvolutionRule =>
-	(a, b, c) =>
-		patterns.includes(`${a}${b}${c}`) ? 1 : 0
+export const createRule = (patterns: string[]): EvolutionRule => {
+	const lookup = Object.fromEntries(patterns.map((pattern) => [pattern, true]))
+
+	return (a, b, c) => (lookup[`${a}${b}${c}`] ? 1 : 0)
+}
