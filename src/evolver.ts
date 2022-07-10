@@ -16,7 +16,6 @@ const evolve = (rule: EvolutionRule, generation: number[]) => {
 	})
 }
 
-// ⚠️ mutates state
 export const createEvolver =
 	(rule: EvolutionRule): WorldStateEvolver =>
 	(world) => {
