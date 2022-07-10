@@ -52,7 +52,8 @@ export const createEvolver =
 
     the rule is codified by createRule(['100', '101'])
 */
-export const createRule =
-	(patterns: string[]): EvolutionRule =>
-	(a, b, c) =>
-		patterns.includes(`${a}${b}${c}`) ? 1 : 0
+export const createRule = (patterns: string[]): EvolutionRule => {
+	const lookup = Object.fromEntries(patterns.map((pattern) => [pattern, true]))
+
+	return (a, b, c) => (lookup[`${a}${b}${c}`] ? 1 : 0)
+}

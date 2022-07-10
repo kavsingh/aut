@@ -9,6 +9,7 @@ import {
 import { rule3 } from './rules'
 import { sample, constant, defaultTo, range, noop } from './util'
 
+import type { AudioApi } from './audio'
 import type { RendererFactoryOptions, RenderFn } from './renderers/types'
 import type { State } from './types'
 
@@ -58,7 +59,11 @@ export const createWorldsForType = (
 
 export const startWorldAnimations = (
 	state: State,
-	{ worldCount, renderWorld }: { worldCount: number; renderWorld: RenderFn },
+	{
+		worldCount,
+		renderWorld,
+		audio,
+	}: { worldCount: number; renderWorld: RenderFn; audio: AudioApi },
 ) => {
 	const selectRandomEvolver = pipe(
 		constant(state.rules),
@@ -76,6 +81,7 @@ export const startWorldAnimations = (
 		switchAccum = switchAccum >= switchThreshold ? 0 : switchAccum + 1
 		evolver = switchAccum === 0 ? nextEvolver() : evolver
 		state.world = evolver(state.world)
+		audio.update(state.world)
 	}
 
 	const onFrame = () => {
