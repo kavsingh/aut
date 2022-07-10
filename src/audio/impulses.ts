@@ -1,7 +1,7 @@
 import { curry } from '@kavsingh/curry-pipe'
 
 import impulseStar from './star.wav'
-import impulseWide from './wide.wav'
+// import impulseWide from './wide.wav'
 
 export const loadImpulses = curry(
 	async (audioContext: AudioContext, names: ImpulseName[]) =>
@@ -21,5 +21,5 @@ export type ImpulseName = keyof typeof impulseUrls
 
 const impulseUrls = {
 	star: impulseStar,
-	wide: impulseWide,
+	// wide: impulseWide,
 }
