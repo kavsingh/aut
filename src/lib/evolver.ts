@@ -1,4 +1,4 @@
-import { circMod, isFiniteNumber, last, seedRandom, valueEq } from './util'
+import { circMod, isFiniteNumber, last, seedRandom, valueEq } from '../util'
 
 import type { EvolutionRule, WorldStateEvolver } from './types'
 

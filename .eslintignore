@@ -5,3 +5,4 @@ coverage/
 dist/
 reports/
 *.ignore.js
+**/*.css.d.ts

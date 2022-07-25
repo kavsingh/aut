@@ -1,8 +1,8 @@
-import { createEvolver } from './evolver'
-import { createRenderer } from './renderers/renderer-canvas2d'
-import { generateInitialWorld, getCssValue, range, seedRandom } from './util'
+import { createEvolver } from '~/lib/evolver'
+import { createRenderer } from '~/renderers/renderer-canvas2d'
+import { generateInitialWorld, getCssValue, range, seedRandom } from '~/util'
 
-import type { EvolutionRule } from './types'
+import type { EvolutionRule } from '~/lib/types'
 
 const createRuleThumbnail =
 	(thumbnailDim: number, fillColor: string) => (rule: EvolutionRule) => {
@@ -30,10 +30,7 @@ export const addRuleThumbnails = (
 	thumbnailDim = 40,
 ) => {
 	const thumbnails = rules.map(
-		createRuleThumbnail(
-			thumbnailDim,
-			getCssValue(container, '--color-line-600'),
-		),
+		createRuleThumbnail(thumbnailDim, getCssValue('--color-line-600')),
 	)
 
 	thumbnails.forEach(({ element }) => void container.appendChild(element))

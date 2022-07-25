@@ -1,0 +1,75 @@
+.container {
+	inline-size: 100%;
+	block-size: 100%;
+	display: flex;
+}
+
+.main {
+	position: relative;
+	margin-block-start: 60px;
+	z-index: 2;
+}
+
+.worlds {
+	display: flex;
+	cursor: pointer;
+}
+
+.worlds > *:nth-child(2n - 1) {
+	transform: rotate(180deg);
+}
+
+.worlds > *:nth-child(2n) {
+	transform: rotate(0deg);
+}
+
+.thumbnails-container {
+	transform: translateY(-20%);
+	cursor: pointer;
+	opacity: 0;
+	transition: all 200ms ease-out;
+	pointer-events: none;
+	block-size: 60px;
+}
+
+.main:hover .thumbnails-container {
+	transform: translateY(0);
+	opacity: 1;
+	pointer-events: initial;
+}
+
+.buttons {
+	position: absolute;
+	display: flex;
+	gap: 1rem;
+	transform: translateX(-50%);
+	inset-block-end: 2em;
+	inset-inline-start: 50%;
+}
+
+.snapshot-button,
+.audio-button {
+	color: var(--color-line-100);
+	cursor: pointer;
+	inline-size: 1.3em;
+}
+
+.github-link {
+	inline-size: 1em;
+	position: absolute;
+	inset-block-start: 2em;
+	inset-inline-end: 2em;
+	color: var(--color-line-100);
+}
+
+.snapshot-button,
+.audio-button,
+.github-link {
+	transition: color 200ms ease-out;
+}
+
+.snapshot-button:hover,
+.audio-button:hover,
+.github-link:hover {
+	color: var(--color-line-600);
+}

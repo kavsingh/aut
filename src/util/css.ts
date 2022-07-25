@@ -1,7 +1,4 @@
-import { curry } from '@kavsingh/curry-pipe'
-
-export const getCssValue = curry((el: HTMLElement, cssVar: string) =>
+export const getCssValue = (cssVar: string) =>
 	typeof window !== 'undefined'
-		? getComputedStyle(el).getPropertyValue(cssVar) ?? '#000'
-		: '#000',
-)
+		? getComputedStyle(document.body).getPropertyValue(cssVar) ?? '#000'
+		: '#000'

@@ -1,0 +1,10 @@
+.icon-button svg {
+	inline-size: 100%;
+	aspect-ratio: 1;
+}
+
+.centered-children {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}

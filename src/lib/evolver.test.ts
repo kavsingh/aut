@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 
+import * as util from '../util'
 import { createRule, createEvolver } from './evolver'
-import * as util from './util'
 
 describe('Evolver', () => {
 	it('Should create a rule to return next state', () => {

@@ -1,4 +1,4 @@
-import type { WorldState } from '~/types'
+import type { WorldState } from '~/lib/types'
 
 export const processWorld = (world: WorldState) => {
 	let activeCount = 0

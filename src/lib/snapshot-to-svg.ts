@@ -1,4 +1,4 @@
-import { svgNs, createRenderer } from './renderers/renderer-svg'
+import { svgNs, createRenderer } from '../renderers/renderer-svg'
 
 import type { State } from './types'
 

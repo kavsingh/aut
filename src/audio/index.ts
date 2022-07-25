@@ -1,7 +1,7 @@
 import { loadImpulses } from './impulses'
 import { processWorld } from './process-world'
 
-import type { WorldState } from '~/types'
+import type { WorldState } from '~/lib/types'
 
 export const createAudio = (): AudioApi => {
 	const audioContext: AudioContext = new AudioContext()

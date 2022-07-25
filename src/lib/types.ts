@@ -9,3 +9,11 @@ export interface State {
 	world: WorldState
 	evolver: WorldStateEvolver | undefined
 }
+
+export type ComponentProps<P> = P & Record<never, never>
+
+export type ComponentReturn = { el: HTMLElement | DocumentFragment }
+
+export type Component<P = Record<string, unknown>> = (
+	props: ComponentProps<P>,
+) => ComponentReturn

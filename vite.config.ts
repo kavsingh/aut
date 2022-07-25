@@ -22,6 +22,7 @@ export default defineConfig({
 		? []
 		: [checker, viteSingleFile(), createHtmlPlugin()],
 	resolve: { alias: { '~': path.resolve(__dirname, './src') } },
+	css: { modules: { localsConvention: 'camelCaseOnly' } },
 	test: {
 		include: ['src/**/*.test.ts'],
 		includeSource: ['src/**/*.ts'],
