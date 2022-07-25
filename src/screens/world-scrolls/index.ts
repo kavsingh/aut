@@ -5,7 +5,7 @@ import { generateInitialWorld, getCssValue } from '~/util'
 
 import { saveSvgSnapshot } from './lib/snapshot-to-svg'
 import { createWorldsForType, startWorldAnimations } from './lib/worlds'
-import { addRuleThumbnails } from './thumbnails'
+import { addRuleThumbnails } from './rule-thumbnails'
 import { html } from './world-scrolls.html'
 import {
 	worlds,
@@ -49,7 +49,6 @@ const WorldScrolls: Component = () => {
 	}
 
 	const audio = createAudio()
-	const thumbnails = addRuleThumbnails(state.rules, thumbnailsContainer)
 	const { render: renderWorld } = createWorldsForType(
 		'canvas2d',
 		worldsContainer,
@@ -63,10 +62,6 @@ const WorldScrolls: Component = () => {
 			},
 		},
 	)
-
-	thumbnails.forEach(({ element, evolver }) => {
-		element.addEventListener('click', () => void (state.evolver = evolver))
-	})
 
 	worldsContainer.addEventListener(
 		'click',
@@ -94,6 +89,12 @@ const WorldScrolls: Component = () => {
 			}
 		},
 		false,
+	)
+
+	addRuleThumbnails(
+		state.rules,
+		thumbnailsContainer,
+		(evolver) => void (state.evolver = evolver),
 	)
 
 	startWorldAnimations(state, { worldCount, renderWorld, audio })
