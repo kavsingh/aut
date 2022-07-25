@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 
-import * as util from '../util'
+import * as util from '~/util'
+
 import { createRule, createEvolver } from './evolver'
 
 describe('Evolver', () => {

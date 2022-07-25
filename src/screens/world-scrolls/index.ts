@@ -1,10 +1,10 @@
 import { createAudio } from '~/audio'
 import { htmlToFragment } from '~/lib/dom'
 import * as rules from '~/lib/rules'
-import { saveSvgSnapshot } from '~/lib/snapshot-to-svg'
-import { createWorldsForType, startWorldAnimations } from '~/lib/worlds'
 import { generateInitialWorld, getCssValue } from '~/util'
 
+import { saveSvgSnapshot } from './lib/snapshot-to-svg'
+import { createWorldsForType, startWorldAnimations } from './lib/worlds'
 import { addRuleThumbnails } from './thumbnails'
 import { html } from './world-scrolls.html'
 import {
@@ -14,7 +14,8 @@ import {
 	audioButton as audioButtonClass,
 } from './worlds-scrolls.module.css'
 
-import type { Component, State } from '~/lib/types'
+import type { State } from './lib/types'
+import type { Component } from '~/lib/types'
 
 const WorldScrolls: Component = () => {
 	const worldCount = 3
