@@ -1,7 +1,7 @@
 import { createAudio } from '~/audio'
-import { htmlToFragment } from '~/lib/dom'
 import * as rules from '~/lib/rules'
 import { generateInitialWorld, getCssValue } from '~/util'
+import { htmlToFragment } from '~/util/dom'
 
 import { saveSvgSnapshot } from './lib/snapshot-to-svg'
 import { createWorldsForType, startWorldAnimations } from './lib/worlds'

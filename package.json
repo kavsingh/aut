@@ -10,6 +10,8 @@
 		"node": ">=18.0.0"
 	},
 	"scripts": {
+		"test": "vitest run",
+		"tdd": "vitest",
 		"lint": "pnpm lint:ts && pnpm lint:css",
 		"lint:ts": "pnpm type:styles && tsc && eslint .",
 		"lint:css": "stylelint 'src/**/*.css' 'src/**/*.module.css'",

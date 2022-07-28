@@ -1,19 +1,13 @@
-import { circMod, isFiniteNumber, last, seedRandom, valueEq } from '../util'
+import { accessCirc, last, seedRandom, valueEq } from '../util'
 
 import type { EvolutionRule, WorldStateEvolver } from './types'
 
 const evolve = (rule: EvolutionRule, generation: number[]) => {
-	const modLength = circMod(generation.length)
+	const access = accessCirc(generation)
 
-	return generation.map((_, index) => {
-		const a = generation[modLength(index - 1)]
-		const b = generation[index]
-		const c = generation[modLength(index + 1)]
-
-		return isFiniteNumber(a) && isFiniteNumber(b) && isFiniteNumber(c)
-			? rule(a, b, c)
-			: 0
-	})
+	return generation.map((_, index) =>
+		rule(access(index - 1), access(index), access(index + 1)),
+	)
 }
 
 export const createEvolver =

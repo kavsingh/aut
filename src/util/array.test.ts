@@ -2,20 +2,33 @@ import { describe, it, expect } from 'vitest'
 
 import { mockRandom } from '~/__test__/helpers'
 
-import { last, head, groupIndecesBy, sample } from './array'
+import {
+	last,
+	head,
+	groupIndecesBy,
+	sample,
+	findLast,
+	accessCirc,
+} from './array'
+import { range } from './number'
 
 describe('util/array', () => {
 	describe('sample', () => {
+		const source = ['a', 'b', 'c', 'd']
+
 		it('Should sample a random value from array', () => {
-			const source = [1, 2, 3, 4]
 			const restoreRandom = mockRandom(
 				({ calls }) => (source.length - calls.length) / source.length,
 			)
 			const sampled = new Array(4).fill(0).map(() => sample(source))
 
-			expect(sampled).toEqual([4, 3, 2, 1])
+			expect(sampled).toEqual(['d', 'c', 'b', 'a'])
 
 			restoreRandom()
+		})
+
+		it.each([range(100)])('Should always return a value from the array', () => {
+			expect(source.includes(sample(source))).toBe(true)
 		})
 	})
 
@@ -49,5 +62,26 @@ describe('util/array', () => {
 			])
 			expect(groupIndecesBy(eqA, ['a', 'a', 'b'])).toEqual([[0, 1]])
 		})
+	})
+
+	describe('findLast', () => {
+		it('Should find last item satisfying predicate', () => {
+			const arr = [{ val: 2 }, { val: 1 }, { val: 1 }, { val: 3 }]
+			const findLast1 = findLast(({ val }) => val === 1)
+
+			expect(arr.indexOf(findLast1(arr)!)).toBe(2)
+		})
+	})
+
+	describe('accessCirc', () => {
+		const source = ['a', 'b', 'c', 'd']
+		const accessSource = accessCirc(source)
+
+		it.each([range(100).map((n) => n - 50)])(
+			'Should always return a value from the array despite out of bounds index',
+			(index) => {
+				expect(source.includes(accessSource(index))).toBe(true)
+			},
+		)
 	})
 })

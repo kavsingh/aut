@@ -4,46 +4,48 @@ import { eq, valueEq } from './compare'
 
 describe('util/compare', () => {
 	describe('eq', () => {
-		it('Should check values are strictly equal', () => {
-			expect(eq(1, 2)).toBe(false)
-			expect(eq(NaN, NaN)).toBe(false)
-			expect(eq(1)(3)).toBe(false)
-			expect(eq({}, {})).toBe(false)
-			expect(eq([])([])).toBe(false)
-			expect(eq('a')('a')).toBe(true)
-			expect(eq(1)(1)).toBe(true)
+		it.each([
+			[1, 2, false],
+			[NaN, NaN, false],
+			[1, 3, false],
+			[{}, {}, false],
+			[[], [], false],
+			['a', 'a', true],
+			[1, 1, true],
+		])('Should %s and %s are strictly equal', (a, b, result) => {
+			expect(eq(a, b)).toBe(result)
+			expect(eq(a)(b)).toBe(result)
 		})
 	})
 
 	describe('valueEq', () => {
-		it('Should check that inputs are equal by value', () => {
-			const sameRef = {}
-
-			expect(valueEq(undefined, undefined)).toBe(true)
-			expect(valueEq(undefined, null)).toBe(false)
-			expect(valueEq(NaN, null)).toBe(false)
-			expect(valueEq(null, null)).toBe(true)
-			expect(valueEq(NaN, NaN)).toBe(true)
-			expect(valueEq(Infinity, Infinity)).toBe(true)
-			expect(valueEq(-Infinity, -Infinity)).toBe(true)
-			expect(valueEq(Infinity, -Infinity)).toBe(false)
-			expect(valueEq(+0, -0)).toBe(true)
-			expect(valueEq(1, '1')).toBe(false)
-			expect(valueEq(1, null)).toBe(false)
-			expect(valueEq(1, undefined)).toBe(false)
-			expect(valueEq(1, NaN)).toBe(false)
-			expect(valueEq(1, 1)).toBe(true)
-			expect(valueEq('1', '1')).toBe(true)
-			expect(valueEq(sameRef)(sameRef)).toBe(true)
-			expect(valueEq([])([])).toBe(true)
-			expect(valueEq([1, 2])([1, 2])).toBe(true)
-			expect(valueEq([2, 1])([1, 2])).toBe(false)
-			expect(valueEq([1, 2, 3])([1, 2])).toBe(false)
-			expect(valueEq({ a: 1, b: 2 })({ b: 2, a: 1 })).toBe(true)
-			expect(valueEq({ a: 1, b: 2 })({ b: 2, c: 3, a: 1 })).toBe(false)
-			expect(
-				valueEq({ a: 1, b: [1, { c: 2 }] })({ b: [1, { c: 2 }], a: 1 }),
-			).toBe(true)
+		it.each([
+			[undefined, null, false],
+			[Infinity, -Infinity, false],
+			[1, '1', false],
+			[1, null, false],
+			[1, undefined, false],
+			[1, NaN, false],
+			[NaN, null, false],
+			[[2, 1], [1, 2], false],
+			[[1, 2, 3], [1, 2], false],
+			[{ a: 1, b: 2 }, { b: 2, c: 3, a: 1 }, false],
+			[undefined, undefined, true],
+			[null, null, true],
+			[NaN, NaN, true],
+			[Infinity, Infinity, true],
+			[-Infinity, -Infinity, true],
+			[+0, -0, true],
+			[1, 1, true],
+			['1', '1', true],
+			[{}, {}, true],
+			[[], [], true],
+			[[1, 2], [1, 2], true],
+			[{ a: 1, b: 2 }, { b: 2, a: 1 }, true],
+			[{ a: 1, b: [1, { c: 2 }] }, { b: [1, { c: 2 }], a: 1 }, true],
+		])('Should check that %s equals %s by value', (a, b, result) => {
+			expect(valueEq(a, b)).toBe(result)
+			expect(valueEq(a)(b)).toBe(result)
 		})
 	})
 })

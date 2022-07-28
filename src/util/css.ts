@@ -1,4 +1,4 @@
-export const getCssValue = (cssVar: string) =>
+export const getCssValue = (cssVar: string, el?: HTMLElement) =>
 	typeof window !== 'undefined'
-		? getComputedStyle(document.body).getPropertyValue(cssVar) ?? '#000'
-		: '#000'
+		? getComputedStyle(el ?? document.body).getPropertyValue(cssVar) ?? '0'
+		: '0'

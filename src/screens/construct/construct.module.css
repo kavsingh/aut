@@ -1,0 +1,26 @@
+.container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	block-size: 100%;
+}
+
+.world-container {
+	position: relative;
+	inline-size: 600px;
+	block-size: 600px;
+}
+
+.world-canvas,
+.thumbnails-container {
+	position: absolute;
+	inset: 0;
+}
+
+.world-canvas {
+	z-index: 1;
+}
+
+.thumbnails-container {
+	z-index: 2;
+}
