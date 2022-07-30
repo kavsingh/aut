@@ -5,7 +5,7 @@ export const createEmitter = <
 	const listeners: L[] = []
 
 	const listen = (listener: L) => {
-		if (listeners.includes(listener)) listeners.push(listener)
+		if (!listeners.includes(listener)) listeners.push(listener)
 
 		return () => {
 			const listenerIndex = listeners.indexOf(listener)

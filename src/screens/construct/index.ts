@@ -1,5 +1,6 @@
 import { createEvolver } from '~/lib/evolver'
 import * as rules from '~/lib/rules'
+import { createStateEmitter } from '~/lib/state-emitter'
 import { createRenderer } from '~/renderers/renderer-canvas2d'
 import {
 	findLast,
@@ -28,9 +29,9 @@ const Construct: Component = () => {
 		throw new Error('bad dom')
 	}
 
-	const evolvers = sampleEvolvers(3)
-	const worldState = range(size).reduce<WorldState>(
-		evolveReducer(evolvers),
+	const evolverState = createStateEmitter({ evolvers: sampleEvolvers(4) })
+	let worldState = range(size).reduce<WorldState>(
+		evolveReducer(evolverState.get().evolvers),
 		generateInitialWorld(size, size, seedRandom),
 	)
 
@@ -41,7 +42,31 @@ const Construct: Component = () => {
 		fillColor: getCssValue('--color-line-600'),
 	})
 
-	render(worldState)
+	evolverState.listen(({ evolvers }) => {
+		worldState = range(size).reduce<WorldState>(
+			evolveReducer(evolvers),
+			worldState,
+		)
+	})
+
+	// setInterval(
+	// 	() =>
+	// 		evolverState.update((current) => ({
+	// 			evolvers: current.evolvers.map((item, index) => ({
+	// 				...item,
+	// 				position: item.position + (index === 0 ? 0 : 0.01),
+	// 			})),
+	// 		})),
+	// 	16,
+	// )
+
+	const onAnimFrame = () => {
+		render(worldState)
+
+		// requestAnimationFrame(onAnimFrame)
+	}
+
+	onAnimFrame()
 
 	return { el }
 }
