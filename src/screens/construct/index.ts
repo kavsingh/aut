@@ -19,51 +19,54 @@ import type { Component, WorldState, WorldStateEvolver } from '~/lib/types'
 
 const Construct: Component = () => {
 	const size = 600
+	const cellDim = 2
+	const genSize = size / cellDim
 	const el = htmlToFragment(screen)
 	const worldCanvasEl = el.querySelector<HTMLCanvasElement>(`.${worldCanvas}`)
 	const worldContainerEl = el.querySelector<HTMLDivElement>(
 		`.${worldContainer}`,
 	)
+	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
 
 	if (!(worldContainerEl && worldCanvasEl)) {
 		throw new Error('bad dom')
 	}
 
 	const evolverState = createStateEmitter({ evolvers: sampleEvolvers(4) })
-	let worldState = range(size).reduce<WorldState>(
+	let worldState = range(genSize).reduce<WorldState>(
 		evolveReducer(evolverState.get().evolvers),
-		generateInitialWorld(size, size, seedRandom),
+		firstGen,
 	)
 
 	const render = createRenderer([worldCanvasEl], {
-		cellDim: 1,
+		cellDim,
 		width: size,
 		height: size,
 		fillColor: getCssValue('--color-line-600'),
 	})
 
 	evolverState.listen(({ evolvers }) => {
-		worldState = range(size).reduce<WorldState>(
+		worldState = range(genSize).reduce<WorldState>(
 			evolveReducer(evolvers),
-			worldState,
+			firstGen,
 		)
 	})
 
-	// setInterval(
-	// 	() =>
-	// 		evolverState.update((current) => ({
-	// 			evolvers: current.evolvers.map((item, index) => ({
-	// 				...item,
-	// 				position: item.position + (index === 0 ? 0 : 0.01),
-	// 			})),
-	// 		})),
-	// 	16,
-	// )
+	setInterval(
+		() =>
+			evolverState.update((current) => ({
+				evolvers: current.evolvers.map((item, index) => ({
+					...item,
+					position: item.position + (index === 0 ? 0 : 0.01),
+				})),
+			})),
+		16,
+	)
 
 	const onAnimFrame = () => {
 		render(worldState)
 
-		// requestAnimationFrame(onAnimFrame)
+		requestAnimationFrame(onAnimFrame)
 	}
 
 	onAnimFrame()
