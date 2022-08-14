@@ -71,8 +71,10 @@ export const createAudio = (): AudioApi => {
 		if (impulse) reverbA.buffer = reverbB.buffer = impulse
 	})
 
+	const isRunning = () => audioContext.state === 'running'
+
 	const start: AudioApi['start'] = async () => {
-		if (audioContext.state !== 'running') {
+		if (!isRunning()) {
 			await audioContext.resume()
 
 			if (!oscillatorsStarted) {
@@ -88,7 +90,7 @@ export const createAudio = (): AudioApi => {
 	}
 
 	const stop: AudioApi['stop'] = async () => {
-		if (audioContext.state === 'running') {
+		if (isRunning()) {
 			out.gain.setValueAtTime(0.001, audioContext.currentTime)
 			await audioContext.suspend()
 		}
@@ -109,17 +111,20 @@ export const createAudio = (): AudioApi => {
 	}
 
 	const dispose: AudioApi['dispose'] = async () => {
+		await stop()
 		out.disconnect()
+
 		return audioContext.close()
 	}
 
-	return { start, stop, toggle, update, dispose }
+	return { start, stop, toggle, update, dispose, isRunning }
 }
 
-export interface AudioApi {
+export type AudioApi = Readonly<{
+	isRunning: () => boolean
 	start: () => Promise<void>
 	stop: () => Promise<void>
 	toggle: () => void
 	update: (world: WorldState) => void
 	dispose: () => Promise<void>
-}
+}>
