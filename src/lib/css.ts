@@ -1,4 +1,9 @@
-export const getCssValue = (cssVar: string, el?: HTMLElement) =>
+import type { CssThemeProp } from '~/style/__generated__/constants'
+
+export const getThemeValue = (prop: `${CssThemeProp}`, el?: HTMLElement) =>
+	getCssValue(prop, el)
+
+const getCssValue = (cssVar: string, el?: HTMLElement) =>
 	typeof window !== 'undefined'
-		? getComputedStyle(el ?? document.body).getPropertyValue(cssVar) ?? '0'
-		: '0'
+		? getComputedStyle(el ?? document.body).getPropertyValue(cssVar)
+		: ''

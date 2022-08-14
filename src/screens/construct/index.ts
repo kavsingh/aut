@@ -1,14 +1,19 @@
-import { getCssValue } from '~/lib/css'
+import { getThemeValue } from '~/lib/css'
 import { htmlToFragment } from '~/lib/dom'
 import { createEvolver } from '~/lib/evolver'
 import * as rules from '~/lib/rules'
 import { createStateEmitter } from '~/lib/state-emitter'
+import { findLast, range, sample } from '~/lib/util'
 import { generateInitialWorld, seedRandom } from '~/lib/world'
 import { createRenderer } from '~/renderers/renderer-canvas2d'
-import { findLast, range, sample } from '~/lib/util'
 
 import { screen } from './construct.html'
-import { worldCanvas, worldContainer } from './construct.module.css'
+import {
+	thumbnailsContainer,
+	worldCanvas,
+	worldContainer,
+} from './construct.module.css'
+import RuleSlider from './rule-slider'
 
 import type { Component, WorldState, WorldStateEvolver } from '~/lib/types'
 
@@ -21,9 +26,12 @@ const Construct: Component = () => {
 	const worldContainerEl = el.querySelector<HTMLDivElement>(
 		`.${worldContainer}`,
 	)
+	const thumbnailsContainerEl = el.querySelector<HTMLDivElement>(
+		`.${thumbnailsContainer}`,
+	)
 	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
 
-	if (!(worldContainerEl && worldCanvasEl)) {
+	if (!(worldContainerEl && worldCanvasEl && thumbnailsContainerEl)) {
 		throw new Error('bad dom')
 	}
 
@@ -37,8 +45,26 @@ const Construct: Component = () => {
 		cellDim,
 		width: size,
 		height: size,
-		fillColor: getCssValue('--color-line-600'),
+		fillColor: getThemeValue('--color-line-600'),
 	})
+
+	const constructRuleSliders = (evolvers: EvolverItem[]) => {
+		const sliders = evolvers.map(({ evolver, position }) =>
+			RuleSlider({
+				evolver,
+				initialPosition: position * size,
+				maxPosition: size,
+			}),
+		)
+
+		sliders.forEach((slider) => thumbnailsContainerEl.appendChild(slider.el))
+	}
+
+	const onAnimFrame = () => {
+		render(worldState)
+
+		requestAnimationFrame(onAnimFrame)
+	}
 
 	evolverState.listen(({ evolvers }) => {
 		worldState = range(genSize).reduce<WorldState>(
@@ -47,23 +73,7 @@ const Construct: Component = () => {
 		)
 	})
 
-	setInterval(
-		() =>
-			evolverState.update((current) => ({
-				evolvers: current.evolvers.map((item, index) => ({
-					...item,
-					position: item.position + (index === 0 ? 0 : 0.01),
-				})),
-			})),
-		16,
-	)
-
-	const onAnimFrame = () => {
-		render(worldState)
-
-		requestAnimationFrame(onAnimFrame)
-	}
-
+	constructRuleSliders(evolverState.get().evolvers)
 	onAnimFrame()
 
 	return { el }

@@ -1,5 +1,5 @@
 import { createAudio } from '~/audio'
-import { getCssValue } from '~/lib/css'
+import { getThemeValue } from '~/lib/css'
 import { htmlToFragment } from '~/lib/dom'
 import * as rules from '~/lib/rules'
 import { generateInitialWorld } from '~/lib/world'
@@ -59,7 +59,7 @@ const WorldScrolls: Component = () => {
 				cellDim,
 				width: worldDim,
 				height: worldDim,
-				fillColor: getCssValue('--color-line-600'),
+				fillColor: getThemeValue('--color-line-600'),
 			},
 		},
 	)

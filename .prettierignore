@@ -1,1 +1,7 @@
-package.json
+.nyc_output/
+node_modules/
+coverage/
+dist/
+reports/
+*.ignore.js
+**/__generated__/

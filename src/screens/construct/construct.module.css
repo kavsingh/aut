@@ -19,8 +19,9 @@
 
 .world-canvas {
 	z-index: 1;
+	background-color: var(--color-surface-0);
 }
 
 .thumbnails-container {
-	z-index: 2;
+	z-index: 0;
 }

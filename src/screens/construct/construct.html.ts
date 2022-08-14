@@ -8,8 +8,8 @@ import {
 export const screen = /*html*/ `
 	<div class=${container}>
 		<div class=${worldContainer}>
-			<canvas class=${worldCanvas}></canvas>
 			<div class=${thumbnailsContainer}></div>
+			<canvas class=${worldCanvas}></canvas>
 		</div>
 	</div>
 `

@@ -18,7 +18,8 @@
 		"dev": "concurrently 'vite' 'pnpm type:styles -w'",
 		"build": "rm -rf ./dist && vite build",
 		"preview": "vite preview",
-		"type:styles": "tcm -p 'src/**/*.module.css' -c -e"
+		"type:styles": "tcm -p 'src/**/*.module.css' -c -e",
+		"r": "ts-node --log-error -P './tsconfig.node.json'"
 	},
 	"dependencies": {
 		"@kavsingh/curry-pipe": "0.1.4"
@@ -27,7 +28,9 @@
 		"@testing-library/dom": "8.17.1",
 		"@testing-library/user-event": "14.4.3",
 		"@tsconfig/node18-strictest": "1.0.0",
+		"@types/fs-extra": "9.0.13",
 		"@types/node": "18.7.3",
+		"@types/prettier": "2.7.0",
 		"@typescript-eslint/eslint-plugin": "5.33.0",
 		"@typescript-eslint/parser": "5.33.0",
 		"c8": "7.12.0",
@@ -39,6 +42,7 @@
 		"eslint-plugin-import": "2.26.0",
 		"eslint-plugin-prettier": "4.2.1",
 		"eslint-plugin-testing-library": "5.6.0",
+		"fs-extra": "10.1.0",
 		"jest-canvas-mock": "2.4.0",
 		"jsdom": "20.0.0",
 		"prettier": "2.7.1",

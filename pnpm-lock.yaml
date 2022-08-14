@@ -5,7 +5,9 @@ specifiers:
   '@testing-library/dom': 8.17.1
   '@testing-library/user-event': 14.4.3
   '@tsconfig/node18-strictest': 1.0.0
+  '@types/fs-extra': 9.0.13
   '@types/node': 18.7.3
+  '@types/prettier': 2.7.0
   '@typescript-eslint/eslint-plugin': 5.33.0
   '@typescript-eslint/parser': 5.33.0
   c8: 7.12.0
@@ -17,6 +19,7 @@ specifiers:
   eslint-plugin-import: 2.26.0
   eslint-plugin-prettier: 4.2.1
   eslint-plugin-testing-library: 5.6.0
+  fs-extra: 10.1.0
   jest-canvas-mock: 2.4.0
   jsdom: 20.0.0
   prettier: 2.7.1
@@ -44,7 +47,9 @@ devDependencies:
   '@testing-library/dom': 8.17.1
   '@testing-library/user-event': 14.4.3_wl4iynrlixafokvgqnhzlvigei
   '@tsconfig/node18-strictest': 1.0.0
+  '@types/fs-extra': 9.0.13
   '@types/node': 18.7.3
+  '@types/prettier': 2.7.0
   '@typescript-eslint/eslint-plugin': 5.33.0_yy5c4q6zhpajzhorvwhnwvctfe
   '@typescript-eslint/parser': 5.33.0_4rv7y5c6xz3vfxwhbrcxxi73bq
   c8: 7.12.0
@@ -56,6 +61,7 @@ devDependencies:
   eslint-plugin-import: 2.26.0_5yqa6y7jadhx25xxnmrnyuevy4
   eslint-plugin-prettier: 4.2.1_i2cojdczqdiurzgttlwdgf764e
   eslint-plugin-testing-library: 5.6.0_4rv7y5c6xz3vfxwhbrcxxi73bq
+  fs-extra: 10.1.0
   jest-canvas-mock: 2.4.0
   jsdom: 20.0.0
   prettier: 2.7.1
@@ -327,6 +333,12 @@ packages:
       postcss: 7.0.39
     dev: true
 
+  /@types/fs-extra/9.0.13:
+    resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
+    dependencies:
+      '@types/node': 18.7.3
+    dev: true
+
   /@types/istanbul-lib-coverage/2.0.4:
     resolution: {integrity: sha512-z/QT1XN4K4KYuslS23k62yDIDLwLFkzxOuMplDtObz0+y7VqJCaO2o+SPwHCvLFZh7xazvvoor2tA/hPz9ee7g==}
     dev: true
@@ -353,6 +365,10 @@ packages:
 
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
+    dev: true
+
+  /@types/prettier/2.7.0:
+    resolution: {integrity: sha512-RI1L7N4JnW5gQw2spvL7Sllfuf1SaHdrZpCHiBlCXjIlufi1SMNnbu2teze3/QE67Fg2tBlH7W+mi4hVNk4p0A==}
     dev: true
 
   /@typescript-eslint/eslint-plugin/5.33.0_yy5c4q6zhpajzhorvwhnwvctfe:

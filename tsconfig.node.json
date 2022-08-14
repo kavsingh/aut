@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"isolatedModules": false,
+		"lib": ["esnext"],
+		"module": "commonjs",
+		"target": "es2022"
+	}
+}
