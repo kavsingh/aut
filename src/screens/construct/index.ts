@@ -43,7 +43,7 @@ const Construct: Component = () => {
 		throw new Error('bad dom')
 	}
 
-	const size = 600
+	const size = 440
 	const cellDim = 2
 	const genSize = size / cellDim
 	const audio = createAudio()
@@ -69,10 +69,12 @@ const Construct: Component = () => {
 				maxPosition: size,
 				allowMove: idx !== 0,
 				onPositionChange: (pos) => {
-					item.position = pos / size
-					evolverState.update(() => ({
-						evolvers: [...evolvers].sort((a, b) => a.position - b.position),
-					}))
+					whenIdle(() => {
+						item.position = pos / size
+						evolverState.update(() => ({
+							evolvers: [...evolvers].sort((a, b) => a.position - b.position),
+						}))
+					})
 				},
 			}),
 		)
@@ -117,6 +119,11 @@ const Construct: Component = () => {
 
 export default Construct
 
+const whenIdle =
+	typeof window.requestIdleCallback === 'function'
+		? window.requestIdleCallback
+		: (fn: () => void) => setTimeout(fn, 0)
+
 const allEvolvers = Object.values(rules).map(createEvolver)
 
 const sampleEvolvers = (count: number) =>
@@ -135,4 +142,5 @@ const evolveReducer =
 
 		return evolver?.(acc) ?? acc
 	}
+
 type EvolverItem = { evolver: WorldStateEvolver; position: number }

@@ -7,8 +7,8 @@
 
 .world-container {
 	position: relative;
-	inline-size: 600px;
-	block-size: 600px;
+	inline-size: 440px;
+	block-size: 440px;
 }
 
 .world-canvas,
