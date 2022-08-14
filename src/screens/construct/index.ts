@@ -48,7 +48,7 @@ const Construct: Component = () => {
 	const genSize = size / cellDim
 	const audio = createAudio()
 	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
-	const evolverState = createStateEmitter({ evolvers: sampleEvolvers(4) })
+	const evolverState = createStateEmitter({ evolvers: sampleEvolvers(3) })
 	let worldState = range(genSize).reduce<WorldState>(
 		evolveReducer(evolverState.get().evolvers),
 		firstGen,

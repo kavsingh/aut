@@ -1,6 +1,6 @@
 .container {
 	position: absolute;
-	inset-inline: 0 -8px;
+	inset-inline: 0 -16px;
 	inset-block-start: 0;
 	block-size: 1px;
 	background-color: var(--color-line-100);
@@ -26,5 +26,5 @@
 }
 
 .container:not(:first-child) {
-	cursor: pointer;
+	cursor: ns-resize;
 }
