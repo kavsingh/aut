@@ -6,9 +6,7 @@ export const createRouter = (base = '') => {
 	const handleHistoryEvent = () => {
 		const nextHash = createHash(currentPathname(base), location.search)
 
-		if (nextHash !== hash) {
-			hash = nextHash
-		}
+		if (nextHash !== hash) hash = nextHash
 	}
 
 	patchHistoryFn('pushState')
@@ -42,9 +40,10 @@ const patchHistoryFn = <K extends HistoryStateFnKey>(key: K) => {
 	history[key] = function (...args: Parameters<History[K]>) {
 		const result = original.apply(this, args)
 		const event: Event & { arguments?: unknown[] } = new Event(key)
-		event.arguments = args
 
+		event.arguments = args
 		dispatchEvent(event)
+
 		return result
 	}
 }
