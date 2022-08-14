@@ -63,7 +63,7 @@ export const createAudio = (): AudioApi => {
 	reverbAGain.gain.setValueAtTime(0.2, audioContext.currentTime)
 	reverbBGain.gain.setValueAtTime(0.5, audioContext.currentTime)
 	dry.gain.setValueAtTime(0.3, audioContext.currentTime)
-	compressor.threshold.setValueAtTime(0.4, audioContext.currentTime)
+	compressor.threshold.setValueAtTime(-40, audioContext.currentTime)
 	compressor.ratio.setValueAtTime(1.2, audioContext.currentTime)
 	out.gain.setValueAtTime(0.001, audioContext.currentTime)
 
