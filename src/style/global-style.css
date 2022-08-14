@@ -2,7 +2,7 @@
 
 html {
 	box-sizing: border-box;
-	color: var(--color-text-400);
+	color: var(--color-line-400);
 	font-size: 16px;
 	font-family: system-ui, sans-serif;
 	background-color: var(--color-surface-0);
