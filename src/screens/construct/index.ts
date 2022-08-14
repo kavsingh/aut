@@ -1,16 +1,11 @@
+import { getCssValue } from '~/lib/css'
+import { htmlToFragment } from '~/lib/dom'
 import { createEvolver } from '~/lib/evolver'
 import * as rules from '~/lib/rules'
 import { createStateEmitter } from '~/lib/state-emitter'
+import { generateInitialWorld, seedRandom } from '~/lib/world'
 import { createRenderer } from '~/renderers/renderer-canvas2d'
-import {
-	findLast,
-	generateInitialWorld,
-	getCssValue,
-	range,
-	sample,
-	seedRandom,
-} from '~/util'
-import { htmlToFragment } from '~/util/dom'
+import { findLast, range, sample } from '~/lib/util'
 
 import { screen } from './construct.html'
 import { worldCanvas, worldContainer } from './construct.module.css'

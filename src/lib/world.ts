@@ -1,4 +1,4 @@
-import { range } from './number'
+import { range } from '~/lib/util/number'
 
 export const seedSingle = (len: number) => {
 	if (!len) return []

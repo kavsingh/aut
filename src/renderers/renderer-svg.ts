@@ -1,4 +1,4 @@
-import { last, head, groupIndecesBy, eq } from '../util'
+import { last, head, groupIndecesBy, eq } from '../lib/util'
 
 import type { RendererFactory } from './types'
 

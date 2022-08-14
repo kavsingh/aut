@@ -1,6 +1,6 @@
 import RuleThumbnail from '~/components/rule-thumbnail'
+import { getCssValue } from '~/lib/css'
 import { createEvolver } from '~/lib/evolver'
-import { getCssValue } from '~/util'
 
 import type { EvolutionRule, WorldStateEvolver } from '~/lib/types'
 

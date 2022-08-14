@@ -7,7 +7,7 @@ import {
 	createRenderer as createSvgRenderer,
 	svgNs,
 } from '~/renderers/renderer-svg'
-import { sample, constant, defaultTo, range, noop } from '~/util'
+import { sample, constant, defaultTo, range, noop } from '~/lib/util'
 
 import type { State } from './types'
 import type { AudioApi } from '~/audio'

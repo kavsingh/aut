@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 
-import * as util from '~/util'
-
 import { createRule, createEvolver } from './evolver'
+import * as world from './world'
 
 describe('Evolver', () => {
 	it('Should create a rule to return next state', () => {
@@ -55,7 +54,7 @@ describe('Evolver', () => {
 	})
 
 	it('should not perpetuate identical generations', () => {
-		vi.spyOn(util, 'seedRandom').mockImplementationOnce(() => [0, 1, 0])
+		vi.spyOn(world, 'seedRandom').mockImplementationOnce(() => [0, 1, 0])
 
 		const evolve = createEvolver(createRule([]))
 

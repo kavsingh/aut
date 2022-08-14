@@ -1,4 +1,5 @@
-import { accessCirc, last, seedRandom, valueEq } from '../util'
+import { accessCirc, last, valueEq } from './util'
+import { seedRandom } from './world'
 
 import type { EvolutionRule, WorldStateEvolver } from './types'
 

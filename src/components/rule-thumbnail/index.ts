@@ -1,5 +1,6 @@
+import { range } from '~/lib/util'
+import { generateInitialWorld, seedRandom } from '~/lib/world'
 import { createRenderer } from '~/renderers/renderer-canvas2d'
-import { generateInitialWorld, range, seedRandom } from '~/util'
 
 import type { Component, WorldStateEvolver } from '~/lib/types'
 
