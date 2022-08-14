@@ -100,8 +100,6 @@ export const createAudio = (): AudioApi => {
 	}
 
 	const update: AudioApi['update'] = (world) => {
-		if (audioContext.state !== 'running') return
-
 		const time = audioContext.currentTime + 0.06
 		const { inactiveRatio, activeRatio, movement } = processWorld(world)
 

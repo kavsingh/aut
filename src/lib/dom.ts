@@ -11,7 +11,7 @@ export const htmlToFragment = (html: string) => {
 	return fragment
 }
 
-export const htmlToDiv = (html: string) => {
+export const htmlToElement = (html: string) => {
 	const template = document.createElement('template')
 	const div = document.createElement('div')
 
@@ -21,5 +21,11 @@ export const htmlToDiv = (html: string) => {
 
 	els.forEach((el) => void div.appendChild(el))
 
-	return div
+	const firstChild = div.firstElementChild
+
+	if (!(firstChild instanceof HTMLElement)) {
+		throw new Error('No valid HTML Child')
+	}
+
+	return firstChild
 }

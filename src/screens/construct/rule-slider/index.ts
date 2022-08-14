@@ -1,5 +1,5 @@
 import RuleThumbnail from '~/components/rule-thumbnail'
-import { htmlToDiv } from '~/lib/dom'
+import { htmlToElement } from '~/lib/dom'
 
 import { container, thumbnailContainer } from './rule-slider.module.css'
 
@@ -19,7 +19,7 @@ const RuleSlider: Component<{
 	allowMove = true,
 }) => {
 	const thumbnail = RuleThumbnail({ evolver, size: 40 })
-	const el = htmlToDiv(/* html */ `
+	const el = htmlToElement(/* html */ `
 	<div class=${container} style="transform: translateY(${initialPosition}px)">
 		<div class=${thumbnailContainer}></div>
 	</div>`)
@@ -42,15 +42,13 @@ const RuleSlider: Component<{
 
 		onPositionChange(relPosition)
 
-		el.style.transform = `translateY(${relPosition - initialPosition}px)`
+		el.style.transform = `translateY(${relPosition}px)`
 	}
 
 	const handleMouseDown = () => {
 		if (!allowMove) return
 
-		parentOffset =
-			(el as unknown as HTMLElement)?.parentElement?.getBoundingClientRect?.()
-				.top ?? 0
+		parentOffset = el.parentElement?.getBoundingClientRect?.().top ?? 0
 
 		document.body.removeEventListener('mousedown', handleMouseDown)
 		document.body.addEventListener('mousemove', handleMouseMove)
