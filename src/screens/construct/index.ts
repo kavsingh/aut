@@ -104,7 +104,7 @@ const Construct: Component = () => {
 		content: speaker,
 		onClick: () => {
 			audio.update(worldState)
-			audio.toggle.bind(audio)
+			audio.toggle()
 		},
 	})
 
