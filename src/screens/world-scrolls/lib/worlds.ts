@@ -65,6 +65,8 @@ export const startWorldAnimations = (
 		audio,
 	}: { worldCount: number; renderWorld: RenderFn; audio: AudioApi },
 ) => {
+	let running = true
+
 	const selectRandomEvolver = pipe(
 		constant(state.rules),
 		sample,
@@ -78,6 +80,8 @@ export const startWorldAnimations = (
 	let evolver = nextEvolver()
 
 	const update = () => {
+		if (!running) return
+
 		switchAccum = switchAccum >= switchThreshold ? 0 : switchAccum + 1
 		evolver = switchAccum === 0 ? nextEvolver() : evolver
 		state.world = evolver(state.world)
@@ -85,12 +89,19 @@ export const startWorldAnimations = (
 	}
 
 	const onFrame = () => {
+		if (!running) return
+
 		renderWorld(state.world)
 		window.requestAnimationFrame(onFrame)
 	}
 
-	setInterval(update, 14)
+	const updateInterval = setInterval(update, 14)
 	window.requestAnimationFrame(onFrame)
+
+	return () => {
+		running = false
+		clearInterval(updateInterval)
+	}
 }
 
 export type RenderType = 'svg' | 'canvas2d'

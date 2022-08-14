@@ -1,12 +1,5 @@
 import './style/global-style.css'
-// import WorldScrolls from './screens/world-scrolls'
-import Construct from './screens/construct'
-
-const app = (rootEl: HTMLElement) => {
-	const { el } = Construct({})
-
-	rootEl.appendChild(el)
-}
+import app from './app'
 
 const appRoot = document.getElementById('app-root')
 

@@ -1,0 +1,10 @@
+.container {
+	position: fixed;
+	inset-block-start: 2em;
+	inset-inline-start: 2em;
+	z-index: 10;
+}
+
+.container div {
+	cursor: pointer;
+}

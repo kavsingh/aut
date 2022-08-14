@@ -3,6 +3,8 @@
 	--color-line-100: #888;
 	--color-line-400: #444;
 	--color-line-600: #000;
+	--color-text-400: #444;
+	--color-text-600: #000;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -11,5 +13,7 @@
 		--color-line-100: #444;
 		--color-line-400: #888;
 		--color-line-600: #eee;
+		--color-text-400: #888;
+		--color-text-600: #eee;
 	}
 }

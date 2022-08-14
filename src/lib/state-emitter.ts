@@ -14,5 +14,10 @@ export const createStateEmitter = <T extends Record<string, unknown>>(
 		return state
 	}
 
-	return { get, update, listen: emitter.listen.bind(emitter) }
+	return {
+		get,
+		update,
+		listen: emitter.listen.bind(emitter),
+		clear: emitter.clear.bind(emitter),
+	}
 }

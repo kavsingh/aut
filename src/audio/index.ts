@@ -108,7 +108,12 @@ export const createAudio = (): AudioApi => {
 		lfo.frequency.linearRampToValueAtTime(movement ** 4 * 40, time)
 	}
 
-	return { start, stop, toggle, update }
+	const dispose: AudioApi['dispose'] = async () => {
+		out.disconnect()
+		return audioContext.close()
+	}
+
+	return { start, stop, toggle, update, dispose }
 }
 
 export interface AudioApi {
@@ -116,4 +121,5 @@ export interface AudioApi {
 	stop: () => Promise<void>
 	toggle: () => void
 	update: (world: WorldState) => void
+	dispose: () => Promise<void>
 }

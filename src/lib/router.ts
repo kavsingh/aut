@@ -1,12 +1,18 @@
 // adapted from https://github.com/molefrog/wouter/blob/master/use-location.js
 
-export const createRouter = (base = '') => {
+export const createRouter = (
+	onRoute: (route: string) => unknown,
+	base = '',
+) => {
 	let hash = createHash(currentPathname(base), location.search)
 
 	const handleHistoryEvent = () => {
 		const nextHash = createHash(currentPathname(base), location.search)
 
-		if (nextHash !== hash) hash = nextHash
+		if (nextHash !== hash) {
+			hash = nextHash
+			void onRoute(hash)
+		}
 	}
 
 	patchHistoryFn('pushState')
@@ -25,6 +31,8 @@ export const createRouter = (base = '') => {
 			// handle nested routers and absolute paths
 			to.startsWith('~') ? to.slice(1) : `${base}${to}`,
 		)
+
+	onRoute(hash)
 
 	return { navigate } as const
 }

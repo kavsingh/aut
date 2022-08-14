@@ -79,10 +79,13 @@ const Construct: Component = () => {
 		sliders.forEach((slider) => thumbnailsContainerEl.appendChild(slider.el))
 	}
 
-	const onAnimFrame = () => {
+	const renderWorld = () => {
 		render(worldState)
+	}
 
-		requestAnimationFrame(onAnimFrame)
+	const dispose = () => {
+		evolverState.clear()
+		return audio.dispose()
 	}
 
 	audioButtonEl.addEventListener('click', () => {
@@ -97,12 +100,13 @@ const Construct: Component = () => {
 		)
 
 		audio.update(worldState)
+		requestAnimationFrame(renderWorld)
 	})
 
 	constructRuleSliders(evolverState.get().evolvers)
-	onAnimFrame()
+	renderWorld()
 
-	return { el }
+	return { el, dispose }
 }
 
 export default Construct

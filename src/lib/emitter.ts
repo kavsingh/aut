@@ -2,7 +2,7 @@ export const createEmitter = <
 	T,
 	L extends (payload: T) => void = (payload: T) => void,
 >() => {
-	const listeners: L[] = []
+	let listeners: L[] = []
 
 	const listen = (listener: L) => {
 		if (!listeners.includes(listener)) listeners.push(listener)
@@ -18,5 +18,9 @@ export const createEmitter = <
 		listeners.forEach((listener) => listener(payload))
 	}
 
-	return { listen, emit }
+	const clear = () => {
+		listeners = []
+	}
+
+	return { listen, emit, clear }
 }

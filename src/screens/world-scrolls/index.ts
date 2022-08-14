@@ -76,31 +76,24 @@ const WorldScrolls: Component = () => {
 
 	audioButton.addEventListener('click', audio.toggle)
 
-	document.addEventListener(
-		'dblclick',
-		(event) => {
-			if (event.target !== document.body) return
-
-			event.preventDefault()
-
-			if (!document.fullscreenElement) {
-				void document.documentElement.requestFullscreen()
-			} else if (document.exitFullscreen) {
-				void document.exitFullscreen()
-			}
-		},
-		false,
-	)
-
 	addRuleThumbnails(
 		state.rules,
 		thumbnailsContainer,
 		(evolver) => void (state.evolver = evolver),
 	)
 
-	startWorldAnimations(state, { worldCount, renderWorld, audio })
+	const stopWorldAnimations = startWorldAnimations(state, {
+		worldCount,
+		renderWorld,
+		audio,
+	})
 
-	return { el }
+	const dispose = async () => {
+		stopWorldAnimations()
+		await audio.dispose()
+	}
+
+	return { el, dispose }
 }
 
 export default WorldScrolls

@@ -1,3 +1,5 @@
+import { container } from './nav.module.css'
+
 import type { createRouter } from '~/lib/router'
 import type { Component } from '~/lib/types'
 
@@ -7,9 +9,10 @@ const Nav: Component<{
 	const el = document.createElement('div')
 
 	el.innerHTML = /*html*/ `
-		<div data-navigate="foo">Foo</div>
-		<div data-navigate="faa">Faa</div>
-		<div data-navigate="">Fam</div>
+		<div class=${container}>
+			<div data-navigate="">h</div>
+			<div data-navigate="construct">c</div>
+		</div>
 	`
 
 	Array.from(el.querySelectorAll('[data-navigate]')).forEach((navEl) =>
