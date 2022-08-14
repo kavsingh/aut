@@ -1,5 +1,5 @@
 import { htmlToElement } from '~/lib/dom'
-import { construct, github, scrolls } from '~/style/icons'
+import { construct, fullScreen, github, scrolls } from '~/style/icons'
 
 import Button from '../button'
 import { container } from './nav.module.css'
@@ -21,6 +21,11 @@ const Nav: Component<{
 		onClick: () => navigate('/construct'),
 		content: construct,
 	})
+	const fullScreenButton = Button({
+		as: 'button',
+		onClick: toggleFullscreen,
+		content: fullScreen,
+	})
 	const githubLink = Button({
 		as: 'link',
 		href: 'https://github.com/kavsingh/cellular-automaton',
@@ -29,9 +34,18 @@ const Nav: Component<{
 
 	el.appendChild(scrollsLink.el)
 	el.appendChild(constructLink.el)
+	el.appendChild(fullScreenButton.el)
 	el.appendChild(githubLink.el)
 
 	return { el }
 }
 
 export default Nav
+
+const toggleFullscreen = () => {
+	if (!document.fullscreenElement) {
+		void document.documentElement.requestFullscreen()
+	} else if (document.exitFullscreen) {
+		void document.exitFullscreen()
+	}
+}

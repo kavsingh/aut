@@ -37,22 +37,6 @@ const app = (rootEl: HTMLElement) => {
 
 	rootEl.appendChild(screenContainer)
 	rootEl.appendChild(nav.el)
-
-	document.addEventListener(
-		'dblclick',
-		(event) => {
-			if (event.target !== document.body) return
-
-			event.preventDefault()
-
-			if (!document.fullscreenElement) {
-				void document.documentElement.requestFullscreen()
-			} else if (document.exitFullscreen) {
-				void document.exitFullscreen()
-			}
-		},
-		false,
-	)
 }
 
 export default app

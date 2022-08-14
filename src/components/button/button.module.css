@@ -1,12 +1,13 @@
 .container {
-	color: var(--color-line-100);
+	color: var(--color-line-600);
 	cursor: pointer;
 	inline-size: 1.3em;
-	transition: color 200ms ease-out;
+	opacity: 0.3;
+	transition: opacity 200ms ease-out;
 }
 
 .container:hover {
-	color: var(--color-line-600);
+	opacity: 1;
 }
 
 .container svg {
@@ -16,4 +17,10 @@
 	height: unset;
 	inline-size: 100%;
 	aspect-ratio: 1;
+}
+
+@media screen and (display-mode: fullscreen) {
+	.container:not(:hover) {
+		opacity: 0.1;
+	}
 }
