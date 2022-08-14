@@ -10,6 +10,10 @@
 }
 
 .container svg {
+	/* stylelint-disable-next-line liberty/use-logical-spec */
+	width: unset;
+	/* stylelint-disable-next-line liberty/use-logical-spec */
+	height: unset;
 	inline-size: 100%;
 	aspect-ratio: 1;
 }

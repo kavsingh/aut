@@ -1,5 +1,5 @@
 import { htmlToElement } from '~/lib/dom'
-import { github } from '~/style/icons'
+import { construct, github, scrolls } from '~/style/icons'
 
 import Button from '../button'
 import { container } from './nav.module.css'
@@ -11,15 +11,15 @@ const Nav: Component<{
 	navigate: ReturnType<typeof createRouter>['navigate']
 }> = ({ navigate }) => {
 	const el = htmlToElement(/* html */ `<div class=${container}></div>`)
-	const h = Button({
+	const scrollsLink = Button({
 		as: 'button',
 		onClick: () => navigate('/'),
-		content: 'h',
+		content: scrolls,
 	})
-	const c = Button({
+	const constructLink = Button({
 		as: 'button',
 		onClick: () => navigate('/construct'),
-		content: 'c',
+		content: construct,
 	})
 	const githubLink = Button({
 		as: 'link',
@@ -27,8 +27,8 @@ const Nav: Component<{
 		content: github,
 	})
 
-	el.appendChild(h.el)
-	el.appendChild(c.el)
+	el.appendChild(scrollsLink.el)
+	el.appendChild(constructLink.el)
 	el.appendChild(githubLink.el)
 
 	return { el }
