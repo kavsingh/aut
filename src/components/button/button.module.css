@@ -1,0 +1,15 @@
+.container {
+	color: var(--color-line-100);
+	cursor: pointer;
+	inline-size: 1.3em;
+	transition: color 200ms ease-out;
+}
+
+.container:hover {
+	color: var(--color-line-600);
+}
+
+.container svg {
+	inline-size: 100%;
+	aspect-ratio: 1;
+}

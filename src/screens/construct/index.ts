@@ -1,4 +1,5 @@
 import { createAudio } from '~/audio'
+import Button from '~/components/button'
 import { getThemeValue } from '~/lib/css'
 import { htmlToFragment } from '~/lib/dom'
 import { createEvolver } from '~/lib/evolver'
@@ -7,46 +8,46 @@ import { createStateEmitter } from '~/lib/state-emitter'
 import { findLast, range, sample } from '~/lib/util'
 import { generateInitialWorld, seedRandom } from '~/lib/world'
 import { createRenderer } from '~/renderers/renderer-canvas2d'
+import { speaker } from '~/style/icons'
 
 import { screen } from './construct.html'
 import {
-	audioButton,
-	thumbnailsContainer,
 	worldCanvas,
 	worldContainer,
+	slidersContainer,
+	buttons,
 } from './construct.module.css'
 import RuleSlider from './rule-slider'
 
 import type { Component, WorldState, WorldStateEvolver } from '~/lib/types'
 
 const Construct: Component = () => {
-	const size = 600
-	const cellDim = 2
-	const genSize = size / cellDim
 	const el = htmlToFragment(screen)
 	const worldCanvasEl = el.querySelector<HTMLCanvasElement>(`.${worldCanvas}`)
 	const worldContainerEl = el.querySelector<HTMLDivElement>(
 		`.${worldContainer}`,
 	)
-	const thumbnailsContainerEl = el.querySelector<HTMLDivElement>(
-		`.${thumbnailsContainer}`,
+	const slidersContainerEl = el.querySelector<HTMLDivElement>(
+		`.${slidersContainer}`,
 	)
-	const audioButtonEl = el.querySelector<HTMLDivElement>(`.${audioButton}`)
+	const buttonsContainerEl = el.querySelector<HTMLDivElement>(`.${buttons}`)
 
 	if (
 		!(
-			worldContainerEl &&
 			worldCanvasEl &&
-			thumbnailsContainerEl &&
-			audioButtonEl
+			worldContainerEl &&
+			slidersContainerEl &&
+			buttonsContainerEl
 		)
 	) {
 		throw new Error('bad dom')
 	}
 
-	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
+	const size = 600
+	const cellDim = 2
+	const genSize = size / cellDim
 	const audio = createAudio()
-
+	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
 	const evolverState = createStateEmitter({ evolvers: sampleEvolvers(4) })
 	let worldState = range(genSize).reduce<WorldState>(
 		evolveReducer(evolverState.get().evolvers),
@@ -76,7 +77,7 @@ const Construct: Component = () => {
 			}),
 		)
 
-		sliders.forEach((slider) => thumbnailsContainerEl.appendChild(slider.el))
+		sliders.forEach((slider) => slidersContainerEl.appendChild(slider.el))
 	}
 
 	const renderWorld = () => {
@@ -88,11 +89,6 @@ const Construct: Component = () => {
 		return audio.dispose()
 	}
 
-	audioButtonEl.addEventListener('click', () => {
-		audio.update(worldState)
-		audio.toggle()
-	})
-
 	evolverState.listen(({ evolvers }) => {
 		worldState = range(genSize).reduce<WorldState>(
 			evolveReducer(evolvers),
@@ -103,6 +99,16 @@ const Construct: Component = () => {
 		requestAnimationFrame(renderWorld)
 	})
 
+	const audioButton = Button({
+		as: 'button',
+		content: speaker,
+		onClick: () => {
+			audio.update(worldState)
+			audio.toggle.bind(audio)
+		},
+	})
+
+	buttonsContainerEl.appendChild(audioButton.el)
 	constructRuleSliders(evolverState.get().evolvers)
 	renderWorld()
 

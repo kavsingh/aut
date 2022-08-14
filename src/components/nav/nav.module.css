@@ -1,10 +1,16 @@
 .container {
 	position: fixed;
-	inset-block-start: 2em;
-	inset-inline-start: 2em;
 	z-index: 10;
+	display: flex;
+	inset-block-start: 2em;
+	inset-inline-end: 2em;
+	gap: 0.4rem;
 }
 
 .container div {
 	cursor: pointer;
+}
+
+.github-link {
+	inline-size: 1em;
 }

@@ -46,30 +46,3 @@
 	inset-block-end: 2em;
 	inset-inline-start: 50%;
 }
-
-.snapshot-button,
-.audio-button {
-	color: var(--color-line-100);
-	cursor: pointer;
-	inline-size: 1.3em;
-}
-
-.github-link {
-	inline-size: 1em;
-	position: absolute;
-	inset-block-start: 2em;
-	inset-inline-end: 2em;
-	color: var(--color-line-100);
-}
-
-.snapshot-button,
-.audio-button,
-.github-link {
-	transition: color 200ms ease-out;
-}
-
-.snapshot-button:hover,
-.audio-button:hover,
-.github-link:hover {
-	color: var(--color-line-600);
-}

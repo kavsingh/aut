@@ -1,8 +1,10 @@
 import { createAudio } from '~/audio'
+import Button from '~/components/button'
 import { getThemeValue } from '~/lib/css'
 import { htmlToFragment } from '~/lib/dom'
 import * as rules from '~/lib/rules'
 import { generateInitialWorld } from '~/lib/world'
+import { camera, speaker } from '~/style/icons'
 
 import { saveSvgSnapshot } from './lib/snapshot-to-svg'
 import { createWorldsForType, startWorldAnimations } from './lib/worlds'
@@ -11,8 +13,7 @@ import { html } from './world-scrolls.html'
 import {
 	worlds,
 	thumbnailsContainer as thumbnailsContainerClass,
-	snapshotButton as snapshotButtonClass,
-	audioButton as audioButtonClass,
+	buttons,
 } from './worlds-scrolls.module.css'
 
 import type { State } from './lib/types'
@@ -20,24 +21,6 @@ import type { Component } from '~/lib/types'
 
 const WorldScrolls: Component = () => {
 	const worldCount = 3
-	const el = htmlToFragment(html)
-	const worldsContainer = el.querySelector<HTMLElement>(`.${worlds}`)
-	const audioButton = el.querySelector<HTMLElement>(`.${audioButtonClass}`)
-	const snapshotButton = el.querySelector<HTMLElement>(
-		`.${snapshotButtonClass}`,
-	)
-	const thumbnailsContainer = el.querySelector<HTMLElement>(
-		`.${thumbnailsContainerClass}`,
-	)
-
-	if (
-		!(worldsContainer && thumbnailsContainer && snapshotButton && audioButton)
-	) {
-		throw new Error(
-			'missing dom, expected .worlds, .thumbnails, .snapshot-button, .audio-button',
-		)
-	}
-
 	const cellDim = 2
 	const worldDim = Math.min(Math.floor(window.innerWidth / worldCount), 300)
 	const generationSize = Math.floor(worldDim / cellDim)
@@ -50,6 +33,31 @@ const WorldScrolls: Component = () => {
 	}
 
 	const audio = createAudio()
+	const snapshotButton = Button({
+		as: 'button',
+		content: camera,
+		onClick: () => void saveSvgSnapshot('snapshot.svg', state),
+	})
+	const audioButton = Button({
+		as: 'button',
+		content: speaker,
+		onClick: audio.toggle.bind(audio),
+	})
+
+	const el = htmlToFragment(html)
+	const worldsContainer = el.querySelector<HTMLElement>(`.${worlds}`)
+	const thumbnailsContainer = el.querySelector<HTMLElement>(
+		`.${thumbnailsContainerClass}`,
+	)
+	const buttonsContainer = el.querySelector<HTMLElement>(`.${buttons}`)
+
+	if (!(worldsContainer && thumbnailsContainer && buttonsContainer)) {
+		throw new Error('missing dom, expected worlds, thumbnails, buttons')
+	}
+
+	buttonsContainer.appendChild(snapshotButton.el)
+	buttonsContainer.appendChild(audioButton.el)
+
 	const { render: renderWorld } = createWorldsForType(
 		'canvas2d',
 		worldsContainer,
@@ -68,13 +76,6 @@ const WorldScrolls: Component = () => {
 		'click',
 		() => void (state.evolver = undefined),
 	)
-
-	snapshotButton.addEventListener(
-		'click',
-		() => void saveSvgSnapshot('snapshot.svg', state),
-	)
-
-	audioButton.addEventListener('click', audio.toggle)
 
 	addRuleThumbnails(
 		state.rules,
