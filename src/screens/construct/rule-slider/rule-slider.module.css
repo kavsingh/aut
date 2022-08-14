@@ -1,6 +1,7 @@
 .container {
 	position: absolute;
 	inset-inline: 0 -8px;
+	inset-block-start: 0;
 	block-size: 1px;
 	background-color: var(--color-line-400);
 }

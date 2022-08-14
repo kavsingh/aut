@@ -49,11 +49,18 @@ const Construct: Component = () => {
 	})
 
 	const constructRuleSliders = (evolvers: EvolverItem[]) => {
-		const sliders = evolvers.map(({ evolver, position }) =>
+		const sliders = evolvers.map((item, idx) =>
 			RuleSlider({
-				evolver,
-				initialPosition: position * size,
+				evolver: item.evolver,
+				initialPosition: item.position * size,
 				maxPosition: size,
+				allowMove: idx !== 0,
+				onPositionChange: (pos) => {
+					item.position = pos / size
+					evolverState.update(() => ({
+						evolvers: [...evolvers].sort((a, b) => a.position - b.position),
+					}))
+				},
 			}),
 		)
 
