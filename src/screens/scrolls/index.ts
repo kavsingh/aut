@@ -9,17 +9,17 @@ import { camera, speaker } from '~/style/icons'
 import { saveSvgSnapshot } from './lib/snapshot-to-svg'
 import { createWorldsForType, startWorldAnimations } from './lib/worlds'
 import { addRuleThumbnails } from './rule-thumbnails'
-import { html } from './world-scrolls.html'
+import { html } from './scrolls.html'
 import {
 	worlds,
 	thumbnailsContainer as thumbnailsContainerClass,
 	buttons,
-} from './worlds-scrolls.module.css'
+} from './scrolls.module.css'
 
 import type { State } from './lib/types'
 import type { Component } from '~/lib/types'
 
-const WorldScrolls: Component = () => {
+const Scrolls: Component = () => {
 	const worldCount = 3
 	const cellDim = 2
 	const worldDim = Math.min(Math.floor(window.innerWidth / worldCount), 300)
@@ -97,4 +97,4 @@ const WorldScrolls: Component = () => {
 	return { el, dispose }
 }
 
-export default WorldScrolls
+export default Scrolls

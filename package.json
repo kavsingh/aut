@@ -13,12 +13,13 @@
 		"test": "vitest run",
 		"tdd": "vitest",
 		"lint": "pnpm lint:ts && pnpm lint:css",
-		"lint:ts": "pnpm type:styles && tsc && eslint .",
+		"lint:ts": "pnpm codegen && pnpm typegen:cssmodules && tsc && eslint .",
 		"lint:css": "stylelint 'src/**/*.css' 'src/**/*.module.css'",
-		"dev": "concurrently 'vite' 'pnpm type:styles -w'",
-		"build": "rm -rf ./dist && vite build",
+		"dev": "pnpm codegen && concurrently 'vite' 'pnpm typegen:cssmodules -w'",
+		"build": "rm -rf ./dist && pnpm codegen && vite build",
 		"preview": "vite preview",
-		"type:styles": "tcm -p 'src/**/*.module.css' -c -e",
+		"typegen:cssmodules": "tcm -p 'src/**/*.module.css' -c -e",
+		"codegen": "pnpm r tools/code-gen",
 		"r": "ts-node --log-error -P './tsconfig.node.json'"
 	},
 	"dependencies": {

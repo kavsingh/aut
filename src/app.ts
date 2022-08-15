@@ -2,7 +2,7 @@ import { screenContainer as screenContainerStyle } from './app.module.css'
 import Nav from './components/nav'
 import { createRouter } from './lib/router'
 import Construct from './screens/construct'
-import WorldScrolls from './screens/world-scrolls'
+import Scrolls from './screens/scrolls'
 
 import type { ComponentApi } from './lib/types'
 
@@ -15,7 +15,7 @@ const app = (rootEl: HTMLElement) => {
 
 		switch (route) {
 			case '/':
-				currentScreen = WorldScrolls({})
+				currentScreen = Scrolls({})
 				break
 			case '/construct':
 				currentScreen = Construct({})
