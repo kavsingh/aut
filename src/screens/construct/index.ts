@@ -44,7 +44,7 @@ const Construct: Component = () => {
 	}
 
 	const size = 440
-	const cellDim = 2
+	const cellDim = 1
 	const genSize = size / cellDim
 	const audio = createAudio()
 	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
@@ -124,7 +124,9 @@ const whenIdle =
 		? window.requestIdleCallback
 		: (fn: () => void) => setTimeout(fn, 0)
 
-const allEvolvers = Object.values(rules).map((rule) => createEvolver(rule, true))
+const allEvolvers = Object.values(rules).map((rule) =>
+	createEvolver(rule, true),
+)
 
 const sampleEvolvers = (count: number) =>
 	range(count).map<EvolverItem>((_, i, it) => ({
