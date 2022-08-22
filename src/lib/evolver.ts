@@ -12,7 +12,7 @@ const evolve = (rule: EvolutionRule, generation: number[]) => {
 }
 
 export const createEvolver =
-	(rule: EvolutionRule): WorldStateEvolver =>
+	(rule: EvolutionRule, allowIdentical = false): WorldStateEvolver =>
 	(world) => {
 		const currentGeneration = last(world)
 
@@ -21,7 +21,7 @@ export const createEvolver =
 		const maxGenerations = world.length
 		const nextGeneration = evolve(rule, currentGeneration)
 		const nextWorld = world.concat([
-			valueEq(currentGeneration, nextGeneration)
+			!allowIdentical && valueEq(currentGeneration, nextGeneration)
 				? seedRandom(currentGeneration.length)
 				: nextGeneration,
 		])

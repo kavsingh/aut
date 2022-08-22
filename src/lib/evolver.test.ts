@@ -53,7 +53,7 @@ describe('Evolver', () => {
 		expect(evolve3(initState)).toEqual(expectedState3)
 	})
 
-	it('should not perpetuate identical generations', () => {
+	it('should not perpetuate identical generations if allowIndentical is false (default)', () => {
 		vi.spyOn(world, 'seedRandom').mockImplementationOnce(() => [0, 1, 0])
 
 		const evolve = createEvolver(createRule([]))
@@ -66,6 +66,22 @@ describe('Evolver', () => {
 		).toEqual([
 			[0, 0, 0],
 			[0, 1, 0],
+		])
+	})
+
+	it('should perpetuate identical generations if allowIndentical is true', () => {
+		vi.spyOn(world, 'seedRandom').mockImplementationOnce(() => [0, 1, 0])
+
+		const evolve = createEvolver(createRule([]), true)
+
+		expect(
+			evolve([
+				[0, 0, 0],
+				[0, 0, 0],
+			]),
+		).toEqual([
+			[0, 0, 0],
+			[0, 0, 0],
 		])
 	})
 })

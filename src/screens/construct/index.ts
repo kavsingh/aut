@@ -124,7 +124,7 @@ const whenIdle =
 		? window.requestIdleCallback
 		: (fn: () => void) => setTimeout(fn, 0)
 
-const allEvolvers = Object.values(rules).map(createEvolver)
+const allEvolvers = Object.values(rules).map((rule) => createEvolver(rule, true))
 
 const sampleEvolvers = (count: number) =>
 	range(count).map<EvolverItem>((_, i, it) => ({
