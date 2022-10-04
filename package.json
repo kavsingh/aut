@@ -6,9 +6,6 @@
 	"private": true,
 	"author": "",
 	"license": "ISC",
-	"engines": {
-		"node": ">=18.0.0"
-	},
 	"scripts": {
 		"test": "vitest run",
 		"tdd": "vitest",
