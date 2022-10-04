@@ -18,9 +18,7 @@ const checker = checkerPlugin({
 
 export default defineConfig({
 	build: { sourcemap: true },
-	plugins: import.meta.vitest
-		? []
-		: [checker, viteSingleFile(), createHtmlPlugin()],
+	plugins: [checker, viteSingleFile(), createHtmlPlugin()],
 	resolve: { alias: { '~': path.resolve(__dirname, './src') } },
 	css: { modules: { localsConvention: 'camelCaseOnly' } },
 	test: {
