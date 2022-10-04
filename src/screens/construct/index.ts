@@ -44,7 +44,7 @@ const Construct: Component = () => {
 	}
 
 	const size = 440
-	const cellDim = 1
+	const cellDim = 2
 	const genSize = size / cellDim
 	const audio = createAudio()
 	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
