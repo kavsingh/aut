@@ -13,7 +13,9 @@ export const createEmitter = <
 	}
 
 	const emit = (payload: T) => {
-		listeners.forEach((_, listener) => void listener(payload))
+		for (const [listener] of listeners) {
+			listener(payload)
+		}
 	}
 
 	return { listen, emit, clear: listeners.clear.bind(listeners) }
