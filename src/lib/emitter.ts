@@ -2,25 +2,19 @@ export const createEmitter = <
 	T,
 	L extends (payload: T) => void = (payload: T) => void,
 >() => {
-	let listeners: L[] = []
+	const listeners = new Map<L, boolean>()
 
 	const listen = (listener: L) => {
-		if (!listeners.includes(listener)) listeners.push(listener)
+		listeners.set(listener, true)
 
 		return () => {
-			const listenerIndex = listeners.indexOf(listener)
-
-			if (listenerIndex > -1) listeners.splice(listenerIndex, 1)
+			listeners.delete(listener)
 		}
 	}
 
 	const emit = (payload: T) => {
-		listeners.forEach((listener) => listener(payload))
+		listeners.forEach((_, listener) => void listener(payload))
 	}
 
-	const clear = () => {
-		listeners = []
-	}
-
-	return { listen, emit, clear }
+	return { listen, emit, clear: listeners.clear.bind(listeners) }
 }
