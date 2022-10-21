@@ -3,11 +3,15 @@ import { createEmitter } from './emitter'
 export const createStateEmitter = <T extends Record<string, unknown>>(
 	initialState: T,
 ) => {
-	const state = initialState
+	const state = { ...initialState }
 	const emitter = createEmitter<Readonly<T>>()
-	const get = (): T => state
-	const update = (updater: (current: T) => Partial<T>): T => {
-		Object.assign(state, updater(state))
+	const get = (): Readonly<T> => state
+	const update = (
+		updater: (current: Readonly<T>) => Partial<T> | null | undefined,
+	): Readonly<T> => {
+		const updateResult = updater(state)
+
+		if (updateResult) Object.assign(state, updateResult)
 
 		emitter.emit(state)
 
