@@ -4,6 +4,6 @@ export const getThemeValue = (prop: `${CssThemeProp}`, el?: HTMLElement) =>
 	getCssValue(prop, el)
 
 const getCssValue = (cssVar: string, el?: HTMLElement) =>
-	typeof window !== 'undefined'
-		? getComputedStyle(el ?? document.body).getPropertyValue(cssVar)
+	globalThis.document?.body
+		? getComputedStyle(el ?? globalThis.document.body).getPropertyValue(cssVar)
 		: ''
