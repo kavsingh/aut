@@ -1,4 +1,4 @@
-@import './theme.css';
+@import url('./theme.css');
 
 html {
 	box-sizing: border-box;

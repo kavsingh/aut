@@ -1,4 +1,4 @@
-![](https://github.com/kavsingh/cellular-automaton/workflows/CI/badge.svg)
+[![Test and lint](https://github.com/kavsingh/cellular-automaton/actions/workflows/test-and-lint.yaml/badge.svg)](https://github.com/kavsingh/cellular-automaton/actions/workflows/test-and-lint.yaml)
 
 Trying [this](https://www.youtube.com/watch?v=bc-fVdbjAwk) out
 
