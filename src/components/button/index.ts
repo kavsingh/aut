@@ -17,7 +17,7 @@ const Button: Component<Props> = (props) => {
 			rel="noopener"
 		>${props.content}</a>`
 			: /* html */ `
-		<div class="${classNames} role="button">${props.content}</div>`,
+		<button class="${classNames}">${props.content}</button>`,
 	)
 
 	if (props.as === 'button') {

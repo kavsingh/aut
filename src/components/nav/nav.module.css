@@ -7,10 +7,6 @@
 	inset-inline-end: 2em;
 }
 
-.container div {
-	cursor: pointer;
-}
-
 .github-link {
 	inline-size: 1em;
 }

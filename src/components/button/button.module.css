@@ -1,12 +1,17 @@
 .container {
+	margin: 0;
+	padding: 0;
 	color: var(--color-line-600);
+	background: none;
+	border: none;
 	cursor: pointer;
-	inline-size: 1.3em;
 	opacity: 0.3;
 	transition: opacity 200ms ease-out;
+	appearance: none;
+	inline-size: 1.3em;
 }
 
-.container:hover {
+.container:where(:hover, :active, :focus-visible) {
 	opacity: 1;
 }
 
@@ -20,7 +25,7 @@
 }
 
 @media screen and (display-mode: fullscreen) {
-	.container:not(:hover) {
+	.container:not(:hover, :active, :focus-visible) {
 		opacity: 0.1;
 	}
 }
