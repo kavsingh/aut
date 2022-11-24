@@ -14,6 +14,7 @@
 	"exclude": ["**/node_modules"],
 	"include": ["./src", "./tools", "./*.ts"],
 	"ts-node": {
+		"transpileOnly": true,
 		"compilerOptions": {
 			"isolatedModules": false,
 			"lib": ["esnext"],
