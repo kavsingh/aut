@@ -1,4 +1,9 @@
-export const isFiniteNumber = (value: unknown): value is number =>
-	Number.isFinite(value)
+export function isFiniteNumber(value: unknown): value is number {
+	return Number.isFinite(value)
+}
 
-export const isTruthy = <T>(value: T): value is NonNullable<T> => !!value
+export function isTruthy<T>(
+	value: T,
+): value is Exclude<T, null | undefined | 0 | false | ""> {
+	return !!value
+}

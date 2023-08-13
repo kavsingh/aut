@@ -1,4 +1,4 @@
-import { curry } from '@kavsingh/curry-pipe'
+import { curry } from "@kavsingh/curry-pipe"
 
 export const eq = curry((a: unknown, b: unknown) => a === b)
 
@@ -19,8 +19,10 @@ export const valueEq = curry((a: unknown, b: unknown): boolean => {
 	return false
 })
 
-const isValueNaN = (value: unknown): value is number =>
-	Number.isNaN(value as number)
+function isValueNaN(value: unknown): value is number {
+	return Number.isNaN(value as number)
+}
 
-const isTypeofObject = (value: unknown): value is { [key: string]: unknown } =>
-	typeof value === 'object'
+function isTypeofObject(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object"
+}

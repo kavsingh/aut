@@ -13,7 +13,9 @@
 	border-radius: 50%;
 	transform: scale(0.4);
 	opacity: 0.4;
-	transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+	transition:
+		transform 0.2s ease-out,
+		opacity 0.2s ease-out;
 	inline-size: 40px;
 	block-size: 40px;
 	inset-inline-end: -40px;

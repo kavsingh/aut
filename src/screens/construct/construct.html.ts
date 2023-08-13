@@ -4,7 +4,7 @@ import {
 	slidersContainer,
 	worldCanvas,
 	worldContainer,
-} from './construct.module.css'
+} from "./construct.module.css"
 
 export const screen = /*html*/ `
 	<div class=${container}>

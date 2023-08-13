@@ -1,12 +1,14 @@
-import { format } from 'prettier'
+import { pipe } from "@kavsingh/curry-pipe"
+import { format } from "prettier"
 
-import type { Options } from 'prettier'
+import type { Options } from "prettier"
 
-const prettifier =
-	(parser: NonNullable<Options['parser']>) => (content: string) =>
-		format(content, { parser })
+export const formatTypescriptContent = prettifier("typescript")
 
-export const formatTypescriptContent = prettifier('typescript')
+export const formatJsonContent = pipe(JSON.stringify, prettifier("json"))
 
-export const formatJsonContent = (content: unknown) =>
-	prettifier('json')(JSON.stringify(content))
+function prettifier(parser: NonNullable<Options["parser"]>) {
+	return function prettify(content: string) {
+		return format(content, { parser })
+	}
+}

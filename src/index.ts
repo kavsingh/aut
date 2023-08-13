@@ -1,8 +1,8 @@
-import './style/global-style.css'
-import app from './app'
+import "./style/global-style.css"
+import app from "./app"
 
-const appRoot = document.getElementById('app-root')
+const appRoot = document.getElementById("app-root")
 
-if (!appRoot) throw new Error('Could not find #app-root')
+if (!appRoot) throw new Error("Could not find #app-root")
 
 app(appRoot)

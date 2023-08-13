@@ -1,34 +1,38 @@
-import { htmlToElement } from '~/lib/dom'
-import { construct, fullScreen, github, scrolls } from '~/style/icons'
+import { htmlToElement } from "~/lib/dom"
+import { construct, fullScreen, github, scrolls } from "~/style/icons"
 
-import Button from '../button'
-import { container } from './nav.module.css'
+import { container } from "./nav.module.css"
+import Button from "../button"
 
-import type { createRouter } from '~/lib/router'
-import type { Component } from '~/lib/types'
+import type { createRouter } from "~/lib/router"
+import type { Component } from "~/lib/types"
 
 const Nav: Component<{
-	navigate: ReturnType<typeof createRouter>['navigate']
+	navigate: ReturnType<typeof createRouter>["navigate"]
 }> = ({ navigate }) => {
 	const el = htmlToElement(/* html */ `<div class=${container}></div>`)
 	const scrollsLink = Button({
-		as: 'button',
-		onClick: () => navigate('/'),
+		as: "button",
+		onClick: () => {
+			navigate("/")
+		},
 		content: scrolls,
 	})
 	const constructLink = Button({
-		as: 'button',
-		onClick: () => navigate('/construct'),
+		as: "button",
+		onClick: () => {
+			navigate("/construct")
+		},
 		content: construct,
 	})
 	const fullScreenButton = Button({
-		as: 'button',
+		as: "button",
 		onClick: toggleFullscreen,
 		content: fullScreen,
 	})
 	const githubLink = Button({
-		as: 'link',
-		href: 'https://github.com/kavsingh/cellular-automaton',
+		as: "link",
+		href: "https://github.com/kavsingh/cellular-automaton",
 		content: github,
 	})
 
@@ -42,10 +46,10 @@ const Nav: Component<{
 
 export default Nav
 
-const toggleFullscreen = () => {
-	if (!document.fullscreenElement) {
-		void document.documentElement.requestFullscreen()
-	} else if (document.exitFullscreen) {
+function toggleFullscreen() {
+	if (document.fullscreenElement) {
 		void document.exitFullscreen()
+	} else {
+		void document.documentElement.requestFullscreen()
 	}
 }

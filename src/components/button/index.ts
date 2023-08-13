@@ -1,14 +1,14 @@
-import { htmlToElement } from '~/lib/dom'
-import { isTruthy } from '~/lib/util'
+import { htmlToElement } from "~/lib/dom"
+import { isTruthy } from "~/lib/util"
 
-import { container } from './button.module.css'
+import { container } from "./button.module.css"
 
-import type { Component } from '~/lib/types'
+import type { Component } from "~/lib/types"
 
 const Button: Component<Props> = (props) => {
-	const classNames = [container, props.class].filter(isTruthy).join(' ')
+	const classNames = [container, props.class].filter(isTruthy).join(" ")
 	const el = htmlToElement(
-		props.as === 'link'
+		props.as === "link"
 			? /* html */ `
 		<a
 			class="${classNames}
@@ -20,8 +20,8 @@ const Button: Component<Props> = (props) => {
 		<button class="${classNames}">${props.content}</button>`,
 	)
 
-	if (props.as === 'button') {
-		el.addEventListener('click', () => {
+	if (props.as === "button") {
+		el.addEventListener("click", () => {
 			void props.onClick()
 		})
 	}
@@ -34,12 +34,12 @@ export default Button
 type Props = ButtonProps | LinkProps
 
 type ButtonProps = PropsBase & {
-	as: 'button'
+	as: "button"
 	onClick: () => unknown
 }
 
 type LinkProps = PropsBase & {
-	as: 'link'
+	as: "link"
 	href: string
 }
 

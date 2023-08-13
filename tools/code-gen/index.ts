@@ -1,49 +1,60 @@
-import path from 'path'
+import { readFile, writeFile } from "node:fs/promises"
+import path from "node:path"
 
-import { readFile, ensureDir, writeFile } from 'fs-extra'
+import { ensureDir } from "fs-extra/esm"
 
-import { PROJECT_ROOT } from '../lib/constants'
-import { formatTypescriptContent } from '../lib/format/file-contents'
+import { PROJECT_ROOT } from "../lib/constants.js"
+import { formatTypescriptContent } from "../lib/format/file-contents.js"
 
-const readThemeCssFile = () =>
-	readFile(path.resolve(PROJECT_ROOT, 'src/style/theme.css'), 'utf-8')
+function readThemeCssFile() {
+	return readFile(path.resolve(PROJECT_ROOT, "src/style/theme.css"), "utf-8")
+}
 
-const writeThemeCssConstants = async (content: string) => {
-	const genDir = path.resolve(PROJECT_ROOT, 'src/style/__generated__/')
+async function writeThemeCssConstants(content: string) {
+	const genDir = path.resolve(PROJECT_ROOT, "src/style/__generated__/")
 
 	await ensureDir(genDir)
 
-	return writeFile(path.join(genDir, 'constants.ts'), content)
+	return writeFile(path.join(genDir, "constants.ts"), content)
 }
 
-const extractCustomProperties = (contents: string) =>
-	Array.from(
+function extractCustomProperties(contents: string) {
+	return Array.from(
 		new Set(
 			contents
 				.match(/(?:^|\W)--([\w,-]+):/g)
-				?.map((match) => match.trim().replace(/:$/, '')) ?? [],
+				?.map((match) => match.trim().replace(/:$/, "")) ?? [],
 		),
 	)
+}
 
-const propToEnumMemberName = (prop: string) =>
-	prop
-		.replace(/^--/, '')
-		.split('-')
-		.map(([first, ...rest]) => `${first?.toUpperCase() ?? ''}${rest.join('')}`)
-		.join('')
+function propToEnumMemberName(prop: string) {
+	return prop
+		.replace(/^--/, "")
+		.split("-")
+		.map(([first, ...rest]) => `${first?.toUpperCase() ?? ""}${rest.join("")}`)
+		.join("")
+}
 
-const generateEnumMembers = (props: string[]) =>
-	props.map<[string, string]>((prop) => [propToEnumMemberName(prop), prop])
+function generateEnumMembers(props: string[]) {
+	return props.map<[string, string]>((prop) => [
+		propToEnumMemberName(prop),
+		prop,
+	])
+}
 
-const generateContents = (name: string) => (members: [string, string][]) =>
-	formatTypescriptContent(
-		`export enum ${name} {${members
-			.map(([key, val]) => `${key} = "${val}",`)
-			.join('\n')}}`,
-	)
+function generateContents(name: string) {
+	return function generateMembers(members: [string, string][]) {
+		return formatTypescriptContent(
+			`export enum ${name} {${members
+				.map(([key, val]) => `${key} = "${val}",`)
+				.join("\n")}}`,
+		)
+	}
+}
 
 void readThemeCssFile()
 	.then(extractCustomProperties)
 	.then(generateEnumMembers)
-	.then(generateContents('CssThemeProp'))
+	.then(generateContents("CssThemeProp"))
 	.then(writeThemeCssConstants)

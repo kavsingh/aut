@@ -1,23 +1,23 @@
-import { createAudio } from '~/audio'
-import Button from '~/components/button'
-import { getThemeValue } from '~/lib/css'
-import { htmlToFragment } from '~/lib/dom'
-import * as rules from '~/lib/rules'
-import { generateInitialWorld } from '~/lib/world'
-import { camera, speaker } from '~/style/icons'
+import Audio from "~/audio"
+import Button from "~/components/button"
+import { getThemeValue } from "~/lib/css"
+import { htmlToFragment } from "~/lib/dom"
+import * as rules from "~/lib/rules"
+import { generateInitialWorld } from "~/lib/world"
+import { camera, speaker } from "~/style/icons"
 
-import { saveSvgSnapshot } from './lib/snapshot-to-svg'
-import { createWorldsForType, startWorldAnimations } from './lib/worlds'
-import { addRuleThumbnails } from './rule-thumbnails'
-import { html } from './scrolls.html'
+import { saveSvgSnapshot } from "./lib/snapshot-to-svg"
+import { createWorldsForType, startWorldAnimations } from "./lib/worlds"
+import { addRuleThumbnails } from "./rule-thumbnails"
+import { html } from "./scrolls.html"
 import {
 	worlds,
 	thumbnailsContainer as thumbnailsContainerClass,
 	buttons,
-} from './scrolls.module.css'
+} from "./scrolls.module.css"
 
-import type { State } from './lib/types'
-import type { Component } from '~/lib/types'
+import type { State } from "./lib/types"
+import type { Component } from "~/lib/types"
 
 const Scrolls: Component = () => {
 	const worldCount = 3
@@ -32,14 +32,16 @@ const Scrolls: Component = () => {
 		world: generateInitialWorld(generationSize, generationSize),
 	}
 
-	const audio = createAudio()
+	const audio = new Audio()
 	const snapshotButton = Button({
-		as: 'button',
+		as: "button",
 		content: camera,
-		onClick: () => void saveSvgSnapshot('snapshot.svg', state),
+		onClick: () => {
+			saveSvgSnapshot("snapshot.svg", state)
+		},
 	})
 	const audioButton = Button({
-		as: 'button',
+		as: "button",
 		content: speaker,
 		onClick: audio.toggle.bind(audio),
 	})
@@ -52,14 +54,14 @@ const Scrolls: Component = () => {
 	const buttonsContainer = el.querySelector<HTMLElement>(`.${buttons}`)
 
 	if (!(worldsContainer && thumbnailsContainer && buttonsContainer)) {
-		throw new Error('missing dom, expected worlds, thumbnails, buttons')
+		throw new Error("missing dom, expected worlds, thumbnails, buttons")
 	}
 
 	buttonsContainer.appendChild(snapshotButton.el)
 	buttonsContainer.appendChild(audioButton.el)
 
 	const { render: renderWorld } = createWorldsForType(
-		'canvas2d',
+		"canvas2d",
 		worldsContainer,
 		{
 			count: worldCount,
@@ -67,15 +69,12 @@ const Scrolls: Component = () => {
 				cellDim,
 				width: worldDim,
 				height: worldDim,
-				fillColor: getThemeValue('--color-line-600'),
+				fillColor: getThemeValue("--color-line-600"),
 			},
 		},
 	)
 
-	worldsContainer.addEventListener(
-		'click',
-		() => void (state.evolver = undefined),
-	)
+	worldsContainer.addEventListener("click", () => (state.evolver = undefined))
 
 	addRuleThumbnails(
 		state.rules,
@@ -89,7 +88,7 @@ const Scrolls: Component = () => {
 		audio,
 	})
 
-	const dispose = async () => {
+	async function dispose() {
 		stopWorldAnimations()
 		await audio.dispose()
 	}

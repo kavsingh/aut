@@ -1,9 +1,9 @@
-import RuleThumbnail from '~/components/rule-thumbnail'
-import { htmlToElement } from '~/lib/dom'
+import RuleThumbnail from "~/components/rule-thumbnail"
+import { htmlToElement } from "~/lib/dom"
 
-import { container, thumbnailContainer } from './rule-slider.module.css'
+import { container, thumbnailContainer } from "./rule-slider.module.css"
 
-import type { Component, WorldStateEvolver } from '~/lib/types'
+import type { Component, WorldStateEvolver } from "~/lib/types"
 
 const RuleSlider: Component<{
 	evolver: WorldStateEvolver
@@ -28,13 +28,13 @@ const RuleSlider: Component<{
 
 	let parentOffset = 0
 
-	const handleMouseUp = () => {
-		document.body.removeEventListener('mousemove', handleMouseMove)
-		document.body.removeEventListener('mouseup', handleMouseUp)
-		thumbnail.el.addEventListener('mousedown', handleMouseDown)
+	function handleMouseUp() {
+		document.body.removeEventListener("mousemove", handleMouseMove)
+		document.body.removeEventListener("mouseup", handleMouseUp)
+		thumbnail.el.addEventListener("mousedown", handleMouseDown)
 	}
 
-	const handleMouseMove = (event: MouseEvent) => {
+	function handleMouseMove(event: MouseEvent) {
 		let relPosition = event.clientY - parentOffset
 
 		if (relPosition > maxPosition) relPosition = maxPosition
@@ -45,17 +45,17 @@ const RuleSlider: Component<{
 		el.style.transform = `translateY(${relPosition}px)`
 	}
 
-	const handleMouseDown = () => {
+	function handleMouseDown() {
 		if (!allowMove) return
 
-		parentOffset = el.parentElement?.getBoundingClientRect?.().top ?? 0
+		parentOffset = el.parentElement?.getBoundingClientRect().top ?? 0
 
-		document.body.removeEventListener('mousedown', handleMouseDown)
-		document.body.addEventListener('mousemove', handleMouseMove)
-		document.body.addEventListener('mouseup', handleMouseUp)
+		document.body.removeEventListener("mousedown", handleMouseDown)
+		document.body.addEventListener("mousemove", handleMouseMove)
+		document.body.addEventListener("mouseup", handleMouseUp)
 	}
 
-	thumbnail.el.addEventListener('mousedown', handleMouseDown)
+	thumbnail.el.addEventListener("mousedown", handleMouseDown)
 
 	return { el }
 }

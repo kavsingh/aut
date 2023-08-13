@@ -1,18 +1,25 @@
-import { curry } from '@kavsingh/curry-pipe'
+import { curry } from "@kavsingh/curry-pipe"
 
-import { circMod } from './number'
+import { circMod } from "./number"
 
-import type { PredicateFn } from './types'
+import type { PredicateFn } from "./types"
 
-export const sample = <T>(arr: T[]): T =>
+export function sample<T>(arr: T[]): T {
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	arr[Math.floor(Math.random() * arr.length)]!
+	return arr[Math.floor(Math.random() * arr.length)]!
+}
 
-export const head = <T>([x]: T[]) => x
+export function head<T>([x]: T[]) {
+	return x
+}
 
-export const tail = <T>([_x, ...xs]: T[]) => xs
+export function tail<T>([_x, ...xs]: T[]) {
+	return xs
+}
 
-export const last = <T>(arr: T[]) => arr.at(-1)
+export function last<T>(arr: T[]) {
+	return arr.at(-1)
+}
 
 export const groupIndecesBy: {
 	<T>(predicate: PredicateFn<T>): (arr: T[]) => number[][]
@@ -41,6 +48,8 @@ export const findLast: {
 
 		if (predicate(val)) return val
 	}
+
+	return undefined
 })
 
 export const accessCirc: {

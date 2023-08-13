@@ -1,9 +1,11 @@
-import type { CssThemeProp } from '~/style/__generated__/constants'
+import type { CssThemeProp } from "~/style/__generated__/constants"
 
-export const getThemeValue = (prop: `${CssThemeProp}`, el?: HTMLElement) =>
-	getCssValue(prop, el)
+export function getThemeValue(prop: `${CssThemeProp}`, el?: HTMLElement) {
+	return getCssValue(prop, el)
+}
 
-const getCssValue = (cssVar: string, el?: HTMLElement) =>
-	globalThis.document?.body
-		? getComputedStyle(el ?? globalThis.document.body).getPropertyValue(cssVar)
-		: ''
+function getCssValue(cssVar: string, el?: HTMLElement) {
+	return getComputedStyle(el ?? globalThis.document.body).getPropertyValue(
+		cssVar,
+	)
+}

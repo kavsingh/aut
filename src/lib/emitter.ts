@@ -1,19 +1,19 @@
-export const createEmitter = <
-	T,
-	L extends (payload: T) => void = (payload: T) => void,
->() => {
-	const listeners = new Map<L, boolean>()
+export function createEmitter<
+	TPayload,
+	TListener extends (payload: TPayload) => void = (payload: TPayload) => void,
+>() {
+	const listeners = new Set<TListener>()
 
-	const listen = (listener: L) => {
-		listeners.set(listener, true)
+	function listen(listener: TListener) {
+		listeners.add(listener)
 
-		return () => {
+		return function stopListening() {
 			listeners.delete(listener)
 		}
 	}
 
-	const emit = (payload: T) => {
-		for (const [listener] of listeners) {
+	function emit(payload: TPayload) {
+		for (const listener of listeners) {
 			listener(payload)
 		}
 	}

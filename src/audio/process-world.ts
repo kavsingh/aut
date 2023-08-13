@@ -1,20 +1,16 @@
-import type { WorldState } from '~/lib/types'
+import type { WorldState } from "~/lib/types"
 
-export const processWorld = (world: WorldState) => {
+export function processWorld(world: WorldState) {
 	let activeCount = 0
 	let inactiveCount = 0
 	let totalCount = 0
 	let stateSwitches = 0
 
-	for (let i = 0; i < world.length; i++) {
-		const generation = world[i]
-
-		if (!generation) continue
-
+	for (const generation of world) {
 		for (let j = 0; j < world.length; j++) {
 			const val = generation[j]
 
-			if (typeof val !== 'number') continue
+			if (typeof val !== "number") continue
 
 			totalCount++
 			if (val) activeCount++
@@ -22,7 +18,7 @@ export const processWorld = (world: WorldState) => {
 
 			const prev = generation[j - 1]
 
-			if (typeof prev === 'number' && prev !== val) stateSwitches++
+			if (typeof prev === "number" && prev !== val) stateSwitches++
 		}
 	}
 

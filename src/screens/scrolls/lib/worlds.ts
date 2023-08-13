@@ -1,19 +1,19 @@
-import { pipe } from '@kavsingh/curry-pipe'
+import { pipe } from "@kavsingh/curry-pipe"
 
-import { createEvolver } from '~/lib/evolver'
-import { rule3 } from '~/lib/rules'
-import { sample, constant, defaultTo, range, noop } from '~/lib/util'
-import { createRenderer as createCanvas2dRenderer } from '~/renderers/renderer-canvas2d'
+import { createEvolver } from "~/lib/evolver"
+import { rule3 } from "~/lib/rules"
+import { sample, constant, defaultTo, range, noop } from "~/lib/util"
+import { createRenderer as createCanvas2dRenderer } from "~/renderers/renderer-canvas2d"
 import {
 	createRenderer as createSvgRenderer,
 	svgNs,
-} from '~/renderers/renderer-svg'
+} from "~/renderers/renderer-svg"
 
-import type { State } from './types'
-import type { AudioApi } from '~/audio'
-import type { RendererFactoryOptions, RenderFn } from '~/renderers/types'
+import type { State } from "./types"
+import type Audio from "~/audio"
+import type { RendererFactoryOptions, RenderFn } from "~/renderers/types"
 
-export const createWorldsForType = (
+export function createWorldsForType(
 	type: RenderType,
 	container: HTMLElement,
 	{
@@ -23,13 +23,13 @@ export const createWorldsForType = (
 		count: number
 		rendererOptions: RendererFactoryOptions
 	},
-) => {
+) {
 	const createElements = createNElements(count)
 	const appendElements = appendElementsToContainer(container)
 
 	switch (type) {
-		case 'canvas2d': {
-			const elements = createElements(() => document.createElement('canvas'))
+		case "canvas2d": {
+			const elements = createElements(() => document.createElement("canvas"))
 
 			appendElements(elements)
 
@@ -39,9 +39,9 @@ export const createWorldsForType = (
 				render: createCanvas2dRenderer(elements, rendererOptions),
 			}
 		}
-		case 'svg': {
+		case "svg": {
 			const elements = createElements(() =>
-				document.createElementNS(svgNs, 'svg'),
+				document.createElementNS(svgNs, "svg"),
 			)
 
 			appendElements(elements)
@@ -57,14 +57,14 @@ export const createWorldsForType = (
 	}
 }
 
-export const startWorldAnimations = (
+export function startWorldAnimations(
 	state: State,
 	{
 		worldCount,
 		renderWorld,
 		audio,
-	}: { worldCount: number; renderWorld: RenderFn; audio: AudioApi },
-) => {
+	}: { worldCount: number; renderWorld: RenderFn; audio: Audio },
+) {
 	let running = true
 
 	const selectRandomEvolver = pipe(
@@ -73,7 +73,7 @@ export const startWorldAnimations = (
 		defaultTo(rule3),
 		createEvolver,
 	)
-	const nextEvolver = () => state.evolver || selectRandomEvolver()
+	const nextEvolver = () => state.evolver ?? selectRandomEvolver()
 	const switchThreshold = Math.floor(state.worldDim / (worldCount * 2))
 
 	let switchAccum = 0
@@ -104,18 +104,22 @@ export const startWorldAnimations = (
 	}
 }
 
-export type RenderType = 'svg' | 'canvas2d'
+export type RenderType = "svg" | "canvas2d"
 
-const createNElements =
-	(count: number) =>
-	<R>(createFn: () => R) =>
-		range(count).map(createFn)
+function createNElements(n: number) {
+	return function create<R>(createFn: () => R) {
+		return range(n).map(createFn)
+	}
+}
 
-const appendElementsToContainer =
-	(container: HTMLElement) => (elements: Element[]) => {
+function appendElementsToContainer(container: HTMLElement) {
+	return function append(elements: Element[]) {
 		const fragment = document.createDocumentFragment()
 
-		elements.forEach((element) => fragment.append(element))
+		for (const element of elements) {
+			fragment.append(element)
+		}
 
 		container.appendChild(fragment)
 	}
+}

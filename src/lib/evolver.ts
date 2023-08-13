@@ -1,19 +1,13 @@
-import { accessCirc, last, valueEq } from './util'
-import { seedRandom } from './world'
+import { accessCirc, last, valueEq } from "./util"
+import { seedRandom } from "./world"
 
-import type { EvolutionRule, WorldStateEvolver } from './types'
+import type { EvolutionRule, WorldStateEvolver } from "./types"
 
-const evolve = (rule: EvolutionRule, generation: number[]) => {
-	const access = accessCirc(generation)
-
-	return generation.map((_, index) =>
-		rule(access(index - 1), access(index), access(index + 1)),
-	)
-}
-
-export const createEvolver =
-	(rule: EvolutionRule, allowIdentical = false): WorldStateEvolver =>
-	(world) => {
+export function createEvolver(
+	rule: EvolutionRule,
+	allowIdentical = false,
+): WorldStateEvolver {
+	return function evolver(world) {
 		const currentGeneration = last(world)
 
 		if (!currentGeneration) return world
@@ -30,6 +24,7 @@ export const createEvolver =
 
 		return nextWorld
 	}
+}
 
 /*
     codifies rules as described in http://atlas.wolfram.com/01/01/
@@ -47,8 +42,21 @@ export const createEvolver =
 
     the rule is codified by createRule(['100', '101'])
 */
-export const createRule = (patterns: string[]): EvolutionRule => {
-	const lookup = Object.fromEntries(patterns.map((pattern) => [pattern, true]))
+export function createRule(patterns: string[]): EvolutionRule {
+	const lookup = new Set(patterns)
 
-	return (a, b, c) => (lookup[`${a}${b}${c}`] ? 1 : 0)
+	return function rule(a, b, c) {
+		return lookup.has(`${a}${b}${c}`) ? 1 : 0
+	}
+}
+
+function evolve(rule: EvolutionRule, generation: number[]) {
+	const access = accessCirc(generation)
+	const next: number[] = []
+
+	for (let i = 0; i < generation.length; i++) {
+		next.push(rule(access(i - 1), access(i), access(i + 1)))
+	}
+
+	return next
 }

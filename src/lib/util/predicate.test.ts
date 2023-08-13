@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from "vitest"
 
-import { isFiniteNumber, isTruthy } from './predicate'
+import { isFiniteNumber, isTruthy } from "./predicate"
 
-describe('util/predicate', () => {
-	describe('isFiniteNumber', () => {
+describe("util/predicate", () => {
+	describe("isFiniteNumber", () => {
 		it.each([
 			[0, true],
 			[+0, true],
@@ -20,14 +20,14 @@ describe('util/predicate', () => {
 			[-NaN, false],
 			[{}, false],
 			[[], false],
-			['', false],
+			["", false],
 			[true, false],
-		])('Should determine if %s is finite with typeguard', (value, expected) => {
+		])("should determine if %s is finite with typeguard", (value, expected) => {
 			expect(isFiniteNumber(value)).toBe(expected)
 		})
 	})
 
-	describe('isTruthy', () => {
+	describe("isTruthy", () => {
 		it.each([
 			[{}, true],
 			[[], true],
@@ -40,10 +40,10 @@ describe('util/predicate', () => {
 			[-0, false],
 			[NaN, false],
 			[-NaN, false],
-			['', false],
+			["", false],
 			[null, false],
 			[undefined, false],
-		])('Should determine if %s is truthy with typeguard', (value, expected) => {
+		])("should determine if %s is truthy with typeguard", (value, expected) => {
 			expect(isTruthy(value)).toBe(expected)
 		})
 	})

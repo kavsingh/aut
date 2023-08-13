@@ -1,14 +1,18 @@
-import { createEmitter } from './emitter'
+import { createEmitter } from "./emitter"
 
 export const createStateEmitter = <T extends Record<string, unknown>>(
 	initialState: T,
 ) => {
 	const state = { ...initialState }
 	const emitter = createEmitter<Readonly<T>>()
-	const get = (): Readonly<T> => state
-	const update = (
+
+	function get(): Readonly<T> {
+		return { ...state }
+	}
+
+	function update(
 		updater: (current: Readonly<T>) => Partial<T> | null | undefined,
-	): Readonly<T> => {
+	): Readonly<T> {
 		const updateResult = updater(state)
 
 		if (updateResult) Object.assign(state, updateResult)

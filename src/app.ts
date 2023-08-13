@@ -1,23 +1,23 @@
-import { screenContainer as screenContainerStyle } from './app.module.css'
-import Nav from './components/nav'
-import { createRouter } from './lib/router'
-import Construct from './screens/construct'
-import Scrolls from './screens/scrolls'
+import { screenContainer as screenContainerStyle } from "./app.module.css"
+import Nav from "./components/nav"
+import { createRouter } from "./lib/router"
+import Construct from "./screens/construct"
+import Scrolls from "./screens/scrolls"
 
-import type { ComponentApi } from './lib/types'
+import type { ComponentApi } from "./lib/types"
 
-const app = (rootEl: HTMLElement) => {
-	const screenContainer = document.createElement('div')
-	let currentScreen: ComponentApi
+export default function app(rootEl: HTMLElement) {
+	const screenContainer = document.createElement("div")
+	let currentScreen: ComponentApi | undefined
 
-	const routeHandler = async (route: string) => {
+	async function routeHandler(route: string) {
 		if (currentScreen) await currentScreen.dispose?.()
 
 		switch (route) {
-			case '/':
+			case "/":
 				currentScreen = Scrolls({})
 				break
-			case '/construct':
+			case "/construct":
 				currentScreen = Construct({})
 				break
 			default:
@@ -25,7 +25,7 @@ const app = (rootEl: HTMLElement) => {
 		}
 
 		if (currentScreen) {
-			screenContainer.innerHTML = ''
+			screenContainer.innerHTML = ""
 			screenContainer.appendChild(currentScreen.el)
 		}
 	}
@@ -38,5 +38,3 @@ const app = (rootEl: HTMLElement) => {
 	rootEl.appendChild(screenContainer)
 	rootEl.appendChild(nav.el)
 }
-
-export default app

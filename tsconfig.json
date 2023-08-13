@@ -1,25 +1,38 @@
 {
-	"extends": "@tsconfig/node18-strictest/tsconfig.json",
+	"extends": "@tsconfig/node20/tsconfig.json",
 	"compilerOptions": {
 		"isolatedModules": true,
 		"lib": ["esnext", "dom"],
 		"module": "esnext",
+		"moduleResolution": "bundler",
 		"noEmit": true,
-		"paths": {
-			"~/*": ["./src/*"]
-		},
+		"paths": { "~/*": ["./src/*"] },
 		"sourceMap": true,
-		"target": "esnext"
+		"target": "esnext",
+
+		// latest ts-node release does not support extends array
+		// manually add strictect config here
+		// TODO: replace with "@tsconfig/strictest/tsconfig.json" in extends
+		// array when supported by ts-node
+		"allowUnusedLabels": false,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
+		"checkJs": true,
+
+		// leave the following to eslint
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		// leave to eslint: some extensions delete
+		// unreachable code detected via ts too eagerly
+		"allowUnreachableCode": true
 	},
 	"exclude": ["**/node_modules"],
-	"include": ["./src", "./tools", "./*.ts"],
+	"include": ["./src", "./tools", "./*.ts", "./*.js", "./*.*.cjs"],
 	"ts-node": {
-		"transpileOnly": true,
-		"compilerOptions": {
-			"isolatedModules": false,
-			"lib": ["esnext"],
-			"module": "commonjs",
-			"target": "es2022"
-		}
+		"esm": true,
+		"transpileOnly": true
 	}
 }

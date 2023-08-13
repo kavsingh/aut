@@ -1,6 +1,6 @@
-import type { EvolutionRule, WorldState, WorldStateEvolver } from '~/lib/types'
+import type { EvolutionRule, WorldState, WorldStateEvolver } from "~/lib/types"
 
-export interface State {
+export type State = {
 	cellDim: number
 	worldDim: number
 	rules: EvolutionRule[]

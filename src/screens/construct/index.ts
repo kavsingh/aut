@@ -1,25 +1,25 @@
-import { createAudio } from '~/audio'
-import Button from '~/components/button'
-import { getThemeValue } from '~/lib/css'
-import { htmlToFragment } from '~/lib/dom'
-import { createEvolver } from '~/lib/evolver'
-import * as rules from '~/lib/rules'
-import { createStateEmitter } from '~/lib/state-emitter'
-import { findLast, range, sample } from '~/lib/util'
-import { generateInitialWorld, seedRandom } from '~/lib/world'
-import { createRenderer } from '~/renderers/renderer-canvas2d'
-import { speaker } from '~/style/icons'
+import Audio from "~/audio"
+import Button from "~/components/button"
+import { getThemeValue } from "~/lib/css"
+import { htmlToFragment } from "~/lib/dom"
+import { createEvolver } from "~/lib/evolver"
+import * as rules from "~/lib/rules"
+import { createStateEmitter } from "~/lib/state-emitter"
+import { findLast, range, sample } from "~/lib/util"
+import { generateInitialWorld, seedRandom } from "~/lib/world"
+import { createRenderer } from "~/renderers/renderer-canvas2d"
+import { speaker } from "~/style/icons"
 
-import { screen } from './construct.html'
+import { screen } from "./construct.html"
 import {
 	worldCanvas,
 	worldContainer,
 	slidersContainer,
 	buttons,
-} from './construct.module.css'
-import RuleSlider from './rule-slider'
+} from "./construct.module.css"
+import RuleSlider from "./rule-slider"
 
-import type { Component, WorldState, WorldStateEvolver } from '~/lib/types'
+import type { Component, WorldState, WorldStateEvolver } from "~/lib/types"
 
 const Construct: Component = () => {
 	const el = htmlToFragment(screen)
@@ -40,13 +40,13 @@ const Construct: Component = () => {
 			buttonsContainerEl
 		)
 	) {
-		throw new Error('bad dom')
+		throw new Error("bad dom")
 	}
 
 	const size = 440
 	const cellDim = 2
 	const genSize = size / cellDim
-	const audio = createAudio()
+	const audio = new Audio()
 	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
 	const evolverState = createStateEmitter({ evolvers: sampleEvolvers(3) })
 	let worldState = range(genSize).reduce<WorldState>(
@@ -58,10 +58,10 @@ const Construct: Component = () => {
 		cellDim,
 		width: size,
 		height: size,
-		fillColor: getThemeValue('--color-line-600'),
+		fillColor: getThemeValue("--color-line-600"),
 	})
 
-	const constructRuleSliders = (evolvers: EvolverItem[]) => {
+	function constructRuleSliders(evolvers: EvolverItem[]) {
 		const sliders = evolvers.map((item, idx) =>
 			RuleSlider({
 				evolver: item.evolver,
@@ -79,15 +79,18 @@ const Construct: Component = () => {
 			}),
 		)
 
-		sliders.forEach((slider) => slidersContainerEl.appendChild(slider.el))
+		for (const slider of sliders) {
+			slidersContainerEl?.appendChild(slider.el)
+		}
 	}
 
-	const renderWorld = () => {
+	function renderWorld() {
 		render(worldState)
 	}
 
-	const dispose = () => {
+	function dispose() {
 		evolverState.clear()
+
 		return audio.dispose()
 	}
 
@@ -102,7 +105,7 @@ const Construct: Component = () => {
 	})
 
 	const audioButton = Button({
-		as: 'button',
+		as: "button",
 		content: speaker,
 		onClick: () => {
 			audio.update(worldState)
@@ -120,7 +123,7 @@ const Construct: Component = () => {
 export default Construct
 
 const whenIdle =
-	typeof window.requestIdleCallback === 'function'
+	typeof window.requestIdleCallback === "function"
 		? window.requestIdleCallback
 		: (fn: () => void) => setTimeout(fn, 0)
 
@@ -128,15 +131,15 @@ const allEvolvers = Object.values(rules).map((rule) =>
 	createEvolver(rule, true),
 )
 
-const sampleEvolvers = (count: number) =>
-	range(count).map<EvolverItem>((_, i, it) => ({
+function sampleEvolvers(count: number) {
+	return range(count).map<EvolverItem>((_, i, it) => ({
 		evolver: sample(allEvolvers),
 		position: i / it.length,
 	}))
+}
 
-const evolveReducer =
-	(evolvers: EvolverItem[]) =>
-	(acc: WorldState, index: number): WorldState => {
+function evolveReducer(evolvers: EvolverItem[]) {
+	return function reducer(acc: WorldState, index: number): WorldState {
 		const evolver = findLast(
 			({ position }) => position <= index / acc.length,
 			evolvers,
@@ -144,5 +147,6 @@ const evolveReducer =
 
 		return evolver?.(acc) ?? acc
 	}
+}
 
 type EvolverItem = { evolver: WorldStateEvolver; position: number }

@@ -4,7 +4,7 @@ import {
 	main,
 	thumbnailsContainer,
 	worlds,
-} from './scrolls.module.css'
+} from "./scrolls.module.css"
 
 export const html = /* html */ `
 	<div class="${container}">

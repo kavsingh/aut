@@ -1,12 +1,12 @@
-import { svgNs, createRenderer } from '~/renderers/renderer-svg'
+import { svgNs, createRenderer } from "~/renderers/renderer-svg"
 
-import type { State } from './types'
+import type { State } from "./types"
 
 // ganked from https://stackoverflow.com/a/38019175
 
-export const saveSvgSnapshot = (name: string, state: State) => {
-	const svg = document.createElementNS(svgNs, 'svg')
-	const downloadTrigger = document.createElement('a')
+export function saveSvgSnapshot(name: string, state: State) {
+	const svg = document.createElementNS(svgNs, "svg")
+	const downloadTrigger = document.createElement("a")
 
 	createRenderer([svg], {
 		width: state.worldDim,
@@ -15,7 +15,7 @@ export const saveSvgSnapshot = (name: string, state: State) => {
 	})(state.world)
 
 	const svgUrl = URL.createObjectURL(
-		new Blob([svg.outerHTML], { type: 'image/svg+xml;charset=utf-8' }),
+		new Blob([svg.outerHTML], { type: "image/svg+xml;charset=utf-8" }),
 	)
 
 	downloadTrigger.href = svgUrl
