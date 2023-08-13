@@ -9,8 +9,8 @@ overrides:
 
 dependencies:
   '@kavsingh/curry-pipe':
-    specifier: 0.1.4
-    version: 0.1.4
+    specifier: 0.2.0
+    version: 0.2.0
 
 devDependencies:
   '@testing-library/dom':
@@ -555,9 +555,9 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
-  /@kavsingh/curry-pipe@0.1.4:
-    resolution: {integrity: sha512-x8jVT5YBQC3UhJXH7WsRP3eQCtJ0UwKfuEnbBxEKR18fLygoW9ARJy58cWrW5ojZiJMheFA9PtaRtNWTtIboag==}
-    engines: {node: '>=14.0.0'}
+  /@kavsingh/curry-pipe@0.2.0:
+    resolution: {integrity: sha512-ss+TpV+zFF0zw0lTk0vAXVYylKS0pxLm8II9z3SISKMIaUddE71QA4LwAzd3gNv4xUNzUYoGaVrM8HeLrgpOLg==}
+    engines: {node: '>=16.0.0'}
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:

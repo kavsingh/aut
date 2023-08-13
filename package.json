@@ -20,7 +20,7 @@
 		"codegen": "node --loader=ts-node/esm ./tools/code-gen/index.ts"
 	},
 	"dependencies": {
-		"@kavsingh/curry-pipe": "0.1.4"
+		"@kavsingh/curry-pipe": "0.2.0"
 	},
 	"devDependencies": {
 		"@testing-library/dom": "9.3.1",

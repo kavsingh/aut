@@ -28,6 +28,7 @@ const devDependencies = {
 const tsconfigPathPatterns = Object.keys(
 	tsconfig?.config?.compilerOptions?.paths ?? {},
 )
+
 const testFileSuffixes = ["test", "spec", "mock"]
 
 function testFilePatterns({ root = "", extensions = "*" } = {}) {
