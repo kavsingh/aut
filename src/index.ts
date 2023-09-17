@@ -1,4 +1,4 @@
-import "./style/global-style.css"
+import "./index.css"
 import app from "./app"
 
 const appRoot = document.getElementById("app-root")

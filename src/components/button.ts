@@ -1,12 +1,15 @@
-import { htmlToElement } from "~/lib/dom"
-import { isTruthy } from "~/lib/util"
+import { twMerge } from "tailwind-merge"
 
-import { container } from "./button.module.css"
+import { htmlToElement } from "~/lib/dom"
 
 import type { Component } from "~/lib/types"
 
 const Button: Component<Props> = (props) => {
-	const classNames = [container, props.class].filter(isTruthy).join(" ")
+	const classNames = twMerge(
+		"w-[1.3em] text-black opacity-30 transition-opacity hover:opacity-100 focus-visible:opacity-100 active:opacity-100 dark:text-white fs:opacity-10 [&>svg]:aspect-square [&>svg]:h-[unset] [&>svg]:w-full",
+		props.class,
+	)
+
 	const el = htmlToElement(
 		props.as === "link"
 			? /* html */ `

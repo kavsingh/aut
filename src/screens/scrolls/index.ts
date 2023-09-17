@@ -1,20 +1,14 @@
 import Audio from "~/audio"
 import Button from "~/components/button"
-import { getThemeValue } from "~/lib/css"
+import { camera, speaker } from "~/components/icons"
 import { htmlToFragment } from "~/lib/dom"
 import * as rules from "~/lib/rules"
 import { generateInitialWorld } from "~/lib/world"
-import { camera, speaker } from "~/style/icons"
 
 import { saveSvgSnapshot } from "./lib/snapshot-to-svg"
 import { createWorldsForType, startWorldAnimations } from "./lib/worlds"
 import { addRuleThumbnails } from "./rule-thumbnails"
 import { html } from "./scrolls.html"
-import {
-	worlds,
-	thumbnailsContainer as thumbnailsContainerClass,
-	buttons,
-} from "./scrolls.module.css"
 
 import type { State } from "./lib/types"
 import type { Component } from "~/lib/types"
@@ -47,11 +41,15 @@ const Scrolls: Component = () => {
 	})
 
 	const el = htmlToFragment(html)
-	const worldsContainer = el.querySelector<HTMLElement>(`.${worlds}`)
-	const thumbnailsContainer = el.querySelector<HTMLElement>(
-		`.${thumbnailsContainerClass}`,
+	const worldsContainer = el.querySelector<HTMLElement>(
+		'[data-el="worlds-container"]',
 	)
-	const buttonsContainer = el.querySelector<HTMLElement>(`.${buttons}`)
+	const thumbnailsContainer = el.querySelector<HTMLElement>(
+		'[data-el="thumbnails-container"]',
+	)
+	const buttonsContainer = el.querySelector<HTMLElement>(
+		'[data-el="buttons-container"]',
+	)
 
 	if (!(worldsContainer && thumbnailsContainer && buttonsContainer)) {
 		throw new Error("missing dom, expected worlds, thumbnails, buttons")
@@ -69,7 +67,7 @@ const Scrolls: Component = () => {
 				cellDim,
 				width: worldDim,
 				height: worldDim,
-				fillColor: getThemeValue("--color-line-600"),
+				fillColor: "#fff",
 			},
 		},
 	)

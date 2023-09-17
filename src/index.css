@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	color: theme(colors.neutral.700);
+	background-color: theme(colors.white);
+}
+
+*:focus {
+	outline: none;
+}
+
+*:focus-visible {
+	outline: 1px solid theme(colors.neutral.500);
+	outline-offset: 1px;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		color: theme(colors.neutral.500);
+		background-color: theme(colors.neutral.950);
+	}
+
+	*:focus-visible {
+		outline-color: theme(colors.neutral.700);
+	}
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+
+#app-root {
+	width: 100vw;
+	height: 100vh;
+}

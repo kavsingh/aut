@@ -1,4 +1,3 @@
-import { getThemeValue } from "~/lib/css"
 import { range } from "~/lib/util"
 import { generateInitialWorld, seedRandom } from "~/lib/world"
 import { createRenderer } from "~/renderers/renderer-canvas2d"
@@ -15,7 +14,7 @@ const RuleThumbnail: Component<{
 		cellDim: 1,
 		width: size,
 		height: size,
-		fillColor: fillColor ?? getThemeValue("--color-line-600"),
+		fillColor: fillColor ?? "#fff",
 	})
 	const state = range(size).reduce(
 		(acc) => evolver(acc),

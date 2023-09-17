@@ -1,5 +1,4 @@
 import RuleThumbnail from "~/components/rule-thumbnail"
-import { getThemeValue } from "~/lib/css"
 import { createEvolver } from "~/lib/evolver"
 
 import type { EvolutionRule, WorldStateEvolver } from "~/lib/types"
@@ -9,11 +8,9 @@ export function addRuleThumbnails(
 	container: HTMLElement,
 	onThumbnailClick: (evolver: WorldStateEvolver) => void,
 ) {
-	const fillColor = getThemeValue("--color-line-600")
-
 	for (const rule of rules) {
 		const evolver = createEvolver(rule)
-		const { el } = RuleThumbnail({ fillColor, evolver })
+		const { el } = RuleThumbnail({ fillColor: "#fff", evolver })
 
 		container.appendChild(el)
 		el.addEventListener("click", () => {

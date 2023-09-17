@@ -1,17 +1,10 @@
-/** @type {import("path")} */
-const path = require("path")
+/** @type {import("node:path")} */
+const path = require("node:path")
 
 /** @type {import("typescript")} */
 const ts = require("typescript")
 
-const tsconfigFile = ts.findConfigFile(
-	__dirname,
-	ts.sys.fileExists,
-	"tsconfig.json",
-)
-const tsconfig = tsconfigFile
-	? ts.readConfigFile(tsconfigFile, ts.sys.readFile)
-	: undefined
+const testFileSuffixes = ["test", "spec", "mock"]
 
 const srcDependencies = {
 	devDependencies: false,
@@ -25,27 +18,13 @@ const devDependencies = {
 	peerDependencies: false,
 }
 
-const tsconfigPathPatterns = Object.keys(
-	tsconfig?.config?.compilerOptions?.paths ?? {},
-)
-
-const testFileSuffixes = ["test", "spec", "mock"]
-
-function testFilePatterns({ root = "", extensions = "*" } = {}) {
-	return [
-		`*.{${testFileSuffixes.join(",")}}`,
-		"__{test,tests,mocks,fixtures}__/**/*",
-		"__{test,mock,fixture}-*__/**/*",
-	].map((pattern) => path.join(root, `**/${pattern}.${extensions}`))
-}
-
 /** @type {import("eslint").ESLint.ConfigData} */
 module.exports = {
 	root: true,
 	reportUnusedDisableDirectives: true,
 	env: { es2022: true, node: true, browser: false },
 	parser: "@typescript-eslint/parser",
-	parserOptions: { project: "./tsconfig.json", sourceType: "module" },
+	parserOptions: { project: "./tsconfig.json" },
 	settings: {
 		"import/parsers": { "@typescript-eslint/parser": [".ts"] },
 		"import/resolver": {
@@ -98,27 +77,7 @@ module.exports = {
 		"import/no-unused-modules": "error",
 		"import/no-useless-path-segments": "error",
 		"import/no-extraneous-dependencies": ["error", devDependencies],
-		"import/order": [
-			"warn",
-			{
-				"groups": [
-					"builtin",
-					"external",
-					"internal",
-					["parent", "sibling", "index"],
-					"type",
-				],
-				"pathGroups": [
-					...tsconfigPathPatterns.map((pattern) => ({
-						pattern,
-						group: "internal",
-					})),
-				],
-				"pathGroupsExcludedImportTypes": ["type"],
-				"alphabetize": { order: "asc" },
-				"newlines-between": "always",
-			},
-		],
+		"import/order": getImportOrderConfig("tsconfig.json"),
 		"deprecation/deprecation": "warn",
 		"prettier/prettier": "warn",
 	},
@@ -131,28 +90,38 @@ module.exports = {
 		{
 			files: ["*.?(c)js"],
 			extends: ["plugin:@typescript-eslint/disable-type-checked"],
-			rules: { "deprecation/deprecation": "off" },
+			rules: {
+				"deprecation/deprecation": "off",
+			},
 		},
 		{
 			files: ["./*"],
-			rules: { "filenames/match-exported": "off" },
+			rules: {
+				"filenames/match-exported": "off",
+			},
 		},
 		{
 			files: ["src/**/*"],
 			env: { node: false, browser: true },
+			parserOptions: { project: "./tsconfig.json" },
+			settings: {
+				"import/resolver": {
+					"eslint-import-resolver-typescript": {
+						project: "./tsconfig.json",
+					},
+				},
+				"tailwindcss": { callees: ["twMerge", "twJoin"] },
+			},
+			extends: ["plugin:tailwindcss/recommended"],
 			rules: {
 				"no-console": "error",
 				"import/no-extraneous-dependencies": ["error", srcDependencies],
+				"import/order": getImportOrderConfig("./tsconfig.json"),
 			},
 		},
 		{
 			files: testFilePatterns(),
 			env: { node: true },
-			extends: [
-				"plugin:vitest/all",
-				"plugin:testing-library/dom",
-				"plugin:jest-dom/recommended",
-			],
 			rules: {
 				"no-console": "off",
 				"import/no-extraneous-dependencies": ["error", devDependencies],
@@ -161,12 +130,6 @@ module.exports = {
 					"kebab",
 					`\\.(${testFileSuffixes.join("|")})$`,
 				],
-				"vitest/no-hooks": "off",
-			},
-		},
-		{
-			files: testFilePatterns({ extensions: "ts" }),
-			rules: {
 				"@typescript-eslint/no-explicit-any": "off",
 				"@typescript-eslint/no-non-null-assertion": "off",
 				"@typescript-eslint/no-unsafe-argument": "off",
@@ -177,5 +140,64 @@ module.exports = {
 				"@typescript-eslint/unbound-method": "off",
 			},
 		},
+		{
+			files: testFilePatterns({ root: "src" }),
+			env: { node: true },
+			extends: [
+				"plugin:vitest/all",
+				"plugin:testing-library/dom",
+				"plugin:jest-dom/recommended",
+			],
+			rules: {
+				"vitest/no-hooks": "off",
+			},
+		},
 	],
+}
+
+function testFilePatterns({ root = "", extensions = "*" } = {}) {
+	return [
+		`*.{${testFileSuffixes.join(",")}}`,
+		"__{test,tests,mocks,fixtures}__/**/*",
+		"__{test,mock,fixture}-*__/**/*",
+	].map((pattern) => path.join(root, `**/${pattern}.${extensions}`))
+}
+
+/** @param {string} configPath */
+function getImportOrderConfig(configPath) {
+	const parsed = path.parse(path.resolve(__dirname, configPath))
+
+	const tsconfigFile = ts.findConfigFile(
+		parsed.dir,
+		ts.sys.fileExists,
+		parsed.base,
+	)
+
+	const configContents = tsconfigFile
+		? ts.readConfigFile(tsconfigFile, ts.sys.readFile)
+		: undefined
+
+	const pathAliases = Object.keys(
+		configContents?.config?.compilerOptions?.paths ?? {},
+	)
+
+	return [
+		"warn",
+		{
+			"groups": [
+				"builtin",
+				"external",
+				"internal",
+				["parent", "sibling", "index"],
+				"type",
+			],
+			"pathGroups": pathAliases.map((pattern) => ({
+				pattern,
+				group: "internal",
+			})),
+			"pathGroupsExcludedImportTypes": ["type"],
+			"alphabetize": { order: "asc" },
+			"newlines-between": "always",
+		},
+	]
 }
