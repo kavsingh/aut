@@ -8,13 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: oven-sh/setup-bun@v1
         with:
-          version: latest
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: ".nvmrc"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm test -- --coverage --silent
-      - run: pnpm lint
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run test -- --coverage --silent
+      - run: bun lint
