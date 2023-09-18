@@ -68,23 +68,18 @@ function findInternalUrl(
 	container: HTMLElement,
 	target: EventTarget | null,
 ): string | undefined {
-	const targetUrl = getInternalUrl(target)
-
-	if (targetUrl) return targetUrl
 	if (!(target instanceof Element)) return undefined
 
-	let root = target
+	let maybeElement: Element | null = target
 
-	while (root.parentNode) {
-		const parent = root.parentNode
+	while (maybeElement) {
+		if (maybeElement === container) return undefined
 
-		if (parent === container) return undefined
+		const url = getInternalUrl(maybeElement)
 
-		const fromParent = getInternalUrl(parent)
+		if (url) return url
 
-		if (fromParent) return getInternalUrl(parent)
-		else if (parent instanceof Element) root = parent
-		else break
+		maybeElement = maybeElement.parentElement
 	}
 
 	return undefined
