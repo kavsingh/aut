@@ -19,7 +19,7 @@
 @media (prefers-color-scheme: dark) {
 	:root {
 		color: theme(colors.neutral.500);
-		background-color: theme(colors.neutral.950);
+		background-color: theme(colors.neutral.900);
 	}
 
 	*:focus-visible {

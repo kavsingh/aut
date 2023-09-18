@@ -9,9 +9,7 @@ import type { Component } from "~/lib/types"
 const Nav: Component<{
 	navigate: ReturnType<typeof createRouter>["navigate"]
 }> = ({ navigate }) => {
-	const el = htmlToElement(
-		/* html */ `<div class="fixed z-10 flex top-0 right-0 gap-1 pt-1 pe-1"></div>`,
-	)
+	const el = htmlToElement(/* html */ `<div class="flex gap-1"></div>`)
 	const scrollsLink = Button({
 		as: "button",
 		onClick: () => {
@@ -35,7 +33,7 @@ const Nav: Component<{
 		as: "link",
 		href: "https://github.com/kavsingh/cellular-automaton",
 		content: github,
-		class: "w-[1em]",
+		class: "w-5",
 	})
 
 	el.appendChild(scrollsLink.el)

@@ -24,7 +24,7 @@ const RuleSlider: Component<{
 	>
 		<div
 			data-el="thumbnail-container"
-			class="absolute overflow-hidden bg-white dark:bg-neutral-950 rounded-full scale-50 opacity-40 w-[40px] h-[40px] end-[-40px] top-[-20px] hover:opacity-100 hover:scale-100 transition-all"
+			class="absolute overflow-hidden bg-white dark:bg-neutral-900 rounded-full scale-50 opacity-40 w-[40px] h-[40px] end-[-40px] top-[-20px] hover:opacity-100 hover:scale-100 transition-all"
 		></div>
 	</div>`)
 

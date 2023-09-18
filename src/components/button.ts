@@ -6,7 +6,7 @@ import type { Component } from "~/lib/types"
 
 const Button: Component<Props> = (props) => {
 	const classNames = twMerge(
-		"w-[1.3em] text-black opacity-30 transition-opacity hover:opacity-100 focus-visible:opacity-100 active:opacity-100 dark:text-white fs:opacity-10 [&>svg]:aspect-square [&>svg]:h-[unset] [&>svg]:w-full",
+		"w-[1.1rem] text-black opacity-30 transition-opacity hover:opacity-100 focus-visible:opacity-100 active:opacity-100 dark:text-white fs:opacity-10 [&>svg]:aspect-square [&>svg]:h-[unset] [&>svg]:w-full",
 		props.class,
 	)
 
@@ -14,7 +14,7 @@ const Button: Component<Props> = (props) => {
 		props.as === "link"
 			? /* html */ `
 		<a
-			class="${classNames}
+			class="${classNames}"
 			href=${props.href}
 			target="_blank"
 			rel="noopener"

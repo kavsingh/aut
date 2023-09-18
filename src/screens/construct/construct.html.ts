@@ -7,7 +7,7 @@ export const screen = /*html*/ `
 		></div>
 		<canvas
 			data-el="world-canvas"
-			class="absolute inset-0 z-0 bg-white dark:bg-neutral-950"
+			class="absolute inset-0 z-0 bg-white dark:bg-neutral-900"
 		></canvas>
 	</div>
 </div>
