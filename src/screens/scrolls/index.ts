@@ -17,7 +17,7 @@ const screenHtml = /* html */ `
 	<div class="relative mt-[60px] z-[2] group">
 		<div
 			data-el="worlds-container"
-			class="flex items-center justify-center cursor-pointer"
+			class="flex items-center justify-center cursor-pointer [&>*:nth-child(2n-1)]:rotate-180"
 		></div>
 		<div
 			data-el="thumbnails-container"
