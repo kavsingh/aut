@@ -8,10 +8,28 @@ import { generateInitialWorld } from "~/lib/world"
 import { saveSvgSnapshot } from "./lib/snapshot-to-svg"
 import { createWorldsForType, startWorldAnimations } from "./lib/worlds"
 import { addRuleThumbnails } from "./rule-thumbnails"
-import { html } from "./scrolls.html"
 
 import type { State } from "./lib/types"
 import type { Component } from "~/lib/types"
+
+const screenHtml = /* html */ `
+<div class="flex items-center justify-center w-full h-full">
+	<div class="relative mt-[60px] z-[2] group">
+		<div
+			data-el="worlds-container"
+			class="flex items-center justify-center cursor-pointer"
+		></div>
+		<div
+			data-el="thumbnails-container"
+			class="flex items-center justify-center translate-y-[-20%] cursor-pointer opacity-0 transition-all h-[60px] group-hover:opacity-100 group-hover:translate-y-0"
+		></div>
+	</div>
+	<div
+		data-el="buttons-container"
+		class="absolute flex gap-4 bottom-[2em] start-1/2 -translate-x-1/2"
+	></div>
+</div>
+`
 
 const Scrolls: Component = () => {
 	const worldCount = 3
@@ -40,7 +58,7 @@ const Scrolls: Component = () => {
 		onClick: audio.toggle.bind(audio),
 	})
 
-	const el = htmlToFragment(html)
+	const el = htmlToFragment(screenHtml)
 	const worldsContainer = el.querySelector<HTMLElement>(
 		'[data-el="worlds-container"]',
 	)

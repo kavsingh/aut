@@ -9,19 +9,23 @@ const RuleThumbnail: Component<{
 	evolver: WorldStateEvolver
 	fillColor?: string
 	size?: number
-}> = ({ evolver, fillColor, size = 40 }) => {
+	class?: string
+}> = ({ evolver, class: className, fillColor, size = 40 }) => {
+	const state = range(size).reduce(
+		(acc) => evolver(acc),
+		generateInitialWorld(size, size, seedRandom),
+	)
+
 	const el = document.createElement("canvas")
+
 	const ruleRenderer = createRenderer([el], {
 		cellDim: 1,
 		width: size,
 		height: size,
 		fillColor: fillColor ?? getComputedFillColor(),
 	})
-	const state = range(size).reduce(
-		(acc) => evolver(acc),
-		generateInitialWorld(size, size, seedRandom),
-	)
 
+	if (className) el.classList.add(...className.split(" "))
 	ruleRenderer(state)
 
 	return { el }
