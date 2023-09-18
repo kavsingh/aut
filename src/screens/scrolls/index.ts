@@ -21,7 +21,7 @@ const screenHtml = /* html */ `
 		></div>
 		<div
 			data-el="thumbnails-container"
-			class="flex items-center justify-center translate-y-[-20%] cursor-pointer opacity-0 transition-all h-[60px] group-hover:opacity-100 group-hover:translate-y-0"
+			class="flex items-center justify-center translate-y-[-20%] cursor-pointer opacity-0 transition-all h-[60px] pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto"
 		></div>
 	</div>
 	<div
@@ -48,12 +48,14 @@ const Scrolls: Component = () => {
 	const snapshotButton = Button({
 		as: "button",
 		content: camera,
+		label: "Take SVG snapshot",
 		onClick: () => {
 			saveSvgSnapshot("snapshot.svg", state)
 		},
 	})
 	const audioButton = Button({
 		as: "button",
+		label: "Toggle audio",
 		content: speaker,
 		onClick: audio.toggle.bind(audio),
 	})

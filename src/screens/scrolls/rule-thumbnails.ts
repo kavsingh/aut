@@ -8,13 +8,16 @@ export function addRuleThumbnails(
 	container: HTMLElement,
 	onThumbnailClick: (evolver: WorldStateEvolver) => void,
 ) {
-	for (const rule of rules) {
+	rules.forEach((rule, index) => {
 		const evolver = createEvolver(rule)
-		const { el } = RuleThumbnail({ evolver, class: "cursor-pointer" })
+		const buttonEl = document.createElement("button")
+		const { el } = RuleThumbnail({ evolver })
 
-		container.appendChild(el)
-		el.addEventListener("click", () => {
+		buttonEl.setAttribute("aria-label", `Rule ${index + 1}`)
+		buttonEl.appendChild(el)
+		container.appendChild(buttonEl)
+		buttonEl.addEventListener("click", () => {
 			onThumbnailClick(evolver)
 		})
-	}
+	})
 }

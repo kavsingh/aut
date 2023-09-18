@@ -121,6 +121,7 @@ const Construct: Component = () => {
 	const audioButton = Button({
 		as: "button",
 		content: speaker,
+		label: "Toggle audio",
 		onClick: () => {
 			audio.update(worldState)
 			audio.toggle()
