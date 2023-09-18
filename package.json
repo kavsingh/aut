@@ -12,7 +12,7 @@
 		"tdd": "bunx vitest",
 		"lint": "tsc && eslint .",
 		"dev": "bunx vite",
-		"build": "rm -rf ./dist && bunx vite build",
+		"build": "rm -rf ./dist && vite build",
 		"preview": "vite preview"
 	},
 	"dependencies": {
