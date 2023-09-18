@@ -63,12 +63,7 @@ const Scrolls: Component = () => {
 		worldsContainer,
 		{
 			count: worldCount,
-			rendererOptions: {
-				cellDim,
-				width: worldDim,
-				height: worldDim,
-				fillColor: "#fff",
-			},
+			rendererOptions: { cellDim, width: worldDim, height: worldDim },
 		},
 	)
 

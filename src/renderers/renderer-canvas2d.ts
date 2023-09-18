@@ -1,3 +1,5 @@
+import { getComputedFillColor } from "~/lib/color"
+
 import { last, head, groupIndecesBy, eq } from "../lib/util"
 
 import type { RendererFactory } from "./types"
@@ -8,7 +10,7 @@ export const createRenderer: CanvasRendererFactory = (
 		width = 200,
 		height = 200,
 		cellDim = 2,
-		fillColor = "#000000",
+		fillColor = getComputedFillColor(),
 		fillMode = "active",
 	},
 ) => {

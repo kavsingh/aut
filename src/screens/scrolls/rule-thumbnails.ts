@@ -10,7 +10,7 @@ export function addRuleThumbnails(
 ) {
 	for (const rule of rules) {
 		const evolver = createEvolver(rule)
-		const { el } = RuleThumbnail({ fillColor: "#fff", evolver })
+		const { el } = RuleThumbnail({ evolver })
 
 		container.appendChild(el)
 		el.addEventListener("click", () => {

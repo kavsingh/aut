@@ -55,7 +55,6 @@ const Construct: Component = () => {
 		cellDim,
 		width: size,
 		height: size,
-		fillColor: "#fff",
 	})
 
 	function constructRuleSliders(evolvers: EvolverItem[]) {

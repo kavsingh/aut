@@ -1,3 +1,4 @@
+import { getComputedFillColor } from "~/lib/color"
 import { range } from "~/lib/util"
 import { generateInitialWorld, seedRandom } from "~/lib/world"
 import { createRenderer } from "~/renderers/renderer-canvas2d"
@@ -14,7 +15,7 @@ const RuleThumbnail: Component<{
 		cellDim: 1,
 		width: size,
 		height: size,
-		fillColor: fillColor ?? "#fff",
+		fillColor: fillColor ?? getComputedFillColor(),
 	})
 	const state = range(size).reduce(
 		(acc) => evolver(acc),
