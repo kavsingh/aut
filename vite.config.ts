@@ -8,14 +8,12 @@ import tsConfigPaths from "vite-tsconfig-paths"
 
 export default defineConfig(({ mode }) => {
 	return {
-		build: { sourcemap: true },
 		plugins: [
 			tsConfigPaths(),
 			checker(mode),
 			viteSingleFile(),
 			createHtmlPlugin(),
 		],
-		css: { modules: { localsConvention: "camelCaseOnly" } },
 		deps: { optimizer: { web: { include: ["vitest-canvas-mock"] } } },
 		test: {
 			include: ["src/**/*.test.ts"],

@@ -2,8 +2,8 @@
 	"recommendations": [
 		"dbaeumer.vscode-eslint",
 		"esbenp.prettier-vscode",
-		"stylelint.vscode-stylelint",
 		"Tobermory.es6-string-html",
+		"bradlc.vscode-tailwindcss",
 		"vunguyentuan.vscode-css-variables"
 	]
 }

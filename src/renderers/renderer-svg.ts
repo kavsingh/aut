@@ -1,3 +1,5 @@
+import { getComputedFillColor } from "~/lib/color"
+
 import { last, head, groupIndecesBy, eq } from "../lib/util"
 
 import type { RendererFactory } from "./types"
@@ -10,7 +12,7 @@ export const createRenderer: SvgRendererFactory = (
 		width = 200,
 		height = 200,
 		cellDim = 2,
-		fillColor = "#000000",
+		fillColor = getComputedFillColor(),
 		fillMode = "active",
 	},
 ) => {
@@ -22,7 +24,7 @@ export const createRenderer: SvgRendererFactory = (
 		svgElements.forEach((element) => void (element.innerHTML = ""))
 	}
 
-	const drawRow = (row: number[], yOffset: number) => {
+	function drawRow(row: number[], yOffset: number) {
 		const rowFragment = document.createDocumentFragment()
 
 		for (const current of groupFillRanges(row)) {

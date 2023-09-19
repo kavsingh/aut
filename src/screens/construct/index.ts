@@ -1,6 +1,6 @@
 import Audio from "~/audio"
 import Button from "~/components/button"
-import { getThemeValue } from "~/lib/css"
+import { speaker } from "~/components/icons"
 import { htmlToFragment } from "~/lib/dom"
 import { createEvolver } from "~/lib/evolver"
 import * as rules from "~/lib/rules"
@@ -8,29 +8,44 @@ import { createStateEmitter } from "~/lib/state-emitter"
 import { findLast, range, sample } from "~/lib/util"
 import { generateInitialWorld, seedRandom } from "~/lib/world"
 import { createRenderer } from "~/renderers/renderer-canvas2d"
-import { speaker } from "~/style/icons"
 
-import { screen } from "./construct.html"
-import {
-	worldCanvas,
-	worldContainer,
-	slidersContainer,
-	buttons,
-} from "./construct.module.css"
 import RuleSlider from "./rule-slider"
 
 import type { Component, WorldState, WorldStateEvolver } from "~/lib/types"
 
+const screenHtml = /*html*/ `
+<div class="flex items-center justify-center w-full h-full">
+	<div data-el="world-container" class="relative w-[440px] h-[440px]">
+		<div 
+			data-el="sliders-container"
+			class="absolute inset-0 z-10"
+		></div>
+		<canvas
+			data-el="world-canvas"
+			class="absolute inset-0 z-0 bg-white dark:bg-neutral-900"
+		></canvas>
+	</div>
+</div>
+<div
+	data-el="buttons-container"
+	class="absolute flex gap-4 -translate-x-1/2 bottom-[2em] start-1/2"
+></div>
+`
+
 const Construct: Component = () => {
-	const el = htmlToFragment(screen)
-	const worldCanvasEl = el.querySelector<HTMLCanvasElement>(`.${worldCanvas}`)
+	const el = htmlToFragment(screenHtml)
+	const worldCanvasEl = el.querySelector<HTMLCanvasElement>(
+		"[data-el='world-canvas']",
+	)
 	const worldContainerEl = el.querySelector<HTMLDivElement>(
-		`.${worldContainer}`,
+		"[data-el='world-container']",
 	)
 	const slidersContainerEl = el.querySelector<HTMLDivElement>(
-		`.${slidersContainer}`,
+		"[data-el='sliders-container']",
 	)
-	const buttonsContainerEl = el.querySelector<HTMLDivElement>(`.${buttons}`)
+	const buttonsContainerEl = el.querySelector<HTMLDivElement>(
+		"[data-el='buttons-container']",
+	)
 
 	if (
 		!(
@@ -58,7 +73,6 @@ const Construct: Component = () => {
 		cellDim,
 		width: size,
 		height: size,
-		fillColor: getThemeValue("--color-line-600"),
 	})
 
 	function constructRuleSliders(evolvers: EvolverItem[]) {
@@ -107,6 +121,7 @@ const Construct: Component = () => {
 	const audioButton = Button({
 		as: "button",
 		content: speaker,
+		label: "Toggle audio",
 		onClick: () => {
 			audio.update(worldState)
 			audio.toggle()

@@ -3,6 +3,12 @@
 	"editor.codeActionsOnSave": {
 		"source.fixAll": true
 	},
+	"editor.quickSuggestions": {
+		"strings": true
+	},
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
 	"files.watcherExclude": {
 		"**/node_modules": true,
 		"**/dist/": true
@@ -11,8 +17,7 @@
 		"**/node_modules": true,
 		"**/dist/": true
 	},
-	"css.validate": false,
-	"stylelint.enable": true,
+	"tailwindCSS.validate": true,
 	"cssVariables.lookupFiles": ["src/style/**/*.css"],
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"[javascript]": {
@@ -21,16 +26,16 @@
 	"[typescript]": {
 		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
 	},
+	"[html]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[css]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
 	"[json]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[jsonc]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"[html]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"[css]": {
-		"editor.defaultFormatter": "stylelint.vscode-stylelint"
 	}
 }

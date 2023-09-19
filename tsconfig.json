@@ -15,5 +15,5 @@
 		"allowUnreachableCode": true
 	},
 	"exclude": ["**/node_modules"],
-	"include": ["./src", "./tools", "./*.ts", "./*.js", "./*.*.cjs"]
+	"include": ["./src", "./*.ts", "./*.js", "./*.*.cjs"]
 }

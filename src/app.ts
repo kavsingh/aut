@@ -1,4 +1,3 @@
-import { screenContainer as screenContainerStyle } from "./app.module.css"
 import Nav from "./components/nav"
 import { createRouter } from "./lib/router"
 import Construct from "./screens/construct"
@@ -7,7 +6,19 @@ import Scrolls from "./screens/scrolls"
 import type { ComponentApi } from "./lib/types"
 
 export default function app(rootEl: HTMLElement) {
-	const screenContainer = document.createElement("div")
+	rootEl.innerHTML = /* html */ `
+		<div
+			data-el="nav-container"
+			class="fixed z-10 w-full flex justify-end pt-8 px-8"
+		></div>
+		<div data-el="screen-container" class="h-full w-full"></div>
+	`
+
+	const navContainer = rootEl.querySelector("[data-el='nav-container']")
+	const screenContainer = rootEl.querySelector("[data-el='screen-container']")
+
+	if (!(navContainer && screenContainer)) throw new Error("Missing dom")
+
 	let currentScreen: ComponentApi | undefined
 
 	async function routeHandler(route: string) {
@@ -24,7 +35,7 @@ export default function app(rootEl: HTMLElement) {
 				break
 		}
 
-		if (currentScreen) {
+		if (currentScreen && screenContainer) {
 			screenContainer.innerHTML = ""
 			screenContainer.appendChild(currentScreen.el)
 		}
@@ -33,8 +44,5 @@ export default function app(rootEl: HTMLElement) {
 	const router = createRouter(routeHandler)
 	const nav = Nav({ navigate: router.navigate.bind(router) })
 
-	screenContainer.classList.add(screenContainerStyle)
-
-	rootEl.appendChild(screenContainer)
-	rootEl.appendChild(nav.el)
+	navContainer.appendChild(nav.el)
 }

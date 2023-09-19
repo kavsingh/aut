@@ -1,6 +1,8 @@
 export function createEmitter<
 	TPayload,
-	TListener extends (payload: TPayload) => void = (payload: TPayload) => void,
+	TListener extends (payload: Readonly<TPayload>) => void = (
+		payload: Readonly<TPayload>,
+	) => void,
 >() {
 	const listeners = new Set<TListener>()
 

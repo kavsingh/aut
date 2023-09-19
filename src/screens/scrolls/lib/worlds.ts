@@ -79,7 +79,7 @@ export function startWorldAnimations(
 	let switchAccum = 0
 	let evolver = nextEvolver()
 
-	const update = () => {
+	function update() {
 		if (!running) return
 
 		switchAccum = switchAccum >= switchThreshold ? 0 : switchAccum + 1
@@ -88,7 +88,7 @@ export function startWorldAnimations(
 		audio.update(state.world)
 	}
 
-	const onFrame = () => {
+	function onFrame() {
 		if (!running) return
 
 		renderWorld(state.world)
@@ -98,7 +98,7 @@ export function startWorldAnimations(
 	const updateInterval = setInterval(update, 14)
 	window.requestAnimationFrame(onFrame)
 
-	return () => {
+	return function stopWorldAnimations() {
 		running = false
 		clearInterval(updateInterval)
 	}
