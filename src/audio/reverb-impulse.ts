@@ -7,7 +7,6 @@ export default class ReverbImpulse implements ReverbNode {
 	#convolver: ConvolverNode
 	#wetGain: GainNode
 	#dryGain: GainNode
-	#outGain: GainNode
 
 	constructor(audioContext: AudioContext, impulseUrl: string) {
 		this.#audioContext = audioContext
@@ -15,10 +14,8 @@ export default class ReverbImpulse implements ReverbNode {
 		this.#convolver = this.#audioContext.createConvolver()
 		this.#wetGain = this.#audioContext.createGain()
 		this.#dryGain = this.#audioContext.createGain()
-		this.#outGain = this.#audioContext.createGain()
 
-		this.#convolver.connect(this.#wetGain).connect(this.#outGain)
-		this.#dryGain.connect(this.#outGain)
+		this.#convolver.connect(this.#wetGain)
 
 		this.#dryGain.gain.setValueAtTime(0, this.#audioContext.currentTime)
 		this.#wetGain.gain.setValueAtTime(0, this.#audioContext.currentTime)

@@ -63,7 +63,7 @@ export default class Audio {
 		this.#highOsc.type = "triangle"
 
 		this.#reverbA.setWetDry(0.2, this.#audioContext.currentTime)
-		this.#reverbB.setWetDry(1, this.#audioContext.currentTime)
+		this.#reverbB.setWetDry(0.8, this.#audioContext.currentTime)
 		this.#lfo.frequency.setValueAtTime(0.01, this.#audioContext.currentTime)
 		this.#lowOsc.frequency.setValueAtTime(60, this.#audioContext.currentTime)
 		this.#midOsc.frequency.setValueAtTime(120, this.#audioContext.currentTime)
