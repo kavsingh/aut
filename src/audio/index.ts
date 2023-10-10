@@ -70,7 +70,7 @@ export default class Audio {
 		this.#lowOsc.frequency.setValueAtTime(60, this.#audioContext.currentTime)
 		this.#midOsc.frequency.setValueAtTime(120, this.#audioContext.currentTime)
 		this.#highOsc.frequency.setValueAtTime(320, this.#audioContext.currentTime)
-		this.#midGain.gain.setValueAtTime(0.01, this.#audioContext.currentTime)
+		this.#midGain.gain.setValueAtTime(0.005, this.#audioContext.currentTime)
 		this.#lfoGain.gain.setValueAtTime(0.01, this.#audioContext.currentTime)
 		this.#compressor.threshold.setValueAtTime(
 			-40,
