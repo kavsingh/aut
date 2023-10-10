@@ -42,8 +42,8 @@ export default class ReverbImpulse implements ReverbNode {
 		const clamped = clamp(0, 1, ratio)
 		const time = atTime ?? this.#audioContext.currentTime
 
-		this.#dryGain.gain.setValueAtTime(clamped, time)
-		this.#wetGain.gain.setValueAtTime(1 - clamped, time)
+		this.#wetGain.gain.setValueAtTime(clamped, time)
+		this.#dryGain.gain.setValueAtTime(1 - clamped, time)
 	}
 }
 
