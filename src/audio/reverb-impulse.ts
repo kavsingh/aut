@@ -17,8 +17,8 @@ export default class ReverbImpulse implements ReverbNode {
 
 		this.#convolver.connect(this.#wetGain)
 
-		this.#dryGain.gain.setValueAtTime(0, this.#audioContext.currentTime)
 		this.#wetGain.gain.setValueAtTime(0, this.#audioContext.currentTime)
+		this.#dryGain.gain.setValueAtTime(1, this.#audioContext.currentTime)
 
 		void loadImpulse(this.#audioContext, impulseUrl).then((impulse) => {
 			this.#convolver.buffer = impulse
