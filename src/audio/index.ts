@@ -2,7 +2,7 @@ import { processWorld } from "./process-world"
 import ReverbImpulse from "./reverb-impulse"
 import starImpulse from "./star.wav"
 
-import type { ReverbNode } from "./types"
+import type { EffectNode } from "./types"
 import type { WorldState } from "~/lib/types"
 
 export default class Audio {
@@ -15,8 +15,8 @@ export default class Audio {
 	#lowGain: GainNode
 	#midGain: GainNode
 	#highGain: GainNode
-	#reverbA: ReverbNode
-	#reverbB: ReverbNode
+	#reverbA: EffectNode
+	#reverbB: EffectNode
 	#mix: GainNode
 	#compressor: DynamicsCompressorNode
 	#oscillatorsStarted = false

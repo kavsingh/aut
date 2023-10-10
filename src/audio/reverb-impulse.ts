@@ -1,8 +1,8 @@
 import { clamp } from "~/lib/util"
 
-import type { ReverbNode } from "./types"
+import type { EffectNode } from "./types"
 
-export default class ReverbImpulse implements ReverbNode {
+export default class ReverbImpulse implements EffectNode {
 	#audioContext: AudioContext
 	#convolver: ConvolverNode
 	#wetGain: GainNode
