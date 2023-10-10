@@ -1,6 +1,5 @@
 import { processWorld } from "./process-world"
-import ReverbImpulse from "./reverb-impulse"
-import starImpulse from "./star.wav"
+import ReverbSimple from "./reverb-simple"
 
 import type { EffectNode } from "./types"
 import type { WorldState } from "~/lib/types"
@@ -26,8 +25,11 @@ export default class Audio {
 
 		void this.#audioContext.suspend()
 
-		this.#reverbA = new ReverbImpulse(this.#audioContext, starImpulse)
-		this.#reverbB = new ReverbImpulse(this.#audioContext, starImpulse)
+		this.#reverbA = new ReverbSimple(this.#audioContext)
+		this.#reverbB = new ReverbSimple(this.#audioContext, {
+			seconds: 10,
+			reverse: true,
+		})
 
 		this.#lfo = this.#audioContext.createOscillator()
 		this.#lowOsc = this.#audioContext.createOscillator()
