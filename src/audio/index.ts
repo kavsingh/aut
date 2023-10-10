@@ -1,6 +1,8 @@
-import { loadImpulses } from "./impulses"
 import { processWorld } from "./process-world"
+import ReverbImpulse from "./reverb-impulse"
+import starImpulse from "./star.wav"
 
+import type { ReverbNode } from "./types"
 import type { WorldState } from "~/lib/types"
 
 export default class Audio {
@@ -13,12 +15,9 @@ export default class Audio {
 	#lowGain: GainNode
 	#midGain: GainNode
 	#highGain: GainNode
-	#reverbA: ConvolverNode
-	#reverbB: ConvolverNode
-	#reverbAGain: GainNode
-	#reverbBGain: GainNode
-	#dry: GainNode
-	#out: GainNode
+	#reverbA: ReverbNode
+	#reverbB: ReverbNode
+	#mix: GainNode
 	#compressor: DynamicsCompressorNode
 	#oscillatorsStarted = false
 
@@ -26,6 +25,9 @@ export default class Audio {
 		this.#audioContext = new AudioContext()
 
 		void this.#audioContext.suspend()
+
+		this.#reverbA = new ReverbImpulse(this.#audioContext, starImpulse)
+		this.#reverbB = new ReverbImpulse(this.#audioContext, starImpulse)
 
 		this.#lfo = this.#audioContext.createOscillator()
 		this.#lowOsc = this.#audioContext.createOscillator()
@@ -35,62 +37,45 @@ export default class Audio {
 		this.#lowGain = this.#audioContext.createGain()
 		this.#midGain = this.#audioContext.createGain()
 		this.#highGain = this.#audioContext.createGain()
-		this.#reverbA = this.#audioContext.createConvolver()
-		this.#reverbB = this.#audioContext.createConvolver()
-		this.#reverbAGain = this.#audioContext.createGain()
-		this.#reverbBGain = this.#audioContext.createGain()
-		this.#dry = this.#audioContext.createGain()
-		this.#out = this.#audioContext.createGain()
+		this.#mix = this.#audioContext.createGain()
 		this.#compressor = this.#audioContext.createDynamicsCompressor()
 
 		this.#lowOsc.connect(this.#lowGain)
 		this.#midOsc.connect(this.#midGain)
 		this.#highOsc.connect(this.#highGain)
 
-		this.#lowGain.connect(this.#reverbA)
-		this.#lowGain.connect(this.#dry)
+		this.#reverbA.connectFrom(this.#lowGain)
+		this.#reverbA.connectFrom(this.#midGain)
+		this.#reverbB.connectFrom(this.#highGain)
 
-		this.#midGain.connect(this.#reverbA)
-		this.#midGain.connect(this.#dry)
-
-		this.#highGain.connect(this.#reverbB)
-		this.#highGain.connect(this.#dry)
-
-		this.#reverbA.connect(this.#reverbAGain).connect(this.#out)
-		this.#reverbB.connect(this.#reverbBGain).connect(this.#out)
+		this.#reverbA.connectTo(this.#mix)
+		this.#reverbB.connectTo(this.#mix)
 
 		this.#lfo.connect(this.#lfoGain)
 		this.#lfoGain.connect(this.#highGain.gain)
 		this.#lfoGain.connect(this.#lowGain.gain)
 
-		this.#dry.connect(this.#out)
-		this.#out.connect(this.#compressor).connect(this.#audioContext.destination)
+		this.#mix.connect(this.#compressor).connect(this.#audioContext.destination)
 
 		this.#lfo.type = "triangle"
 		this.#lowOsc.type = "sine"
 		this.#midOsc.type = "triangle"
 		this.#highOsc.type = "triangle"
 
+		this.#reverbA.setWetDry(0.2, this.#audioContext.currentTime)
+		this.#reverbB.setWetDry(1, this.#audioContext.currentTime)
 		this.#lfo.frequency.setValueAtTime(0.01, this.#audioContext.currentTime)
 		this.#lowOsc.frequency.setValueAtTime(60, this.#audioContext.currentTime)
 		this.#midOsc.frequency.setValueAtTime(120, this.#audioContext.currentTime)
 		this.#highOsc.frequency.setValueAtTime(320, this.#audioContext.currentTime)
-
 		this.#midGain.gain.setValueAtTime(0.01, this.#audioContext.currentTime)
 		this.#lfoGain.gain.setValueAtTime(0.01, this.#audioContext.currentTime)
-		this.#reverbAGain.gain.setValueAtTime(0.2, this.#audioContext.currentTime)
-		this.#reverbBGain.gain.setValueAtTime(0.5, this.#audioContext.currentTime)
-		this.#dry.gain.setValueAtTime(0.3, this.#audioContext.currentTime)
 		this.#compressor.threshold.setValueAtTime(
 			-40,
 			this.#audioContext.currentTime,
 		)
 		this.#compressor.ratio.setValueAtTime(1.2, this.#audioContext.currentTime)
-		this.#out.gain.setValueAtTime(0.001, this.#audioContext.currentTime)
-
-		void loadImpulses(this.#audioContext, ["star"]).then(([impulse]) => {
-			if (impulse) this.#reverbA.buffer = this.#reverbB.buffer = impulse
-		})
+		this.#mix.gain.setValueAtTime(0.001, this.#audioContext.currentTime)
 	}
 
 	isRunning() {
@@ -110,7 +95,7 @@ export default class Audio {
 			this.#oscillatorsStarted = true
 		}
 
-		this.#out.gain.exponentialRampToValueAtTime(
+		this.#mix.gain.exponentialRampToValueAtTime(
 			1.0,
 			this.#audioContext.currentTime + 2,
 		)
@@ -119,7 +104,7 @@ export default class Audio {
 	async stop() {
 		if (!this.isRunning()) return
 
-		this.#out.gain.setValueAtTime(0.001, this.#audioContext.currentTime)
+		this.#mix.gain.setValueAtTime(0.001, this.#audioContext.currentTime)
 		await this.#audioContext.suspend()
 	}
 
@@ -142,7 +127,7 @@ export default class Audio {
 
 	async dispose() {
 		await this.stop()
-		this.#out.disconnect()
+		this.#mix.disconnect()
 
 		return this.#audioContext.close()
 	}
