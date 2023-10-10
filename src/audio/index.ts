@@ -20,6 +20,10 @@ export default class Audio {
 	#compressor: DynamicsCompressorNode
 	#oscillatorsStarted = false
 
+	#lowBaseFreq = 60
+	#midBaseFreq = 120
+	#highBaseFreq = 240
+
 	constructor() {
 		this.#audioContext = new AudioContext()
 
@@ -55,22 +59,24 @@ export default class Audio {
 
 		this.#lfo.connect(this.#lfoGain)
 		this.#lfoGain.connect(this.#highGain.gain)
+		// this.#lfoGain.connect(this.#midGain.gain)
 		this.#lfoGain.connect(this.#lowGain.gain)
 
 		this.#mix.connect(this.#compressor).connect(this.#audioContext.destination)
 
 		this.#lfo.type = "triangle"
 		this.#lowOsc.type = "sine"
-		this.#midOsc.type = "triangle"
-		this.#highOsc.type = "triangle"
+		this.#midOsc.type = "sawtooth"
+		this.#highOsc.type = "sawtooth"
+
+		this.#lowOsc.frequency.value = this.#lowBaseFreq
+		this.#midOsc.frequency.value = this.#midBaseFreq
+		this.#highOsc.frequency.value = this.#highBaseFreq
 
 		this.#reverbA.setWetDry(0.2, this.#audioContext.currentTime)
 		this.#reverbB.setWetDry(0.8, this.#audioContext.currentTime)
 		this.#lfo.frequency.setValueAtTime(0.01, this.#audioContext.currentTime)
-		this.#lowOsc.frequency.setValueAtTime(60, this.#audioContext.currentTime)
-		this.#midOsc.frequency.setValueAtTime(120, this.#audioContext.currentTime)
-		this.#highOsc.frequency.setValueAtTime(320, this.#audioContext.currentTime)
-		this.#midGain.gain.setValueAtTime(0.005, this.#audioContext.currentTime)
+		this.#midGain.gain.setValueAtTime(0.01, this.#audioContext.currentTime)
 		this.#lfoGain.gain.setValueAtTime(0.01, this.#audioContext.currentTime)
 		this.#compressor.threshold.setValueAtTime(
 			-40,
@@ -119,11 +125,17 @@ export default class Audio {
 		const time = this.#audioContext.currentTime + 0.06
 		const { inactiveRatio, activeRatio, movement } = processWorld(world)
 
-		this.#lowGain.gain.exponentialRampToValueAtTime(inactiveRatio * 0.3, time)
+		this.#lowGain.gain.exponentialRampToValueAtTime(inactiveRatio * 0.4, time)
 		this.#highGain.gain.exponentialRampToValueAtTime(
-			activeRatio ** 2 * 0.1,
+			activeRatio ** 2 * 0.06,
 			time,
 		)
+
+		this.#highOsc.frequency.linearRampToValueAtTime(
+			this.#highBaseFreq + (0.5 - activeRatio * 2) * 12,
+			time,
+		)
+
 		this.#lfo.frequency.linearRampToValueAtTime(movement ** 4 * 40, time)
 	}
 
