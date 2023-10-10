@@ -59,7 +59,7 @@ export default class Audio {
 
 		this.#lfo.connect(this.#lfoGain)
 		this.#lfoGain.connect(this.#highGain.gain)
-		// this.#lfoGain.connect(this.#midGain.gain)
+		this.#lfoGain.connect(this.#midOsc.frequency)
 		this.#lfoGain.connect(this.#lowGain.gain)
 
 		this.#mix.connect(this.#compressor).connect(this.#audioContext.destination)
@@ -128,6 +128,11 @@ export default class Audio {
 		this.#lowGain.gain.exponentialRampToValueAtTime(inactiveRatio * 0.4, time)
 		this.#highGain.gain.exponentialRampToValueAtTime(
 			activeRatio ** 2 * 0.06,
+			time,
+		)
+
+		this.#midOsc.frequency.linearRampToValueAtTime(
+			this.#midBaseFreq + (0.5 - activeRatio) * 6,
 			time,
 		)
 
