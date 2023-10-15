@@ -120,7 +120,7 @@ export default class Audio {
 		}
 
 		this.#mix.gain.exponentialRampToValueAtTime(
-			1.0,
+			1.2,
 			this.#audioContext.currentTime + 3,
 		)
 	}
@@ -147,7 +147,7 @@ export default class Audio {
 			time,
 		)
 		this.#highGain.gain.exponentialRampToValueAtTime(
-			activeRatio ** 2 * 0.06,
+			clamp(0.008, 0.01, activeRatio ** 2 * 0.06),
 			time,
 		)
 
