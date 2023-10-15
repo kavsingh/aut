@@ -1,3 +1,5 @@
+import { clamp } from "~/lib/util"
+
 import { processWorld } from "./process-world"
 import ReverbSimple from "./reverb-simple"
 
@@ -16,6 +18,7 @@ export default class Audio {
 	#highGain: GainNode
 	#reverbA: EffectNode
 	#reverbB: EffectNode
+	#filter: BiquadFilterNode
 	#mix: GainNode
 	#compressor: DynamicsCompressorNode
 	#oscillatorsStarted = false
@@ -44,6 +47,7 @@ export default class Audio {
 		this.#midGain = this.#audioContext.createGain()
 		this.#highGain = this.#audioContext.createGain()
 		this.#mix = this.#audioContext.createGain()
+		this.#filter = this.#audioContext.createBiquadFilter()
 		this.#compressor = this.#audioContext.createDynamicsCompressor()
 
 		this.#lowOsc.connect(this.#lowGain)
@@ -54,36 +58,48 @@ export default class Audio {
 		this.#reverbA.connectFrom(this.#midGain)
 		this.#reverbB.connectFrom(this.#highGain)
 
-		this.#reverbA.connectTo(this.#mix)
-		this.#reverbB.connectTo(this.#mix)
+		this.#reverbA.connectTo(this.#filter)
+		this.#reverbB.connectTo(this.#filter)
 
 		this.#lfo.connect(this.#lfoGain)
 		this.#lfoGain.connect(this.#highGain.gain)
 		this.#lfoGain.connect(this.#midOsc.frequency)
 		this.#lfoGain.connect(this.#lowGain.gain)
 
-		this.#mix.connect(this.#compressor).connect(this.#audioContext.destination)
+		this.#filter
+			.connect(this.#mix)
+			.connect(this.#compressor)
+			.connect(this.#audioContext.destination)
+
+		const now = this.#audioContext.currentTime
 
 		this.#lfo.type = "triangle"
+		this.#lfo.frequency.setValueAtTime(0.01, now)
+
 		this.#lowOsc.type = "sine"
+		this.#lowOsc.frequency.setValueAtTime(this.#lowBaseFreq, now)
+
 		this.#midOsc.type = "sawtooth"
+		this.#midOsc.frequency.setValueAtTime(this.#midBaseFreq, now)
+
 		this.#highOsc.type = "sawtooth"
+		this.#highOsc.frequency.setValueAtTime(this.#highBaseFreq, now)
 
-		this.#lowOsc.frequency.value = this.#lowBaseFreq
-		this.#midOsc.frequency.value = this.#midBaseFreq
-		this.#highOsc.frequency.value = this.#highBaseFreq
+		this.#midGain.gain.setValueAtTime(0.001, now)
+		this.#lfoGain.gain.setValueAtTime(0.01, now)
 
-		this.#reverbA.setWetDry(0.2, this.#audioContext.currentTime)
-		this.#reverbB.setWetDry(0.8, this.#audioContext.currentTime)
-		this.#lfo.frequency.setValueAtTime(0.01, this.#audioContext.currentTime)
-		this.#midGain.gain.setValueAtTime(0.01, this.#audioContext.currentTime)
-		this.#lfoGain.gain.setValueAtTime(0.01, this.#audioContext.currentTime)
-		this.#compressor.threshold.setValueAtTime(
-			-40,
-			this.#audioContext.currentTime,
-		)
-		this.#compressor.ratio.setValueAtTime(1.2, this.#audioContext.currentTime)
-		this.#mix.gain.setValueAtTime(0.001, this.#audioContext.currentTime)
+		this.#reverbA.setWetDry(0.2, now)
+		this.#reverbB.setWetDry(0.8, now)
+
+		this.#filter.type = "lowshelf"
+		this.#filter.frequency.setValueAtTime(120, now)
+		this.#filter.gain.setValueAtTime(-7, now)
+
+		this.#mix.gain.setValueAtTime(0.001, now)
+
+		this.#compressor.threshold.setValueAtTime(-40, now)
+		this.#compressor.ratio.setValueAtTime(1.4, now)
+		this.#compressor.ratio.setValueAtTime(1.4, now)
 	}
 
 	isRunning() {
@@ -105,7 +121,7 @@ export default class Audio {
 
 		this.#mix.gain.exponentialRampToValueAtTime(
 			1.0,
-			this.#audioContext.currentTime + 2,
+			this.#audioContext.currentTime + 3,
 		)
 	}
 
@@ -125,11 +141,17 @@ export default class Audio {
 		const time = this.#audioContext.currentTime + 0.06
 		const { inactiveRatio, activeRatio, movement } = processWorld(world)
 
-		this.#lowGain.gain.exponentialRampToValueAtTime(inactiveRatio * 0.4, time)
+		this.#lowGain.gain.exponentialRampToValueAtTime(inactiveRatio * 0.3, time)
+		this.#midGain.gain.exponentialRampToValueAtTime(
+			clamp(0.008, 0.01, movement * 0.02),
+			time,
+		)
 		this.#highGain.gain.exponentialRampToValueAtTime(
 			activeRatio ** 2 * 0.06,
 			time,
 		)
+
+		this.#lowOsc.detune.exponentialRampToValueAtTime((0.5 - movement) * 6, time)
 
 		this.#midOsc.frequency.linearRampToValueAtTime(
 			this.#midBaseFreq + (0.5 - activeRatio) * 6,

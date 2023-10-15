@@ -6,6 +6,8 @@ import { createHtmlPlugin } from "vite-plugin-html"
 import { viteSingleFile } from "vite-plugin-singlefile"
 import tsConfigPaths from "vite-tsconfig-paths"
 
+import type { PluginOption } from "vite"
+
 export default defineConfig(({ mode }) => {
 	return {
 		plugins: [
@@ -13,7 +15,7 @@ export default defineConfig(({ mode }) => {
 			checker(mode),
 			viteSingleFile(),
 			createHtmlPlugin(),
-		],
+		] as PluginOption[],
 		deps: { optimizer: { web: { include: ["vitest-canvas-mock"] } } },
 		test: {
 			include: ["src/**/*.test.ts"],
