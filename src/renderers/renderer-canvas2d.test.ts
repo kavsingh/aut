@@ -4,6 +4,8 @@ import { createRenderer } from "./renderer-canvas2d"
 
 describe("renderer 2d", () => {
 	it("should draw state to canvas context", () => {
+		expect.assertions(5)
+
 		const targetCanvas = document.createElement("canvas")
 		const render = createRenderer([targetCanvas], {
 			width: 10,
@@ -35,6 +37,8 @@ describe("renderer 2d", () => {
 	})
 
 	it("should respect draw options", () => {
+		expect.assertions(3)
+
 		const targetCanvas = document.createElement("canvas")
 		const render = createRenderer([targetCanvas], {
 			width: 2,
@@ -56,6 +60,8 @@ describe("renderer 2d", () => {
 	})
 
 	it("should not draw if no active cells", () => {
+		expect.assertions(1)
+
 		const targetCanvas = document.createElement("canvas")
 		const render = createRenderer([targetCanvas], {
 			width: 1,
@@ -71,6 +77,8 @@ describe("renderer 2d", () => {
 	})
 
 	it("should only draw rows to one canvas and share the result", () => {
+		expect.assertions(4)
+
 		const sourceCanvas = document.createElement("canvas")
 		const secondaryCanvas = document.createElement("canvas")
 		const render = createRenderer([sourceCanvas, secondaryCanvas], {

@@ -1,4 +1,4 @@
-import { getComputedFillColor } from "~/lib/color"
+import { getComputedFillColor } from "#lib/color"
 
 import { last, head, groupIndecesBy, eq } from "../lib/util"
 

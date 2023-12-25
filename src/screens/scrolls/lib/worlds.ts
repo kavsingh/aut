@@ -1,17 +1,17 @@
 import { pipe } from "@kavsingh/curry-pipe"
 
-import { createEvolver } from "~/lib/evolver"
-import { rule3 } from "~/lib/rules"
-import { sample, constant, defaultTo, range, noop } from "~/lib/util"
-import { createRenderer as createCanvas2dRenderer } from "~/renderers/renderer-canvas2d"
+import { createEvolver } from "#lib/evolver"
+import { rule3 } from "#lib/rules"
+import { sample, constant, defaultTo, range, noop } from "#lib/util"
+import { createRenderer as createCanvas2dRenderer } from "#renderers/renderer-canvas2d"
 import {
 	createRenderer as createSvgRenderer,
 	svgNs,
-} from "~/renderers/renderer-svg"
+} from "#renderers/renderer-svg"
 
+import type Audio from "#audio"
+import type { RendererFactoryOptions, RenderFn } from "#renderers/types"
 import type { State } from "./types"
-import type Audio from "~/audio"
-import type { RendererFactoryOptions, RenderFn } from "~/renderers/types"
 
 export function createWorldsForType(
 	type: RenderType,

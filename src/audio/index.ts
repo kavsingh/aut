@@ -1,10 +1,10 @@
-import { clamp } from "~/lib/util"
+import { clamp } from "#lib/util"
 
 import { processWorld } from "./process-world"
 import ReverbSimple from "./reverb-simple"
 
+import type { WorldState } from "#lib/types"
 import type { EffectNode } from "./types"
-import type { WorldState } from "~/lib/types"
 
 export default class Audio {
 	#audioContext: AudioContext

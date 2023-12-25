@@ -1,9 +1,9 @@
-import { getComputedFillColor } from "~/lib/color"
-import { range } from "~/lib/util"
-import { generateInitialWorld, seedRandom } from "~/lib/world"
-import { createRenderer } from "~/renderers/renderer-canvas2d"
+import { getComputedFillColor } from "#lib/color"
+import { range } from "#lib/util"
+import { generateInitialWorld, seedRandom } from "#lib/world"
+import { createRenderer } from "#renderers/renderer-canvas2d"
 
-import type { Component, WorldStateEvolver } from "~/lib/types"
+import type { Component, WorldStateEvolver } from "#lib/types"
 
 const RuleThumbnail: Component<{
 	evolver: WorldStateEvolver

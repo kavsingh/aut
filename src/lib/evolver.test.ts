@@ -16,6 +16,8 @@ describe("evolver", () => {
 	] satisfies [[number, number, number], number][])(
 		"should create a rule to return next state",
 		(input, expected) => {
+			expect.assertions(1)
+
 			const rule = createRule(["001", "110", "111"])
 
 			expect(rule(...input)).toBe(expected)
@@ -23,6 +25,8 @@ describe("evolver", () => {
 	)
 
 	it("should create a function that evolves state", () => {
+		expect.assertions(4)
+
 		const initState = [
 			[0, 0, 0, 0, 0, 0, 0, 0, 0],
 			[0, 0, 1, 0, 0, 0, 1, 1, 0],
@@ -59,6 +63,8 @@ describe("evolver", () => {
 	})
 
 	it("should not perpetuate identical generations if allowIndentical is false (default)", () => {
+		expect.assertions(1)
+
 		vi.spyOn(world, "seedRandom").mockImplementationOnce(() => [0, 1, 0])
 
 		const evolve = createEvolver(createRule([]))
@@ -75,6 +81,8 @@ describe("evolver", () => {
 	})
 
 	it("should perpetuate identical generations if allowIndentical is true", () => {
+		expect.assertions(1)
+
 		vi.spyOn(world, "seedRandom").mockImplementationOnce(() => [0, 1, 0])
 
 		const evolve = createEvolver(createRule([]), true)

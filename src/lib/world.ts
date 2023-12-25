@@ -1,4 +1,4 @@
-import { range } from "~/lib/util/number"
+import { range } from "#lib/util/number"
 
 export function seedSingle(len: number) {
 	if (!len) return []

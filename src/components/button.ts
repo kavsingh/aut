@@ -1,12 +1,12 @@
 import { twMerge } from "tailwind-merge"
 
-import { htmlToElement } from "~/lib/dom"
+import { htmlToElement } from "#lib/dom"
 
-import type { Component } from "~/lib/types"
+import type { Component } from "#lib/types"
 
 const Button: Component<Props> = (props) => {
 	const classNames = twMerge(
-		"m-0 flex w-[1.1rem] flex-col items-center p-0 text-black opacity-30 transition-opacity hover:opacity-100 focus-visible:opacity-100 active:opacity-100 dark:text-white fs:opacity-10 [&>svg]:aspect-square [&>svg]:h-[unset] [&>svg]:w-full",
+		"m-0 flex w-[1.1rem] flex-col items-center p-0 text-black opacity-30 transition-opacity hover:opacity-100 focus-visible:opacity-100 active:opacity-100 fs:opacity-10 dark:text-white [&>svg]:aspect-square [&>svg]:h-[unset] [&>svg]:w-full",
 		props.class,
 	)
 

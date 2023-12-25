@@ -23,6 +23,8 @@ describe("util/predicate", () => {
 			["", false],
 			[true, false],
 		])("should determine if %s is finite with typeguard", (value, expected) => {
+			expect.assertions(1)
+
 			expect(isFiniteNumber(value)).toBe(expected)
 		})
 	})
@@ -44,6 +46,8 @@ describe("util/predicate", () => {
 			[null, false],
 			[undefined, false],
 		])("should determine if %s is truthy with typeguard", (value, expected) => {
+			expect.assertions(1)
+
 			expect(isTruthy(value)).toBe(expected)
 		})
 	})

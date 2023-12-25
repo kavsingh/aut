@@ -155,6 +155,13 @@ module.exports = {
 	],
 }
 
+/**
+ * @typedef {object} PatternsConfig
+ * @prop {string} [root]
+ * @prop {string} [extensions]
+ *
+ * @param {PatternsConfig} [config]
+ */
 function testFilePatterns({ root = "", extensions = "*" } = {}) {
 	return [
 		`*.{${testFileSuffixes.join(",")}}`,
@@ -188,7 +195,8 @@ function getImportOrderConfig(configPath) {
 				"builtin",
 				"external",
 				"internal",
-				["parent", "sibling", "index"],
+				"parent",
+				["sibling", "index"],
 				"type",
 			],
 			"pathGroups": pathAliases.map((pattern) => ({

@@ -1,12 +1,14 @@
 {
 	"extends": "./node_modules/@tsconfig/strictest/tsconfig.json",
 	"compilerOptions": {
+		"allowJs": true,
+		"checkJs": true,
 		"isolatedModules": true,
 		"lib": ["esnext", "dom"],
 		"module": "esnext",
 		"moduleResolution": "bundler",
 		"noEmit": true,
-		"paths": { "~/*": ["./src/*"] },
+		"paths": { "#*": ["./src/*"] },
 		"sourceMap": true,
 		"target": "esnext",
 		// leave the following to eslint

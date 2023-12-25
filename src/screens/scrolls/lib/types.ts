@@ -1,4 +1,4 @@
-import type { EvolutionRule, WorldState, WorldStateEvolver } from "~/lib/types"
+import type { EvolutionRule, WorldState, WorldStateEvolver } from "#lib/types"
 
 export type State = {
 	cellDim: number

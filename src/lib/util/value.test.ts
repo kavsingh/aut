@@ -5,6 +5,8 @@ import { constant, defaultTo } from "./value"
 describe("util/value", () => {
 	describe("constant", () => {
 		it("should create a function that always returns the same value", () => {
+			expect.assertions(2)
+
 			const byRef = {}
 			const getRef = constant(byRef)
 
@@ -15,6 +17,8 @@ describe("util/value", () => {
 
 	describe("defaultTo", () => {
 		it("should return a default value for nullish values", () => {
+			expect.assertions(4)
+
 			const defaultToFoo = defaultTo("foo")
 
 			expect(defaultToFoo("yam")).toBe("yam")

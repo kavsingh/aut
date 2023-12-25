@@ -1,4 +1,4 @@
-import { clamp } from "~/lib/util"
+import { clamp } from "#lib/util"
 
 import type { EffectNode } from "./types"
 

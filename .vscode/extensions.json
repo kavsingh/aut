@@ -1,5 +1,6 @@
 {
 	"recommendations": [
+		"tamasfe.even-better-toml",
 		"dbaeumer.vscode-eslint",
 		"esbenp.prettier-vscode",
 		"Tobermory.es6-string-html",

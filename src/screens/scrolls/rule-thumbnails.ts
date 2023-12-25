@@ -1,7 +1,7 @@
-import RuleThumbnail from "~/components/rule-thumbnail"
-import { createEvolver } from "~/lib/evolver"
+import RuleThumbnail from "#components/rule-thumbnail"
+import { createEvolver } from "#lib/evolver"
 
-import type { EvolutionRule, WorldStateEvolver } from "~/lib/types"
+import type { EvolutionRule, WorldStateEvolver } from "#lib/types"
 
 export function addRuleThumbnails(
 	rules: EvolutionRule[],

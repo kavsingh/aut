@@ -1,16 +1,16 @@
-import Audio from "~/audio"
-import Button from "~/components/button"
-import { camera, speaker } from "~/components/icons"
-import { htmlToFragment } from "~/lib/dom"
-import * as rules from "~/lib/rules"
-import { generateInitialWorld } from "~/lib/world"
+import Audio from "#audio"
+import Button from "#components/button"
+import { camera, speaker } from "#components/icons"
+import { htmlToFragment } from "#lib/dom"
+import * as rules from "#lib/rules"
+import { generateInitialWorld } from "#lib/world"
 
 import { saveSvgSnapshot } from "./lib/snapshot-to-svg"
 import { createWorldsForType, startWorldAnimations } from "./lib/worlds"
 import { addRuleThumbnails } from "./rule-thumbnails"
 
+import type { Component } from "#lib/types"
 import type { State } from "./lib/types"
-import type { Component } from "~/lib/types"
 
 const screenHtml = /* html */ `
 <div class="flex items-center justify-center w-full h-full">

@@ -4,6 +4,8 @@ import { createRenderer } from "./renderer-svg"
 
 describe("renderer Svg", () => {
 	it("should place rects in svg", () => {
+		expect.assertions(7)
+
 		const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
 		const render = createRenderer([svg], {
 			width: 10,
@@ -30,6 +32,8 @@ describe("renderer Svg", () => {
 	})
 
 	it("should respect draw options", () => {
+		expect.assertions(1)
+
 		const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
 		const render = createRenderer([svg], {
 			width: 2,
@@ -41,12 +45,12 @@ describe("renderer Svg", () => {
 
 		render([[1, 0]])
 
-		expect(
-			svg.querySelector("rect")?.getAttributeNS(null, "fill"),
-		).toStrictEqual("#f00")
+		expect(svg.querySelector("rect")?.getAttributeNS(null, "fill")).toBe("#f00")
 	})
 
 	it("should not draw if no active cells", () => {
+		expect.assertions(1)
+
 		const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
 		const render = createRenderer([svg], {
 			width: 1,

@@ -1,10 +1,10 @@
-import { construct, fullScreen, github, scrolls } from "~/components/icons"
-import { htmlToElement } from "~/lib/dom"
+import { construct, fullScreen, github, scrolls } from "#components/icons"
+import { htmlToElement } from "#lib/dom"
 
 import Button from "./button"
 
-import type { createRouter } from "~/lib/router"
-import type { Component } from "~/lib/types"
+import type { createRouter } from "#lib/router"
+import type { Component } from "#lib/types"
 
 const Nav: Component<{
 	navigate: ReturnType<typeof createRouter>["navigate"]

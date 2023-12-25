@@ -1,17 +1,17 @@
-import Audio from "~/audio"
-import Button from "~/components/button"
-import { speaker } from "~/components/icons"
-import { htmlToFragment } from "~/lib/dom"
-import { createEvolver } from "~/lib/evolver"
-import * as rules from "~/lib/rules"
-import { createStateEmitter } from "~/lib/state-emitter"
-import { findLast, range, sample } from "~/lib/util"
-import { generateInitialWorld, seedRandom } from "~/lib/world"
-import { createRenderer } from "~/renderers/renderer-canvas2d"
+import Audio from "#audio"
+import Button from "#components/button"
+import { speaker } from "#components/icons"
+import { htmlToFragment } from "#lib/dom"
+import { createEvolver } from "#lib/evolver"
+import * as rules from "#lib/rules"
+import { createStateEmitter } from "#lib/state-emitter"
+import { findLast, range, sample } from "#lib/util"
+import { generateInitialWorld, seedRandom } from "#lib/world"
+import { createRenderer } from "#renderers/renderer-canvas2d"
 
 import RuleSlider from "./rule-slider"
 
-import type { Component, WorldState, WorldStateEvolver } from "~/lib/types"
+import type { Component, WorldState, WorldStateEvolver } from "#lib/types"
 
 const screenHtml = /*html*/ `
 <div class="flex items-center justify-center w-full h-full">

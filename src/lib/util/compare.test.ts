@@ -13,6 +13,8 @@ describe("util/compare", () => {
 			["a", "a", true],
 			[1, 1, true],
 		])("should %s and %s are strictly equal", (a, b, result) => {
+			expect.assertions(2)
+
 			expect(eq(a, b)).toBe(result)
 			expect(eq(a)(b)).toBe(result)
 		})
@@ -44,6 +46,8 @@ describe("util/compare", () => {
 			[{ a: 1, b: 2 }, { b: 2, a: 1 }, true],
 			[{ a: 1, b: [1, { c: 2 }] }, { b: [1, { c: 2 }], a: 1 }, true],
 		])("should check that %s equals %s by value", (a, b, result) => {
+			expect.assertions(2)
+
 			expect(valueEq(a, b)).toBe(result)
 			expect(valueEq(a)(b)).toBe(result)
 		})

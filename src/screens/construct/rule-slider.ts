@@ -1,7 +1,7 @@
-import RuleThumbnail from "~/components/rule-thumbnail"
-import { htmlToElement } from "~/lib/dom"
+import RuleThumbnail from "#components/rule-thumbnail"
+import { htmlToElement } from "#lib/dom"
 
-import type { Component, WorldStateEvolver } from "~/lib/types"
+import type { Component, WorldStateEvolver } from "#lib/types"
 
 const RuleSlider: Component<{
 	evolver: WorldStateEvolver
