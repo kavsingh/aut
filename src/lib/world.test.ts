@@ -6,7 +6,6 @@ import { seedSingle, seedRandom } from "./world"
 
 describe("util/world", () => {
 	describe("seedRandom", () => {
-		/* eslint-disable vitest/no-conditional-in-test, vitest/no-conditional-tests */
 		it("should create an array with random 0s and 1s", () => {
 			expect.assertions(3)
 
