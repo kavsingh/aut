@@ -21,7 +21,6 @@ describe("util/world", () => {
 
 			restoreRandom()
 		})
-		/* eslint-enable */
 	})
 
 	describe("seedSingle", () => {
