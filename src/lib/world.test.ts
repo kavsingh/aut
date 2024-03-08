@@ -24,14 +24,19 @@ describe("util/world", () => {
 	})
 
 	describe("seedSingle", () => {
-		it("should create a single positive value in the center of an n-length array", () => {
-			expect.assertions(5)
+		it.each([
+			[0, []],
+			[1, [1]],
+			[2, [1, 0]],
+			[5, [0, 0, 1, 0, 0]],
+			[6, [0, 0, 1, 0, 0, 0]],
+		])(
+			"should create an array of length %s filled with 0s and a single 1 at the center",
+			(len, expected) => {
+				expect.assertions(1)
 
-			expect(seedSingle(5)).toStrictEqual([0, 0, 1, 0, 0])
-			expect(seedSingle(6)).toStrictEqual([0, 0, 1, 0, 0, 0])
-			expect(seedSingle(1)).toStrictEqual([1])
-			expect(seedSingle(2)).toStrictEqual([1, 0])
-			expect(seedSingle(0)).toStrictEqual([])
-		})
+				expect(seedSingle(len)).toStrictEqual(expected)
+			},
+		)
 	})
 })
