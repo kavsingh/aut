@@ -1,6 +1,7 @@
 /** @type {import("node:path")} */
 const path = require("node:path")
 
+const vitest = require("eslint-plugin-vitest")
 /** @type {import("typescript")} */
 const ts = require("typescript")
 
@@ -50,11 +51,12 @@ module.exports = {
 		],
 		"no-unreachable": "error",
 		"@typescript-eslint/consistent-type-definitions": ["warn", "type"],
-		"@typescript-eslint/consistent-type-imports": [
-			"error",
-			{ disallowTypeAnnotations: false },
-		],
+		"@typescript-eslint/consistent-type-imports": "error",
 		"@typescript-eslint/member-ordering": ["warn"],
+		"@typescript-eslint/restrict-template-expressions": [
+			"error",
+			{ allowNumber: true },
+		],
 		"no-shadow": "off",
 		"@typescript-eslint/no-shadow": [
 			"error",
@@ -143,12 +145,11 @@ module.exports = {
 		{
 			files: testFilePatterns({ root: "src" }),
 			env: { node: true },
-			extends: [
-				"plugin:vitest/all",
-				"plugin:testing-library/dom",
-				"plugin:jest-dom/recommended",
-			],
+			plugins: ["vitest"],
+			extends: ["plugin:testing-library/dom", "plugin:jest-dom/recommended"],
 			rules: {
+				// @ts-expect-error type import mismatch
+				...vitest.configs.all.rules,
 				"vitest/no-hooks": "off",
 			},
 		},
