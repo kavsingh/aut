@@ -7,17 +7,6 @@ export function initShaderProgram(
 ) {
 	const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource)
 	const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource)
-
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-	if (!vertexShader) {
-		throw new Error(`Could not load vertex shader ${vsSource}`)
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-	if (!fragmentShader) {
-		throw new Error(`Could not load fragment shader ${fsSource}`)
-	}
-
 	const shaderProgram = gl.createProgram()
 
 	if (!shaderProgram) throw new Error("Could not create shader program")
