@@ -1,24 +1,28 @@
-export function createEmitter<
+export class Emitter<
 	TPayload,
 	TListener extends (payload: Readonly<TPayload>) => void = (
 		payload: Readonly<TPayload>,
 	) => void,
->() {
-	const listeners = new Set<TListener>()
+> {
+	#listeners = new Set<TListener>()
 
-	function listen(listener: TListener) {
-		listeners.add(listener)
+	listen(listener: TListener) {
+		this.#listeners.add(listener)
 
-		return function stopListening() {
-			listeners.delete(listener)
+		const stopListening = () => {
+			this.#listeners.delete(listener)
 		}
+
+		return stopListening
 	}
 
-	function emit(payload: TPayload) {
-		for (const listener of listeners) {
+	emit(payload: TPayload) {
+		for (const listener of this.#listeners) {
 			listener(payload)
 		}
 	}
 
-	return { listen, emit, clear: listeners.clear.bind(listeners) }
+	clear() {
+		this.#listeners.clear()
+	}
 }

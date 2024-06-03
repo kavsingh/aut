@@ -1,31 +1,34 @@
-import { createEmitter } from "./emitter"
+import { Emitter } from "./emitter"
 
-export const createStateEmitter = <T extends Record<string, unknown>>(
-	initialState: T,
-) => {
-	const state = { ...initialState }
-	const emitter = createEmitter<Readonly<T>>()
+export class StateEmitter<TState extends Record<string, unknown>> {
+	#emitter = new Emitter<Readonly<TState>>()
+	#state: TState
 
-	function get(): Readonly<T> {
-		return { ...state }
+	constructor(initialState: TState) {
+		this.#state = { ...initialState }
 	}
 
-	function update(
-		updater: (current: Readonly<T>) => Partial<T> | null | undefined,
-	): Readonly<T> {
-		const updateResult = updater(state)
-
-		if (updateResult) Object.assign(state, updateResult)
-
-		emitter.emit(state)
-
-		return state
+	get(): Readonly<TState> {
+		return this.#state
 	}
 
-	return {
-		get,
-		update,
-		listen: emitter.listen.bind(emitter),
-		clear: emitter.clear.bind(emitter),
+	update(
+		updater: (current: Readonly<TState>) => Partial<TState> | null | undefined,
+	): Readonly<TState> {
+		const updateResult = updater(this.#state)
+
+		if (updateResult) Object.assign(this.#state, updateResult)
+
+		this.#emitter.emit(this.#state)
+
+		return this.#state
+	}
+
+	listen(...args: Parameters<Emitter<TState>["listen"]>) {
+		return this.#emitter.listen(...args)
+	}
+
+	clear() {
+		this.#emitter.clear()
 	}
 }

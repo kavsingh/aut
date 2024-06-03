@@ -4,7 +4,7 @@ import { speaker } from "#components/icons"
 import { htmlToFragment } from "#lib/dom"
 import { createEvolver } from "#lib/evolver"
 import * as rules from "#lib/rules"
-import { createStateEmitter } from "#lib/state-emitter"
+import { StateEmitter } from "#lib/state-emitter"
 import { findLast, range, sample } from "#lib/util"
 import { generateInitialWorld, seedRandom } from "#lib/world"
 import { createRenderer } from "#renderers/renderer-canvas2d"
@@ -63,7 +63,7 @@ const Construct: Component = () => {
 	const genSize = size / cellDim
 	const audio = new Audio()
 	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
-	const evolverState = createStateEmitter({ evolvers: sampleEvolvers(3) })
+	const evolverState = new StateEmitter({ evolvers: sampleEvolvers(3) })
 	let worldState = range(genSize).reduce<WorldState>(
 		evolveReducer(evolverState.get().evolvers),
 		firstGen,
