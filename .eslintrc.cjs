@@ -92,33 +92,20 @@ module.exports = {
 		{
 			files: ["*.?(c)js"],
 			extends: ["plugin:@typescript-eslint/disable-type-checked"],
-			rules: {
-				"deprecation/deprecation": "off",
-			},
+			rules: { "deprecation/deprecation": "off" },
 		},
 		{
 			files: ["./*"],
-			rules: {
-				"filenames/match-exported": "off",
-			},
+			rules: { "filenames/match-exported": "off" },
 		},
 		{
 			files: ["src/**/*"],
 			env: { node: false, browser: true },
-			parserOptions: { project: "./tsconfig.json" },
-			settings: {
-				"import/resolver": {
-					"eslint-import-resolver-typescript": {
-						project: "./tsconfig.json",
-					},
-				},
-				"tailwindcss": { callees: ["twMerge", "twJoin"] },
-			},
+			settings: { tailwindcss: { callees: ["twMerge", "twJoin"] } },
 			extends: ["plugin:tailwindcss/recommended"],
 			rules: {
 				"no-console": "error",
 				"import/no-extraneous-dependencies": ["error", srcDependencies],
-				"import/order": getImportOrderConfig("./tsconfig.json"),
 			},
 		},
 		{
