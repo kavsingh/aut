@@ -3,37 +3,32 @@
 @tailwind utilities;
 
 :root {
-	color: theme(colors.neutral.700);
-	background-color: theme(colors.white);
+	@apply text-neutral-700 bg-white;
 }
 
 *:focus {
-	outline: none;
+	@apply outline-none;
 }
 
 *:focus-visible {
-	outline: 1px solid theme(colors.neutral.500);
-	outline-offset: 1px;
+	@apply outline outline-1 outline-neutral-500 outline-offset-1;
 }
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		color: theme(colors.neutral.500);
-		background-color: theme(colors.neutral.900);
+		@apply text-neutral-500 bg-neutral-900;
 	}
 
 	*:focus-visible {
-		outline-color: theme(colors.neutral.700);
+		@apply outline-neutral-700;
 	}
 }
 
 html,
 body {
-	margin: 0;
-	padding: 0;
+	@apply m-0 p-0;
 }
 
 #app-root {
-	width: 100vw;
-	height: 100vh;
+	@apply h-screen w-screen;
 }
