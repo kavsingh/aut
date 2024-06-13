@@ -1,4 +1,4 @@
-import { Route, Router } from "@solidjs/router"
+import { Route, HashRouter } from "@solidjs/router"
 
 import Construct from "#routes/construct"
 import Scrolls from "#routes/scrolls"
@@ -8,9 +8,9 @@ import AppLayout from "./layouts/app"
 
 export default function App() {
 	return (
-		<Router root={AppLayout}>
+		<HashRouter root={AppLayout}>
 			<Route path="/" component={Scrolls} />
 			<Route path="/construct" component={Construct} />
-		</Router>
+		</HashRouter>
 	)
 }
