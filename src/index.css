@@ -16,7 +16,7 @@
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		@apply text-neutral-500 bg-neutral-900;
+		@apply text-neutral-100 bg-neutral-900;
 	}
 
 	*:focus-visible {
