@@ -1,11 +1,11 @@
-import Nav from "./components/nav"
+import LegacyNav from "./legacy-components/nav"
+import Construct from "./legacy-screens/construct"
+import Scrolls from "./legacy-screens/scrolls"
 import { createRouter } from "./lib/router"
-import Construct from "./screens/construct"
-import Scrolls from "./screens/scrolls"
 
 import type { ComponentApi } from "./lib/types"
 
-export default function app(rootEl: HTMLElement) {
+export default function legacyApp(rootEl: HTMLElement) {
 	rootEl.innerHTML = /* html */ `
 		<div
 			data-el="nav-container"
@@ -42,7 +42,7 @@ export default function app(rootEl: HTMLElement) {
 	}
 
 	const router = createRouter(routeHandler)
-	const nav = Nav({ navigate: router.navigate.bind(router) })
+	const nav = LegacyNav({ navigate: router.navigate.bind(router) })
 
 	navContainer.appendChild(nav.el)
 }

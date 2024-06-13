@@ -1,4 +1,4 @@
-import RuleThumbnail from "#components/rule-thumbnail"
+import RuleThumbnail from "#legacy-components/rule-thumbnail"
 import { createEvolver } from "#lib/evolver"
 
 import type { EvolutionRule, WorldStateEvolver } from "#lib/types"
