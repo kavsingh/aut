@@ -13,7 +13,7 @@ import type { ParentProps } from "solid-js"
 export default function App(props: ParentProps) {
 	return (
 		<>
-			<div class="sticky top-0 flex items-center justify-end gap-1 px-8 pt-8">
+			<div class="fixed z-10 flex w-full items-center justify-end gap-1 px-8 pt-8">
 				<A href="/" class={buttonClassNames()}>
 					<ScrollsIcon />
 				</A>
@@ -30,7 +30,7 @@ export default function App(props: ParentProps) {
 					<GithubIcon />
 				</a>
 			</div>
-			<div class="min-h-full w-full">{props.children}</div>
+			<div class="size-full">{props.children}</div>
 		</>
 	)
 }
