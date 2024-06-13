@@ -1,4 +1,4 @@
-import { For, createEffect, onCleanup } from "solid-js"
+import { For, onCleanup, onMount } from "solid-js"
 
 import Audio from "#audio"
 import Button from "#components/button"
@@ -33,7 +33,7 @@ export default function Scrolls() {
 		audio,
 	})
 
-	createEffect(() => {
+	onMount(() => {
 		if (!worldsContainer) return
 
 		worldsApi = createWorldsForType("canvas2d", worldsContainer, {
