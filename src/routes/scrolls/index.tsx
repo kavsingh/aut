@@ -6,6 +6,7 @@ import { CameraIcon, SpeakerIcon } from "#components/icons"
 import RuleThumbnail from "#components/rule-thumbnail"
 import { createEvolver } from "#lib/evolver"
 import * as rules from "#lib/rules"
+import { saveSvgSnapshot } from "#lib/scrolls/snapshot-to-svg"
 import { createWorldsForType, startWorldAnimations } from "#lib/scrolls/worlds"
 import { generateInitialWorld } from "#lib/world"
 
@@ -53,6 +54,7 @@ export default function Scrolls() {
 				<div
 					class="flex cursor-pointer items-center justify-center [&>*:nth-child(2n-1)]:rotate-180"
 					ref={(el) => (worldsContainer = el)}
+					onClick={() => (scrollsState.evolver = undefined)}
 				/>
 				<div class="pointer-events-none flex h-[60px] translate-y-[-20%] cursor-pointer items-center justify-center opacity-0 transition-all group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
 					<For each={scrollsState.rules}>
@@ -72,7 +74,11 @@ export default function Scrolls() {
 				</div>
 			</div>
 			<div class="absolute bottom-[2em] start-1/2 flex -translate-x-1/2 gap-4">
-				<Button>
+				<Button
+					onClick={() => {
+						saveSvgSnapshot("snapshot.svg", scrollsState)
+					}}
+				>
 					<CameraIcon />
 				</Button>
 				<Button
