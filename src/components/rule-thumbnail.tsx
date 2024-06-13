@@ -1,4 +1,4 @@
-import { createEffect } from "solid-js"
+import { onMount } from "solid-js"
 import { twMerge } from "tailwind-merge"
 
 import { range } from "#lib/util"
@@ -10,7 +10,7 @@ import type { WorldStateEvolver } from "#lib/types"
 export default function RuleThumbnail(props: Props) {
 	let canvasRef: HTMLCanvasElement | null = null
 
-	createEffect(() => {
+	onMount(() => {
 		if (!canvasRef) return
 
 		const size = props.size ?? 40
