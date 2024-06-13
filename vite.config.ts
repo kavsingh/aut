@@ -4,12 +4,14 @@ import { defineConfig } from "vite"
 import checkerPlugin from "vite-plugin-checker"
 import { createHtmlPlugin } from "vite-plugin-html"
 import { viteSingleFile } from "vite-plugin-singlefile"
+import solidPlugin from "vite-plugin-solid"
 import tsConfigPaths from "vite-tsconfig-paths"
 
 export default defineConfig(({ mode }) => {
 	return {
 		plugins: [
 			tsConfigPaths(),
+			solidPlugin(),
 			checker(mode),
 			viteSingleFile(),
 			createHtmlPlugin(),
@@ -32,7 +34,7 @@ function checker(mode: string) {
 		overlay: { initialIsOpen: false },
 		typescript: true,
 		eslint: {
-			lintCommand: 'eslint "./src/**/*.ts"',
+			lintCommand: 'eslint "./src/**/*.+(ts|tsx)"',
 			dev: { logLevel: ["error"] },
 		},
 	})

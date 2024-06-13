@@ -1,5 +1,5 @@
 import "./index.css"
-import app from "./app"
+import app from "./legacy-app"
 
 const appRoot = document.getElementById("app-root")
 

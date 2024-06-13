@@ -8,3 +8,4 @@
 *.log
 *.log.*
 *.ignore.*
+vite.config.ts.timestamp-*

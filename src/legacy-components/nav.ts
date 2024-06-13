@@ -1,7 +1,7 @@
-import { construct, fullScreen, github, scrolls } from "#components/icons"
 import { htmlToElement } from "#lib/dom"
 
 import Button from "./button"
+import { construct, fullScreen, github, scrolls } from "./icons"
 
 import type { createRouter } from "#lib/router"
 import type { Component } from "#lib/types"

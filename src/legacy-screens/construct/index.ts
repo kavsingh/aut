@@ -1,6 +1,6 @@
 import Audio from "#audio"
-import Button from "#components/button"
-import { speaker } from "#components/icons"
+import Button from "#legacy-components/button"
+import { speaker } from "#legacy-components/icons"
 import { htmlToFragment } from "#lib/dom"
 import { createEvolver } from "#lib/evolver"
 import * as rules from "#lib/rules"

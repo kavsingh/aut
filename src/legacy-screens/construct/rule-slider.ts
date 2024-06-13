@@ -1,4 +1,4 @@
-import RuleThumbnail from "#components/rule-thumbnail"
+import RuleThumbnail from "#legacy-components/rule-thumbnail"
 import { htmlToElement } from "#lib/dom"
 
 import type { Component, WorldStateEvolver } from "#lib/types"

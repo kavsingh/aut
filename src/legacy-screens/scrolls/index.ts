@@ -1,6 +1,6 @@
 import Audio from "#audio"
-import Button from "#components/button"
-import { camera, speaker } from "#components/icons"
+import Button from "#legacy-components/button"
+import { camera, speaker } from "#legacy-components/icons"
 import { htmlToFragment } from "#lib/dom"
 import * as rules from "#lib/rules"
 import { generateInitialWorld } from "#lib/world"
