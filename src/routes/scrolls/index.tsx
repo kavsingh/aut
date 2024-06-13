@@ -2,8 +2,8 @@ import { For, onCleanup, onMount } from "solid-js"
 
 import Audio from "#audio"
 import Button from "#components/button"
+import EvolverSnapshot from "#components/evolver-snapshot"
 import { CameraIcon, SpeakerIcon } from "#components/icons"
-import RuleThumbnail from "#components/rule-thumbnail"
 import { createEvolver } from "#lib/evolver"
 import * as rules from "#lib/rules"
 import { generateInitialWorld } from "#lib/world"
@@ -19,7 +19,7 @@ export default function Scrolls() {
 	const worldDim = Math.min(Math.floor(window.innerWidth / worldCount), 300)
 	const generationSize = Math.floor(worldDim / cellDim)
 	const audio = new Audio()
-	const scrollsState: State = {
+	const worldState: State = {
 		cellDim,
 		worldDim,
 		rules: Object.values(rules),
@@ -29,7 +29,7 @@ export default function Scrolls() {
 	let worldsContainer: HTMLDivElement | null = null
 	let worldsApi: ReturnType<typeof createWorldsForType> | undefined = undefined
 
-	const stopWorldAnimations = startWorldAnimations(scrollsState, {
+	const stopWorldAnimations = startWorldAnimations(worldState, {
 		worldCount,
 		renderWorld: (...args) => worldsApi?.render(...args),
 		audio,
@@ -55,19 +55,19 @@ export default function Scrolls() {
 				<div
 					class="flex cursor-pointer items-center justify-center [&>*:nth-child(2n-1)]:rotate-180"
 					ref={(el) => (worldsContainer = el)}
-					onClick={() => (scrollsState.evolver = undefined)}
+					onClick={() => (worldState.evolver = undefined)}
 				/>
 				<div class="pointer-events-none flex h-[60px] translate-y-[-20%] cursor-pointer items-center justify-center opacity-0 transition-all group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
-					<For each={scrollsState.rules}>
+					<For each={worldState.rules}>
 						{(rule, idx) => {
 							const evolver = createEvolver(rule)
 
 							return (
 								<button
 									aria-label={`Rule ${idx() + 1}`}
-									onClick={() => (scrollsState.evolver = evolver)}
+									onClick={() => (worldState.evolver = evolver)}
 								>
-									<RuleThumbnail evolver={evolver} />
+									<EvolverSnapshot evolver={evolver} />
 								</button>
 							)
 						}}
@@ -77,7 +77,7 @@ export default function Scrolls() {
 			<div class="absolute bottom-[2em] start-1/2 flex -translate-x-1/2 gap-4">
 				<Button
 					onClick={() => {
-						saveSvgSnapshot("snapshot.svg", scrollsState)
+						saveSvgSnapshot("snapshot.svg", worldState)
 					}}
 				>
 					<CameraIcon />

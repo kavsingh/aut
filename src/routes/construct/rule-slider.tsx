@@ -1,6 +1,6 @@
 import { onCleanup } from "solid-js"
 
-import RuleThumbnail from "#components/rule-thumbnail"
+import EvolverSnapshot from "#components/evolver-snapshot"
 
 import type { WorldStateEvolver } from "#lib/types"
 
@@ -50,7 +50,7 @@ export default function RuleSlider(props: Props) {
 				class="absolute end-[-40px] top-[-20px] size-[40px] scale-50 overflow-hidden rounded-full bg-white opacity-40 transition-all hover:scale-100 hover:opacity-100 dark:bg-neutral-900"
 				onPointerDown={handlePointerDown}
 			>
-				<RuleThumbnail evolver={props.evolver} />
+				<EvolverSnapshot evolver={props.evolver} />
 			</div>
 		</div>
 	)
