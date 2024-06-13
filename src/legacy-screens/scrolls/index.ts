@@ -3,14 +3,14 @@ import Button from "#legacy-components/button"
 import { camera, speaker } from "#legacy-components/icons"
 import { htmlToFragment } from "#lib/dom"
 import * as rules from "#lib/rules"
+import { saveSvgSnapshot } from "#lib/scrolls/snapshot-to-svg"
+import { createWorldsForType, startWorldAnimations } from "#lib/scrolls/worlds"
 import { generateInitialWorld } from "#lib/world"
 
-import { saveSvgSnapshot } from "./lib/snapshot-to-svg"
-import { createWorldsForType, startWorldAnimations } from "./lib/worlds"
 import { addRuleThumbnails } from "./rule-thumbnails"
 
+import type { State } from "#lib/scrolls/types"
 import type { Component } from "#lib/types"
-import type { State } from "./lib/types"
 
 const screenHtml = /* html */ `
 <div class="flex items-center justify-center w-full h-full">
