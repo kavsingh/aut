@@ -17,9 +17,7 @@ export class Emitter<
 	}
 
 	emit(payload: TPayload) {
-		for (const listener of this.#listeners) {
-			listener(payload)
-		}
+		for (const listener of this.#listeners) listener(payload)
 	}
 
 	clear() {

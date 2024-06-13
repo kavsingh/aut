@@ -109,10 +109,6 @@ module.exports = {
 			},
 		},
 		{
-			files: ["src/**/legacy-*/**/*"],
-			rules: { "solid/reactivity": "off" },
-		},
-		{
 			files: testFilePatterns(),
 			env: { node: true },
 			rules: {

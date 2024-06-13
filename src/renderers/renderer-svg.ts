@@ -1,4 +1,3 @@
-import { getComputedFillColor } from "#lib/color"
 import { last, head, groupIndecesBy, eq } from "#lib/util"
 
 import type { RendererFactory } from "./types"
@@ -11,8 +10,8 @@ export const createRenderer: SvgRendererFactory = (
 		width = 200,
 		height = 200,
 		cellDim = 2,
-		fillColor = getComputedFillColor(),
 		fillMode = "active",
+		fillColor = "#000",
 	},
 ) => {
 	const groupFillRanges = groupIndecesBy<number>(

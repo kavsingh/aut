@@ -1,23 +1,16 @@
-import { getComputedFillColor } from "#lib/color"
-
 import { last, head, groupIndecesBy, eq } from "../lib/util"
 
 import type { RendererFactory } from "./types"
 
 export const createRenderer: CanvasRendererFactory = (
 	canvases,
-	{
-		width = 200,
-		height = 200,
-		cellDim = 2,
-		fillColor = getComputedFillColor(),
-		fillMode = "active",
-	},
+	{ width = 200, height = 200, cellDim = 2, fillMode = "active", fillColor },
 ) => {
 	const [drawingCanvas, ...targetCanvases] = canvases
 
 	if (!drawingCanvas) throw new Error("no canvas provided")
 
+	const fillCol = fillColor ?? getComputedStyle(drawingCanvas).color
 	const drawingContext = drawingCanvas.getContext("2d")
 	const targetContexts = targetCanvases
 		.map((canvas) => canvas.getContext("2d"))
@@ -35,7 +28,7 @@ export const createRenderer: CanvasRendererFactory = (
 	function clear() {
 		for (const context of allContexts) {
 			context.clearRect(0, 0, width, height)
-			context.fillStyle = fillColor
+			context.fillStyle = fillCol
 		}
 	}
 
