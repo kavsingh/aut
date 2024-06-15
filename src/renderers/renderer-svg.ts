@@ -1,4 +1,4 @@
-import { last, head, groupIndecesBy, eq } from "#lib/util"
+import { groupIndecesBy } from "#lib/util"
 
 import type { RendererFactory } from "./types"
 
@@ -14,9 +14,9 @@ export const createRenderer: SvgRendererFactory = (
 		fillColor = "#000",
 	},
 ) => {
-	const groupFillRanges = groupIndecesBy<number>(
-		eq(fillMode === "inactive" ? 0 : 1),
-	)
+	const groupFillRanges = groupIndecesBy<number>((idx) => {
+		return fillMode === "inactive" ? idx === 0 : idx === 1
+	})
 
 	function clear() {
 		svgElements.forEach((element) => void (element.innerHTML = ""))
@@ -26,8 +26,8 @@ export const createRenderer: SvgRendererFactory = (
 		const rowFragment = document.createDocumentFragment()
 
 		for (const current of groupFillRanges(row)) {
-			const start = head(current)
-			const end = last(current)
+			const start = current[0]
+			const end = current.at(-1)
 
 			if (start !== undefined && end !== undefined) {
 				const fillRect = document.createElementNS(svgNs, "rect")

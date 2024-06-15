@@ -2,14 +2,7 @@ import { describe, it, expect } from "vitest"
 
 import { mockRandom } from "#__test__/helpers"
 
-import {
-	last,
-	head,
-	groupIndecesBy,
-	sample,
-	findLast,
-	accessCirc,
-} from "./array"
+import { groupIndecesBy, sample, accessCirc } from "./array"
 import { range } from "./number"
 
 describe("util/array", () => {
@@ -36,28 +29,6 @@ describe("util/array", () => {
 		})
 	})
 
-	describe("last", () => {
-		it("should get the last element in an array", () => {
-			expect.assertions(3)
-
-			// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-			expect(last([])).toBeUndefined()
-			expect(last([1])).toBe(1)
-			expect(last([1, 2])).toBe(2)
-		})
-	})
-
-	describe("head", () => {
-		it("should get the first element in an array", () => {
-			expect.assertions(3)
-
-			// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-			expect(head([])).toBeUndefined()
-			expect(head([1])).toBe(1)
-			expect(head([1, 2])).toBe(1)
-		})
-	})
-
 	describe("groupIndecesBy", () => {
 		it("should group adjacent indeces in array where value satisfies predicate", () => {
 			expect.assertions(4)
@@ -76,17 +47,6 @@ describe("util/array", () => {
 				[5],
 			])
 			expect(groupIndecesBy(eqA, ["a", "a", "b"])).toStrictEqual([[0, 1]])
-		})
-	})
-
-	describe("findLast", () => {
-		it("should find last item satisfying predicate", () => {
-			expect.assertions(1)
-
-			const arr = [{ val: 2 }, { val: 1 }, { val: 1 }, { val: 3 }]
-			const findLast1 = findLast(({ val }) => val === 1)
-
-			expect(arr.indexOf(findLast1(arr)!)).toBe(2)
 		})
 	})
 

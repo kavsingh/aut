@@ -1,4 +1,4 @@
-import { last, head, groupIndecesBy, eq } from "../lib/util"
+import { groupIndecesBy } from "../lib/util"
 
 import type { RendererFactory } from "./types"
 
@@ -21,9 +21,9 @@ export const createRenderer: CanvasRendererFactory = (
 	}
 
 	const allContexts = [drawingContext, ...targetContexts]
-	const groupFillRanges = groupIndecesBy<number>(
-		eq(fillMode === "inactive" ? 0 : 1),
-	)
+	const groupFillRanges = groupIndecesBy<number>((idx) => {
+		return fillMode === "inactive" ? idx === 0 : idx === 1
+	})
 
 	function clear() {
 		for (const context of allContexts) {
@@ -34,8 +34,8 @@ export const createRenderer: CanvasRendererFactory = (
 
 	function drawRow(row: number[], yOffset: number) {
 		for (const current of groupFillRanges(row)) {
-			const start = head(current)
-			const end = last(current)
+			const start = current[0]
+			const end = current.at(-1)
 
 			if (start !== undefined && end !== undefined) {
 				drawingContext?.fillRect(

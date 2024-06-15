@@ -1,4 +1,4 @@
-import { accessCirc, last, valueEq } from "./util"
+import { accessCirc, valueEq } from "./util"
 import { seedRandom } from "./world"
 
 import type { EvolutionRule, WorldStateEvolver } from "./types"
@@ -8,7 +8,7 @@ export function createEvolver(
 	allowIdentical = false,
 ): WorldStateEvolver {
 	return function evolver(world) {
-		const currentGeneration = last(world)
+		const currentGeneration = world.at(-1)
 
 		if (!currentGeneration) return world
 

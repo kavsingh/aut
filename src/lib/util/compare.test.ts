@@ -1,25 +1,8 @@
 import { describe, it, expect } from "vitest"
 
-import { eq, valueEq } from "./compare"
+import { valueEq } from "./compare"
 
 describe("util/compare", () => {
-	describe("eq", () => {
-		it.each([
-			[1, 2, false],
-			[NaN, NaN, false],
-			[1, 3, false],
-			[{}, {}, false],
-			[[], [], false],
-			["a", "a", true],
-			[1, 1, true],
-		])("should %s and %s are strictly equal", (a, b, result) => {
-			expect.assertions(2)
-
-			expect(eq(a, b)).toBe(result)
-			expect(eq(a)(b)).toBe(result)
-		})
-	})
-
 	describe("valueEq", () => {
 		it.each([
 			[undefined, null, false],
