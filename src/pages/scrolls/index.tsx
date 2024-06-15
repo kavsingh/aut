@@ -7,11 +7,11 @@ import { CameraIcon, SpeakerIcon } from "#components/icons"
 import { createEvolver } from "#lib/evolver"
 import * as rules from "#lib/rules"
 import { generateInitialWorld } from "#lib/world"
-import { saveSvgSnapshot } from "#routes/scrolls/lib/snapshot-to-svg"
+import { saveSvgSnapshot } from "#pages/scrolls/lib/snapshot-to-svg"
 
 import { createWorldsForType, startWorldAnimations } from "./lib/worlds"
 
-import type { State } from "#routes/scrolls/lib/types"
+import type { State } from "#pages/scrolls/lib/types"
 
 export default function Scrolls() {
 	const worldCount = 3

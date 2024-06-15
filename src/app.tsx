@@ -1,7 +1,7 @@
 import { Route, HashRouter } from "@solidjs/router"
 
-import Construct from "#routes/construct"
-import Scrolls from "#routes/scrolls"
+import Construct from "#pages/construct"
+import Scrolls from "#pages/scrolls"
 
 import "./index.css"
 import AppLayout from "./layouts/app"
