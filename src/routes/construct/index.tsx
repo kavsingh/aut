@@ -6,7 +6,7 @@ import { SpeakerIcon } from "#components/icons"
 import { createEvolver } from "#lib/evolver"
 import * as rules from "#lib/rules"
 import { StateEmitter } from "#lib/state-emitter"
-import { findLast, range, sample } from "#lib/util"
+import { defaultTo, range, sample } from "#lib/util"
 import { generateInitialWorld, seedRandom } from "#lib/world"
 import { createRenderer } from "#renderers/renderer-canvas2d"
 
@@ -104,22 +104,22 @@ export default function Construct() {
 	)
 }
 
+const defaultEvolver = createEvolver(rules.rule3)
 const allEvolvers = Object.values(rules).map((rule) =>
 	createEvolver(rule, true),
 )
 
 function sampleEvolvers(count: number) {
 	return range(count).map<EvolverItem>((_, i, it) => ({
-		evolver: sample(allEvolvers),
+		evolver: defaultTo(defaultEvolver, sample(allEvolvers)),
 		position: i / it.length,
 	}))
 }
 
 function evolveReducer(evolvers: EvolverItem[]) {
 	return function reducer(acc: WorldState, index: number): WorldState {
-		const evolver = findLast(
+		const evolver = evolvers.findLast(
 			({ position }) => position <= index / acc.length,
-			evolvers,
 		)?.evolver
 
 		return evolver?.(acc) ?? acc
