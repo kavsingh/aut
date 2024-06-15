@@ -1,4 +1,4 @@
-import { groupIndecesBy } from "../lib/util"
+import { groupIndecesBy } from "#lib/util"
 
 import type { RendererFactory } from "./types"
 
