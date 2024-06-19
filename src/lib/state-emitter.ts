@@ -1,30 +1,26 @@
 import { Emitter } from "./emitter"
 
 export class StateEmitter<TState extends Record<string, unknown>> {
-	#emitter = new Emitter<Readonly<TState>>()
+	#emitter = new Emitter<Immutable<TState>>()
 	#state: TState
 
 	constructor(initialState: TState) {
 		this.#state = { ...initialState }
 	}
 
-	get(): Readonly<TState> {
-		return this.#state
+	get(): Immutable<TState> {
+		return this.#state as Immutable<TState>
 	}
 
-	update(
-		updater: (current: Readonly<TState>) => Partial<TState> | null | undefined,
-	): Readonly<TState> {
-		const updateResult = updater(this.#state)
+	updateMut(updater: (current: TState) => void): Immutable<TState> {
+		updater(this.#state)
 
-		if (updateResult) Object.assign(this.#state, updateResult)
+		this.#emitter.emit(this.#state as Immutable<TState>)
 
-		this.#emitter.emit(this.#state)
-
-		return this.#state
+		return this.#state as Immutable<TState>
 	}
 
-	listen(...args: Parameters<Emitter<TState>["listen"]>) {
+	listen(...args: Parameters<Emitter<Immutable<TState>>["listen"]>) {
 		return this.#emitter.listen(...args)
 	}
 

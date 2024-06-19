@@ -1,19 +1,26 @@
-import { onCleanup } from "solid-js"
+import { For, Show, createMemo, onCleanup } from "solid-js"
+import { twMerge } from "tailwind-merge"
 
 import EvolverSnapshot from "#components/evolver-snapshot"
 
-import type { WorldStateEvolver } from "#lib/types"
+import { ALL_EVOLVERS } from "./lib"
 
 export default function RuleSlider(props: Props) {
+	const allowMove = createMemo(() => props.allowMove ?? true)
+	const evolver = createMemo(() => ALL_EVOLVERS[props.evolverName])
 	let parentOffset = 0
 	let containerEl: HTMLDivElement | null = null
 
-	function handlePointerUp() {
-		document.body.removeEventListener("pointermove", handlePointerMove)
-		document.body.removeEventListener("pointerup", handlePointerUp)
+	function startDrag() {
+		if (!(allowMove() && containerEl)) return
+
+		parentOffset = containerEl.parentElement?.getBoundingClientRect().top ?? 0
+
+		document.body.addEventListener("pointermove", drag)
+		document.body.addEventListener("pointerup", endDrag)
 	}
 
-	function handlePointerMove(event: MouseEvent) {
+	function drag(event: MouseEvent) {
 		if (!containerEl) return
 
 		let relPosition = event.clientY - parentOffset
@@ -26,40 +33,52 @@ export default function RuleSlider(props: Props) {
 		containerEl.style.transform = `translateY(${relPosition}px)`
 	}
 
-	function handlePointerDown() {
-		if (!(props.allowMove && containerEl)) return
-
-		parentOffset = containerEl.parentElement?.getBoundingClientRect().top ?? 0
-
-		document.body.addEventListener("pointermove", handlePointerMove)
-		document.body.addEventListener("pointerup", handlePointerUp)
+	function endDrag() {
+		document.body.removeEventListener("pointermove", drag)
+		document.body.removeEventListener("pointerup", endDrag)
 	}
 
-	onCleanup(() => {
-		document.body.removeEventListener("pointermove", handlePointerMove)
-		document.body.removeEventListener("pointerup", handlePointerUp)
-	})
+	onCleanup(endDrag)
 
 	return (
 		<div
-			class="absolute end-[-16px] start-0 top-0 h-px cursor-ns-resize bg-neutral-400 first:cursor-default dark:bg-neutral-500"
+			class={twMerge(
+				"absolute end-[-16px] start-0 top-0 h-px bg-neutral-400 dark:bg-neutral-500",
+				allowMove() ? "cursor-ns-resize" : "cursor-default",
+			)}
 			style={{ transform: `translateY(${props.initialPosition}px)` }}
 			ref={(el) => (containerEl = el)}
 		>
-			<div
-				class="absolute end-[-40px] top-[-20px] size-[40px] scale-50 overflow-hidden rounded-full bg-white opacity-40 transition-all hover:scale-100 hover:opacity-100 dark:bg-neutral-900"
-				onPointerDown={handlePointerDown}
-			>
-				<EvolverSnapshot evolver={props.evolver} />
+			<div class="absolute end-[-10px]" onPointerDown={startDrag}>
+				<div class="absolute top-[-20px] size-[40px] scale-50 overflow-hidden rounded-full bg-white opacity-40 transition-all hover:scale-100 hover:opacity-100 dark:bg-neutral-900">
+					<Show when={evolver()}>
+						{(currentEvolver) => <EvolverSnapshot evolver={currentEvolver()} />}
+					</Show>
+				</div>
+				<div class="absolute start-[50px] top-[-20px] grid w-[102px] grid-cols-3 opacity-100">
+					<For each={Object.entries(ALL_EVOLVERS)}>
+						{([name, namedEvolver]) => (
+							<button
+								class="bg-white transition-all dark:bg-neutral-900"
+								onClick={() => {
+									props.onEvolverSelect(name)
+								}}
+							>
+								<EvolverSnapshot evolver={namedEvolver} size={34} />
+							</button>
+						)}
+					</For>
+				</div>
 			</div>
 		</div>
 	)
 }
 
 type Props = {
-	evolver: WorldStateEvolver
+	evolverName: string
 	initialPosition: number
 	maxPosition: number
 	onPositionChange: (position: number) => void
-	allowMove?: boolean
+	onEvolverSelect: (evolverName: string) => void
+	allowMove?: boolean | undefined
 }
