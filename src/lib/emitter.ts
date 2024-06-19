@@ -1,8 +1,6 @@
 export class Emitter<
 	TPayload,
-	TListener extends (payload: Readonly<TPayload>) => void = (
-		payload: Readonly<TPayload>,
-	) => void,
+	TListener extends (payload: TPayload) => void = (payload: TPayload) => void,
 > {
 	#listeners = new Set<TListener>()
 

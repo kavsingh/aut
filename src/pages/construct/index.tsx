@@ -3,33 +3,37 @@ import { For, onCleanup, onMount } from "solid-js"
 import Audio from "#audio"
 import Button from "#components/button"
 import { SpeakerIcon } from "#components/icons"
-import { createEvolver } from "#lib/evolver"
-import * as rules from "#lib/rules"
 import { StateEmitter } from "#lib/state-emitter"
 import { defaultTo, range, sample } from "#lib/util"
 import { generateInitialWorld, seedRandom } from "#lib/world"
 import { createRenderer } from "#renderers/renderer-canvas2d"
 
+import { ALL_EVOLVERS } from "./lib"
 import RuleSlider from "./rule-slider"
 
-import type { WorldState, WorldStateEvolver } from "#lib/types"
+import type { WorldState } from "#lib/types"
 
 export default function Construct() {
 	const size = 440
 	const cellDim = 2
 	const genSize = size / cellDim
 	const audio = new Audio()
-	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
 	const evolverState = new StateEmitter({ evolvers: sampleEvolvers(3) })
-	let worldState = range(genSize).reduce<WorldState>(
-		evolveReducer(evolverState.get().evolvers),
-		firstGen,
-	)
 	let worldCanvasEl: HTMLCanvasElement | null = null
 	let unlistenState: (() => void) | undefined = undefined
 
 	onMount(() => {
 		if (!worldCanvasEl) return
+
+		const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
+		let worldState = generateWorldState()
+
+		function generateWorldState() {
+			return range(genSize).reduce<WorldState>(
+				evolveReducer(evolverState.get().evolvers),
+				firstGen,
+			)
+		}
 
 		const render = createRenderer([worldCanvasEl], {
 			cellDim,
@@ -41,14 +45,12 @@ export default function Construct() {
 			render(worldState)
 		}
 
-		unlistenState = evolverState.listen(({ evolvers }) => {
-			worldState = range(genSize).reduce<WorldState>(
-				evolveReducer(evolvers),
-				firstGen,
-			)
-
-			audio.update(worldState)
-			requestAnimationFrame(renderWorld)
+		unlistenState = evolverState.listen(() => {
+			whenIdle(() => {
+				worldState = generateWorldState()
+				audio.update(worldState)
+				requestAnimationFrame(renderWorld)
+			})
 		})
 
 		renderWorld()
@@ -67,18 +69,29 @@ export default function Construct() {
 						<For each={evolverState.get().evolvers}>
 							{(item, idx) => (
 								<RuleSlider
-									evolver={item.evolver}
+									evolverName={item.evolverName}
 									initialPosition={item.position * size}
 									maxPosition={size}
 									allowMove={idx() !== 0}
 									onPositionChange={(pos) => {
-										whenIdle(() => {
-											item.position = pos / size
-											evolverState.update((current) => ({
-												evolvers: [...current.evolvers].sort(
-													(a, b) => a.position - b.position,
-												),
-											}))
+										evolverState.updateMut((current) => {
+											const target = current.evolvers.find(
+												(c) => c.id === item.id,
+											)
+
+											if (!target) return
+
+											target.position = pos / size
+											current.evolvers.sort((a, b) => a.position - b.position)
+										})
+									}}
+									onEvolverSelect={(evolverName) => {
+										evolverState.updateMut((current) => {
+											const target = current.evolvers.find(
+												(c) => c.id === item.id,
+											)
+
+											if (target) target.evolverName = evolverName
 										})
 									}}
 								/>
@@ -104,23 +117,23 @@ export default function Construct() {
 	)
 }
 
-const defaultEvolver = createEvolver(rules.rule3)
-const allEvolvers = Object.values(rules).map((rule) =>
-	createEvolver(rule, true),
-)
+const evolverNames = Object.keys(ALL_EVOLVERS)
 
 function sampleEvolvers(count: number) {
 	return range(count).map<EvolverItem>((_, i, it) => ({
-		evolver: defaultTo(defaultEvolver, sample(allEvolvers)),
+		id: `evolver-${i}`,
+		evolverName: defaultTo("rule3", sample(evolverNames)),
 		position: i / it.length,
 	}))
 }
 
-function evolveReducer(evolvers: EvolverItem[]) {
+function evolveReducer(evolverItems: readonly EvolverItem[]) {
 	return function reducer(acc: WorldState, index: number): WorldState {
-		const evolver = evolvers.findLast(
-			({ position }) => position <= index / acc.length,
-		)?.evolver
+		const evolverName = evolverItems.findLast(({ position }) => {
+			return position <= index / acc.length
+		})?.evolverName
+
+		const evolver = evolverName ? ALL_EVOLVERS[evolverName] : undefined
 
 		return evolver?.(acc) ?? acc
 	}
@@ -131,4 +144,8 @@ const whenIdle =
 		? window.requestIdleCallback
 		: (fn: () => void) => setTimeout(fn, 0)
 
-type EvolverItem = { evolver: WorldStateEvolver; position: number }
+type EvolverItem = {
+	id: string
+	evolverName: keyof typeof ALL_EVOLVERS
+	position: number
+}
