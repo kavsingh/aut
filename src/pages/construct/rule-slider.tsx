@@ -6,13 +6,12 @@ import EvolverSnapshot from "#components/evolver-snapshot"
 import { ALL_EVOLVERS } from "./lib"
 
 export default function RuleSlider(props: Props) {
-	const allowMove = createMemo(() => props.allowMove ?? true)
 	const evolver = createMemo(() => ALL_EVOLVERS[props.evolverName])
 	let parentOffset = 0
 	let containerEl: HTMLDivElement | null = null
 
 	function startDrag() {
-		if (!(allowMove() && containerEl)) return
+		if (!(props.movable && containerEl)) return
 
 		parentOffset = containerEl.parentElement?.getBoundingClientRect().top ?? 0
 
@@ -44,13 +43,16 @@ export default function RuleSlider(props: Props) {
 		<div
 			class={twMerge(
 				"absolute end-[-16px] start-0 top-0 h-px bg-neutral-400 dark:bg-neutral-500",
-				allowMove() ? "cursor-ns-resize" : "cursor-default",
+				props.movable ? "cursor-ns-resize" : "cursor-default",
 			)}
 			style={{ transform: `translateY(${props.initialPosition}px)` }}
 			ref={(el) => (containerEl = el)}
 		>
-			<div class="absolute end-[-10px]" onPointerDown={startDrag}>
-				<div class="absolute top-[-20px] size-[40px] scale-50 overflow-hidden rounded-full bg-white opacity-40 transition-all hover:scale-100 hover:opacity-100 dark:bg-neutral-900">
+			<div class="absolute end-[-10px]">
+				<div
+					class="absolute top-[-20px] size-[40px] scale-50 overflow-hidden rounded-full bg-white opacity-40 transition-all hover:scale-100 hover:opacity-100 dark:bg-neutral-900"
+					onPointerDown={startDrag}
+				>
 					<Show when={evolver()}>
 						{(currentEvolver) => <EvolverSnapshot evolver={currentEvolver()} />}
 					</Show>
@@ -80,5 +82,5 @@ type Props = {
 	maxPosition: number
 	onPositionChange: (position: number) => void
 	onEvolverSelect: (evolverName: string) => void
-	allowMove?: boolean | undefined
+	movable: boolean
 }
