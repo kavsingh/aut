@@ -3,11 +3,9 @@ import { range } from "#lib/util/number"
 export function seedSingle(len: number) {
 	if (!len) return []
 
-	const zeros = range(Math.floor(len / 2)).map(() => 0)
+	const zeros = range(Math.floor(len / 2)).fill(0)
 
-	return len % 2 === 0
-		? zeros.slice(0, -1).concat(1).concat(zeros)
-		: zeros.concat(1).concat(zeros)
+	return [...(len % 2 === 0 ? zeros.slice(0, -1) : zeros), 1, ...zeros]
 }
 
 export function seedRandom(len: number) {
@@ -20,9 +18,7 @@ export function generateInitialWorld(
 	seedFn = seedSingle,
 ) {
 	return [
-		...range(maxGenerations - 1).map(() =>
-			Array<number>(generationSize).fill(0),
-		),
+		...range(maxGenerations - 1).map(() => range(generationSize).fill(0)),
 		seedFn(generationSize),
 	]
 }

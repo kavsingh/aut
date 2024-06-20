@@ -7,35 +7,34 @@ import { createRenderer } from "#renderers/renderer-canvas2d"
 import type { WorldStateEvolver } from "#lib/types"
 
 export default function EvolverSnapshot(props: Props) {
-	const size = createMemo(() => props.size ?? 40)
+	const world = createMemo(() => {
+		const evolver = props.evolver
+		const size = props.size ?? 40
+
+		return range(size).reduce(
+			evolver,
+			generateInitialWorld(size, size, seedRandom),
+		)
+	})
+
 	let canvasRef: HTMLCanvasElement | null = null
 	let render: ReturnType<typeof createRenderer> | undefined = undefined
 
 	onMount(() => {
 		if (!canvasRef) return
 
-		const renderSize = size()
+		const size = props.size ?? 40
 
 		render = createRenderer([canvasRef], {
 			cellDim: 1,
-			width: renderSize,
-			height: renderSize,
+			width: size,
+			height: size,
 			fillColor: getComputedStyle(canvasRef).color,
 		})
 	})
 
 	createEffect(() => {
-		if (!render) return
-
-		const evolver = props.evolver
-		const stateSize = size()
-
-		render(
-			range(stateSize).reduce(
-				evolver,
-				generateInitialWorld(stateSize, stateSize, seedRandom),
-			),
-		)
+		render?.(world())
 	})
 
 	return <canvas class={props.class} ref={(el) => (canvasRef = el)} />
