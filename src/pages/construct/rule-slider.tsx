@@ -42,7 +42,7 @@ export default function RuleSlider(props: Props) {
 	return (
 		<div
 			class={twMerge(
-				"absolute end-[-16px] start-0 top-0 h-px bg-neutral-400 dark:bg-neutral-500",
+				"absolute end-[-16px] start-full top-0 h-px bg-neutral-400 dark:bg-neutral-500",
 				props.movable ? "cursor-ns-resize" : "cursor-default",
 			)}
 			style={{ transform: `translateY(${props.initialPosition}px)` }}

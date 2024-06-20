@@ -1,26 +1,30 @@
-import { For, createEffect, onCleanup, onMount } from "solid-js"
-import { createStore } from "solid-js/store"
+import { For, createSignal, onCleanup, onMount } from "solid-js"
 
 import Audio from "#audio"
 import Button from "#components/button"
 import { SpeakerIcon } from "#components/icons"
-import { defaultTo, range, sample } from "#lib/util"
+import { StateEmitter } from "#lib/state-emitter"
+import { defaultTo, range, sample, valueEq } from "#lib/util"
 import { generateInitialWorld, seedRandom } from "#lib/world"
 import { createRenderer } from "#renderers/renderer-canvas2d"
 
-import { ALL_EVOLVERS } from "./lib"
+import { ALL_EVOLVERS, EVOLVER_NAMES } from "./lib"
 import RuleSlider from "./rule-slider"
 
 import type { WorldState } from "#lib/types"
 
 const size = 440
-const cellDim = 2
+const cellDim = 1
 const genSize = size / cellDim
 
 export default function Construct() {
 	const audio = new Audio()
 	const generateWorldState = worldStateGenerator()
-	const [store, updateStore] = createStore(getInitialState(3))
+	const state = new StateEmitter(getInitialState(4))
+	const [evolverList, setEvolverList] = createSignal(
+		toEvolverList(state.get()),
+		{ equals: valueEq },
+	)
 
 	let worldState: ReturnType<typeof generateWorldState> | undefined = undefined
 	let worldCanvasEl: HTMLCanvasElement | null = null
@@ -29,6 +33,16 @@ export default function Construct() {
 	function renderWorld() {
 		if (worldState && render) render(worldState)
 	}
+
+	const unlistenState = state.listen((current) => {
+		setEvolverList(toEvolverList(current))
+
+		whenIdle(() => {
+			worldState = generateWorldState(current)
+			audio.update(worldState)
+			requestAnimationFrame(renderWorld)
+		})
+	})
 
 	onMount(() => {
 		if (!worldCanvasEl) return
@@ -39,21 +53,12 @@ export default function Construct() {
 			height: size,
 		})
 
+		worldState = generateWorldState(state.get())
 		renderWorld()
 	})
 
-	createEffect(() => {
-		worldState = generateWorldState(store)
-
-		whenIdle(() => {
-			if (!worldState) return
-
-			audio.update(worldState)
-			requestAnimationFrame(renderWorld)
-		})
-	})
-
 	onCleanup(async () => {
+		unlistenState()
 		await audio.dispose()
 	})
 
@@ -62,21 +67,25 @@ export default function Construct() {
 			<div class="flex size-full items-center justify-center">
 				<div data-el="world-container" class="relative size-[440px]">
 					<div class="absolute inset-0 z-10">
-						<For each={Object.entries(store)}>
-							{([id, item]) => (
+						<For each={evolverList()}>
+							{([id, evolverName]) => (
 								<RuleSlider
-									evolverName={item.evolverName}
-									initialPosition={item.position * size}
+									evolverName={evolverName}
+									initialPosition={(state.get()[id]?.position ?? 0) * size}
 									maxPosition={size}
-									movable={item.movable}
+									movable={!!state.get()[id]?.movable}
 									onPositionChange={(pos) => {
-										updateStore(id, (current) => {
-											return { ...current, position: pos / size }
+										state.updateMut((current) => {
+											const currentItem = current[id]
+
+											if (currentItem) currentItem.position = pos / size
 										})
 									}}
-									onEvolverSelect={(evolverName) => {
-										updateStore(id, (current) => {
-											return { ...current, evolverName }
+									onEvolverSelect={(name) => {
+										state.updateMut((current) => {
+											const currentItem = current[id]
+
+											if (currentItem) currentItem.evolverName = name
 										})
 									}}
 								/>
@@ -102,14 +111,20 @@ export default function Construct() {
 	)
 }
 
-const evolverNames = Object.keys(ALL_EVOLVERS)
+function toEvolverList(state: State) {
+	return Object.entries(state).map(
+		([id, { evolverName }]): [id: string, evolverName: string] => {
+			return [id, evolverName]
+		},
+	)
+}
 
 function getInitialState(count: number) {
 	const state: Record<string, EvolverItem> = {}
 
 	for (const i of range(count)) {
 		state[`evolver-${i}`] = {
-			evolverName: defaultTo("rule3", sample(evolverNames)),
+			evolverName: defaultTo("rule3", sample(EVOLVER_NAMES)),
 			position: i / count,
 			movable: i !== 0,
 		}

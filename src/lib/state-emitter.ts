@@ -5,7 +5,7 @@ export class StateEmitter<TState extends Record<string, unknown>> {
 	#state: TState
 
 	constructor(initialState: TState) {
-		this.#state = { ...initialState }
+		this.#state = structuredClone(initialState)
 	}
 
 	get(): Immutable<TState> {
