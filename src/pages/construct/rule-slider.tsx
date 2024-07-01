@@ -1,16 +1,21 @@
-import { For, Show, createMemo, onCleanup } from "solid-js"
+import { For, Show, createMemo, createSignal, onCleanup } from "solid-js"
 import { twMerge } from "tailwind-merge"
 
+import Button from "#components/button"
 import EvolverSnapshot from "#components/evolver-snapshot"
+import { ChevronRightIcon } from "#components/icons"
 
 import { ALL_EVOLVERS } from "./lib"
 
 export default function RuleSlider(props: Props) {
+	const [showSelector, setShowSelector] = createSignal(false)
 	const evolver = createMemo(() => ALL_EVOLVERS[props.evolverName])
 	let parentOffset = 0
 	let containerEl: HTMLDivElement | null = null
 
 	function startDrag() {
+		setShowSelector(false)
+
 		if (!(props.movable && containerEl)) return
 
 		parentOffset = containerEl.parentElement?.getBoundingClientRect().top ?? 0
@@ -48,29 +53,44 @@ export default function RuleSlider(props: Props) {
 			style={{ transform: `translateY(${props.initialPosition}px)` }}
 			ref={(el) => (containerEl = el)}
 		>
-			<div class="absolute end-[-10px]">
+			<div class="absolute end-[-8px]">
 				<div
-					class="absolute top-[-20px] size-[40px] scale-50 overflow-hidden rounded-full bg-white opacity-40 transition-all hover:scale-100 hover:opacity-100 dark:bg-neutral-900"
+					class="absolute top-[-16px] size-[32px] scale-[66%] overflow-hidden rounded-full bg-white opacity-40 transition-all hover:scale-100 hover:opacity-100 dark:bg-neutral-900"
 					onPointerDown={startDrag}
 				>
 					<Show when={evolver()}>
-						{(currentEvolver) => <EvolverSnapshot evolver={currentEvolver()} />}
+						{(currentEvolver) => (
+							<EvolverSnapshot evolver={currentEvolver()} size={32} />
+						)}
 					</Show>
 				</div>
-				<div class="absolute start-[50px] top-[-20px] grid w-[102px] grid-cols-3 opacity-100">
-					<For each={Object.entries(ALL_EVOLVERS)}>
-						{([name, namedEvolver]) => (
-							<button
-								class="bg-white transition-all dark:bg-neutral-900"
-								onClick={() => {
-									props.onEvolverSelect(name)
-								}}
-							>
-								<EvolverSnapshot evolver={namedEvolver} size={34} />
-							</button>
-						)}
-					</For>
-				</div>
+				<Show
+					when={showSelector()}
+					fallback={
+						<Button
+							class="absolute start-[36px] top-[-6px] size-3"
+							onClick={[setShowSelector, true]}
+						>
+							<ChevronRightIcon />
+						</Button>
+					}
+				>
+					<div class="absolute start-[50px] top-[-20px] grid w-[102px] grid-cols-3 opacity-100">
+						<For each={Object.entries(ALL_EVOLVERS)}>
+							{([name, namedEvolver]) => (
+								<button
+									class="bg-white transition-all dark:bg-neutral-900"
+									onClick={() => {
+										setShowSelector(false)
+										props.onEvolverSelect(name)
+									}}
+								>
+									<EvolverSnapshot evolver={namedEvolver} size={34} />
+								</button>
+							)}
+						</For>
+					</div>
+				</Show>
 			</div>
 		</div>
 	)
