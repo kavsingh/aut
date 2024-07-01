@@ -14,13 +14,13 @@ import RuleSlider from "./rule-slider"
 import type { WorldState } from "#lib/types"
 
 const size = 440
-const cellDim = 1
+const cellDim = 2
 const genSize = size / cellDim
 
 export default function Construct() {
 	const audio = new Audio()
 	const generateWorldState = worldStateGenerator()
-	const state = new StateEmitter(getInitialState(4))
+	const state = new StateEmitter(getInitialState(3))
 	const [evolverList, setEvolverList] = createSignal(
 		toEvolverList(state.get()),
 		{ equals: valueEq },
