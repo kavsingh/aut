@@ -1,10 +1,11 @@
-import { For, createSignal, onCleanup, onMount } from "solid-js"
+import { For, onCleanup, onMount } from "solid-js"
+import { createStore, reconcile } from "solid-js/store"
 
 import Audio from "#audio"
 import Button from "#components/button"
 import { SpeakerIcon } from "#components/icons"
 import { StateEmitter } from "#lib/state-emitter"
-import { defaultTo, range, sample, valueEq } from "#lib/util"
+import { defaultTo, range, sample } from "#lib/util"
 import { generateInitialWorld, seedRandom } from "#lib/world"
 import { createRenderer } from "#renderers/renderer-canvas2d"
 
@@ -21,10 +22,9 @@ export default function Construct() {
 	const audio = new Audio()
 	const generateWorldState = worldStateGenerator()
 	const state = new StateEmitter(getInitialState(3))
-	const [evolverList, setEvolverList] = createSignal(
-		toEvolverList(state.get()),
-		{ equals: valueEq },
-	)
+	const [evolvers, setEvolvers] = createStore({
+		evolverList: toEvolverList(state.get()),
+	})
 
 	let worldState: ReturnType<typeof generateWorldState> | undefined = undefined
 	let worldCanvasEl: HTMLCanvasElement | null = null
@@ -35,7 +35,7 @@ export default function Construct() {
 	}
 
 	const unlistenState = state.listen((current) => {
-		setEvolverList(toEvolverList(current))
+		setEvolvers("evolverList", reconcile(toEvolverList(current)))
 
 		whenIdle(() => {
 			worldState = generateWorldState(current)
@@ -67,23 +67,23 @@ export default function Construct() {
 			<div class="flex size-full items-center justify-center">
 				<div data-el="world-container" class="relative size-[440px]">
 					<div class="absolute inset-0 z-10">
-						<For each={evolverList()}>
-							{([id, evolverName]) => (
+						<For each={evolvers.evolverList}>
+							{(item) => (
 								<RuleSlider
-									evolverName={evolverName}
-									initialPosition={(state.get()[id]?.position ?? 0) * size}
+									evolverName={item.evolverName}
+									initialPosition={(state.get()[item.id]?.position ?? 0) * size}
 									maxPosition={size}
-									movable={!!state.get()[id]?.movable}
+									movable={!!state.get()[item.id]?.movable}
 									onPositionChange={(pos) => {
 										state.updateMut((current) => {
-											const currentItem = current[id]
+											const currentItem = current[item.id]
 
 											if (currentItem) currentItem.position = pos / size
 										})
 									}}
 									onEvolverSelect={(name) => {
 										state.updateMut((current) => {
-											const currentItem = current[id]
+											const currentItem = current[item.id]
 
 											if (currentItem) currentItem.evolverName = name
 										})
@@ -113,8 +113,8 @@ export default function Construct() {
 
 function toEvolverList(state: State) {
 	return Object.entries(state).map(
-		([id, { evolverName }]): [id: string, evolverName: string] => {
-			return [id, evolverName]
+		([id, { evolverName }]): { id: string; evolverName: string } => {
+			return { id, evolverName }
 		},
 	)
 }
