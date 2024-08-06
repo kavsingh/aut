@@ -2,7 +2,7 @@ import { vi } from "vitest"
 
 import type { MockContext } from "vitest"
 
-export function mockRandom(fn: (mock: MockContext<any, any>) => number) {
+export function mockRandom(fn: (mock: MockContext<any>) => number) {
 	const _Math = globalThis.Math
 	const random = vi.fn()
 	const mockMath: typeof _Math = Object.create(_Math)
