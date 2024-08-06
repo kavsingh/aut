@@ -65,8 +65,6 @@ module.exports = {
 				ignoreFunctionTypeParameterNameValueShadow: true,
 			},
 		],
-		"no-throw-literal": "off",
-		"@typescript-eslint/no-throw-literal": "error",
 		"no-unused-vars": "off",
 		"@typescript-eslint/no-unused-vars": [
 			"error",
@@ -87,7 +85,10 @@ module.exports = {
 		{
 			files: ["*.c[jt]s"],
 			parserOptions: { sourceType: "script" },
-			rules: { "@typescript-eslint/no-var-requires": "off" },
+			rules: {
+				"@typescript-eslint/no-require-imports": "off",
+				"@typescript-eslint/no-var-requires": "off",
+			},
 		},
 		{
 			files: ["*.?(c)js"],
