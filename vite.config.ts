@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 
 import { defineConfig } from "vite"
-import checkerPlugin from "vite-plugin-checker"
+import { checker as checkerPlugin } from "vite-plugin-checker"
 import deadFilePlugin from "vite-plugin-deadfile"
 import { createHtmlPlugin } from "vite-plugin-html"
 import { viteSingleFile } from "vite-plugin-singlefile"
@@ -44,9 +44,5 @@ function checker(mode: string) {
 	return checkerPlugin({
 		overlay: { initialIsOpen: false },
 		typescript: true,
-		eslint: {
-			lintCommand: 'eslint "./src/**/*.+(ts|tsx)"',
-			dev: { logLevel: ["error"] },
-		},
 	})
 }

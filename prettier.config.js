@@ -1,6 +1,6 @@
 /** @type {import('prettier').Config} */
-module.exports = {
+export default {
 	semi: false,
 	useTabs: true,
-	quoteProps: "consistent"
+	quoteProps: "consistent",
 }

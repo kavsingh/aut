@@ -17,9 +17,10 @@
 		"**/node_modules": true,
 		"**/dist/": true
 	},
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"eslint.options": { "flags": ["unstable_ts_config"] },
 	"tailwindCSS.validate": true,
 	"cssVariables.lookupFiles": ["src/style/**/*.css"],
-	"typescript.tsdk": "node_modules/typescript/lib",
 	"[javascript]": {
 		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
 	},

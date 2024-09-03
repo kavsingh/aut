@@ -1,8 +1,0 @@
-.vscode/
-node_modules/
-coverage/
-dist/
-reports/
-*.ignore.js
-**/*.css.d.ts
-**/__generated__/
