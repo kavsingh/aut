@@ -1,4 +1,5 @@
 import { A } from "@solidjs/router"
+import { tv } from "tailwind-variants"
 
 import Button, { buttonVariants } from "#components/button"
 import {
@@ -8,18 +9,18 @@ import {
 	ScrollsIcon,
 } from "#components/icons"
 
-import type { ParentProps } from "solid-js"
+import type { ComponentProps, ParentProps } from "solid-js"
 
 export default function App(props: ParentProps) {
 	return (
 		<>
 			<div class="fixed z-10 flex w-full items-center justify-end gap-1 px-8 pt-8">
-				<A href="/" class={buttonVariants()}>
+				<InternalLink href="/">
 					<ScrollsIcon />
-				</A>
-				<A href="/construct" class={buttonVariants()}>
+				</InternalLink>
+				<InternalLink href="/construct">
 					<ConstructIcon />
-				</A>
+				</InternalLink>
 				<Button onClick={toggleFullscreen}>
 					<FullscreenIcon />
 				</Button>
@@ -34,6 +35,20 @@ export default function App(props: ParentProps) {
 		</>
 	)
 }
+
+function InternalLink(
+	props: Omit<
+		ComponentProps<typeof A>,
+		"class" | "classList" | "activeClass" | "inactiveClass"
+	>,
+) {
+	return <A {...props} class={internalLinkVariants()} />
+}
+
+const internalLinkVariants = tv({
+	extend: buttonVariants,
+	base: "aria-[current=page]:opacity-60",
+})
 
 function toggleFullscreen() {
 	if (document.fullscreenElement) void document.exitFullscreen()

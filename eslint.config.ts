@@ -146,7 +146,9 @@ export default tsEslintPlugin.config(
 		files: ["src/**/*.?([mc])[tj]s?(x)"],
 		languageOptions: { globals: { ...globals.browser } },
 		settings: {
-			tailwindcss: { callees: ["tv", "twMerge", "class", "classList"] },
+			tailwindcss: {
+				callees: ["tv", "twMerge", "class", "classList"],
+			},
 		},
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		extends: [
