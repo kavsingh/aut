@@ -20,6 +20,9 @@
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"eslint.options": { "flags": ["unstable_ts_config"] },
 	"tailwindCSS.validate": true,
+	"tailwindCSS.experimental.classRegex": [
+		["tv\\((([^()]*|\\([^()]*\\))*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+	],
 	"cssVariables.lookupFiles": ["src/style/**/*.css"],
 	"[javascript]": {
 		"editor.defaultFormatter": "dbaeumer.vscode-eslint"

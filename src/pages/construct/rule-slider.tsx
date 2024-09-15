@@ -1,5 +1,5 @@
 import { For, Show, createMemo, createSignal, onCleanup } from "solid-js"
-import { twMerge } from "tailwind-merge"
+import { tv } from "tailwind-variants"
 
 import Button from "#components/button"
 import EvolverSnapshot from "#components/evolver-snapshot"
@@ -46,10 +46,7 @@ export default function RuleSlider(props: Props) {
 
 	return (
 		<div
-			class={twMerge(
-				"absolute end-[-16px] start-full top-0 h-px bg-neutral-400 dark:bg-neutral-500",
-				props.movable ? "cursor-ns-resize" : "cursor-default",
-			)}
+			class={ruleSliderVariants({ movable: props.movable })}
 			style={{ transform: `translateY(${props.initialPosition}px)` }}
 			ref={(el) => (containerEl = el)}
 		>
@@ -95,6 +92,16 @@ export default function RuleSlider(props: Props) {
 		</div>
 	)
 }
+
+const ruleSliderVariants = tv({
+	base: "absolute end-[-16px] start-full top-0 h-px bg-neutral-400 dark:bg-neutral-500",
+	variants: {
+		movable: {
+			true: "cursor-ns-resize",
+			false: "cursor-default",
+		},
+	},
+})
 
 type Props = {
 	evolverName: string

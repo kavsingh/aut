@@ -35,7 +35,7 @@ export default class ReverbImpulse implements EffectNode {
 		this.#dryGain.connect(node)
 	}
 
-	setWetDry(ratio: number, atTime?: number | undefined) {
+	setWetDry(ratio: number, atTime?: number) {
 		const clamped = clamp(0, 1, ratio)
 		const time = atTime ?? this.#audioContext.currentTime
 

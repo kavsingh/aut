@@ -1,6 +1,6 @@
 import { A } from "@solidjs/router"
 
-import Button, { buttonClassNames } from "#components/button"
+import Button, { buttonVariants } from "#components/button"
 import {
 	ConstructIcon,
 	FullscreenIcon,
@@ -14,10 +14,10 @@ export default function App(props: ParentProps) {
 	return (
 		<>
 			<div class="fixed z-10 flex w-full items-center justify-end gap-1 px-8 pt-8">
-				<A href="/" class={buttonClassNames()}>
+				<A href="/" class={buttonVariants()}>
 					<ScrollsIcon />
 				</A>
-				<A href="/construct" class={buttonClassNames()}>
+				<A href="/construct" class={buttonVariants()}>
 					<ConstructIcon />
 				</A>
 				<Button onClick={toggleFullscreen}>
@@ -25,7 +25,7 @@ export default function App(props: ParentProps) {
 				</Button>
 				<a
 					href="https://github.com/kavsingh/cellular-automaton"
-					class={buttonClassNames()}
+					class={buttonVariants()}
 				>
 					<GithubIcon />
 				</a>

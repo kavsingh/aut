@@ -13,10 +13,7 @@ export default class ReverbSimple implements EffectNode {
 	#decay: number
 	#reverse: boolean
 
-	constructor(
-		audioContext: AudioContext,
-		options?: ReverbSimpleOptions | undefined,
-	) {
+	constructor(audioContext: AudioContext, options?: ReverbSimpleOptions) {
 		this.#audioContext = audioContext
 		this.#seconds = options?.seconds ?? 3
 		this.#decay = options?.decay ?? 2
@@ -70,7 +67,7 @@ export default class ReverbSimple implements EffectNode {
 		this.#dry.connect(node)
 	}
 
-	setWetDry(ratio: number, atTime?: number | undefined) {
+	setWetDry(ratio: number, atTime?: number) {
 		const clamped = clamp(0, 1, ratio)
 		const time = atTime ?? this.#audioContext.currentTime
 

@@ -1,7 +1,7 @@
 // https://ui.shadcn.com/docs/components/button
 
 import { splitProps } from "solid-js"
-import { twMerge } from "tailwind-merge"
+import { tv } from "tailwind-variants"
 
 import type { JSX } from "solid-js"
 
@@ -14,14 +14,11 @@ export default function Button(
 		<button
 			{...passProps}
 			type={localProps.type ?? "button"}
-			class={buttonClassNames(localProps.class)}
+			class={buttonVariants(localProps.class)}
 		/>
 	)
 }
 
-export function buttonClassNames(className?: string | undefined) {
-	return twMerge(
-		"m-0 flex w-[1.1rem] flex-col items-center p-0 text-black opacity-30 transition-opacity hover:opacity-100 focus-visible:opacity-100 active:opacity-100 fs:opacity-10 dark:text-white [&>svg]:aspect-square [&>svg]:h-[unset] [&>svg]:w-full",
-		className,
-	)
-}
+export const buttonVariants = tv({
+	base: "m-0 flex w-[1.1rem] flex-col items-center p-0 text-black opacity-30 transition-opacity hover:opacity-100 focus-visible:opacity-100 active:opacity-100 fs:opacity-10 dark:text-white [&>svg]:aspect-square [&>svg]:h-[unset] [&>svg]:w-full",
+})
