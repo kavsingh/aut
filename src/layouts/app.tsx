@@ -5,6 +5,7 @@ import {
 	ConstructIcon,
 	FullscreenIcon,
 	GithubIcon,
+	RocketIcon,
 	ScrollsIcon,
 } from "#components/icons"
 import { tv } from "#lib/style"
@@ -17,6 +18,9 @@ export default function App(props: ParentProps) {
 			<div class="fixed z-10 flex w-full items-center justify-end gap-1 px-8 pt-8">
 				<InternalLink href="/">
 					<ScrollsIcon />
+				</InternalLink>
+				<InternalLink href="/gpu">
+					<RocketIcon />
 				</InternalLink>
 				<InternalLink href="/construct">
 					<ConstructIcon />
