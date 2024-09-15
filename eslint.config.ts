@@ -201,4 +201,10 @@ export default tsEslintPlugin.config(
 	},
 
 	eslintPluginPrettierRecommended,
+
+	{
+		rules: {
+			"prettier/prettier": "warn",
+		},
+	},
 )
