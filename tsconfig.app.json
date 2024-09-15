@@ -13,6 +13,12 @@
 		"paths": { "~/*": ["./src/*"] },
 		"sourceMap": true,
 		"target": "esnext",
-		"types": ["vite/client", "vitest/importMeta", "@testing-library/jest-dom"]
+		"types": [
+			"vite/client",
+			"vitest/importMeta",
+			"vite-plugin-glsl/ext",
+			"@webgpu/types",
+			"@testing-library/jest-dom"
+		]
 	}
 }
