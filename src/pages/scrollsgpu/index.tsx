@@ -4,6 +4,8 @@ import { onMount } from "solid-js"
 
 import { init } from "./renderer"
 
+const DIM = 500
+
 export default function Scrollsgpu() {
 	let canvasEl: HTMLCanvasElement | undefined
 
@@ -13,13 +15,13 @@ export default function Scrollsgpu() {
 		if (!context) return
 
 		void getDevice().then((device) => {
-			init(device, context)
+			init(device, context, DIM)
 		})
 	})
 
 	return (
 		<div class="grid size-full place-items-center">
-			<canvas width="400" height="400" ref={(el) => (canvasEl = el)} />
+			<canvas width={DIM} height={DIM} ref={(el) => (canvasEl = el)} />
 		</div>
 	)
 }
