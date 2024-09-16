@@ -3,6 +3,8 @@
 
 import shader from "./shader.wgsl"
 
+const GRID_SIZE = 80
+
 export function init(device: GPUDevice, context: GPUCanvasContext) {
 	const canvasFormat = navigator.gpu.getPreferredCanvasFormat()
 
@@ -27,6 +29,15 @@ export function init(device: GPUDevice, context: GPUCanvasContext) {
 	})
 
 	device.queue.writeBuffer(vertexBuffer, 0, vertices)
+
+	const uniformArray = new Float32Array([GRID_SIZE, GRID_SIZE])
+	const uniformBuffer = device.createBuffer({
+		label: "Grid uniforms",
+		size: uniformArray.byteLength,
+		usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+	})
+
+	device.queue.writeBuffer(uniformBuffer, 0, uniformArray)
 
 	const vertexBufferLayout: GPUVertexBufferLayout = {
 		arrayStride: vertices.BYTES_PER_ELEMENT * 2,
@@ -59,13 +70,19 @@ export function init(device: GPUDevice, context: GPUCanvasContext) {
 		},
 	})
 
+	const bindGroup = device.createBindGroup({
+		label: "Cell renderer bind group",
+		layout: cellPipeline.getBindGroupLayout(0),
+		entries: [{ binding: 0, resource: { buffer: uniformBuffer } }],
+	})
+
 	const encoder = device.createCommandEncoder()
 	const pass = encoder.beginRenderPass({
 		colorAttachments: [
 			{
 				view: context.getCurrentTexture().createView(),
 				loadOp: "clear",
-				clearValue: { r: 255, g: 0, b: 0, a: 1 },
+				clearValue: { r: 0, g: 0, b: 0.4, a: 1 },
 				storeOp: "store",
 			},
 		],
@@ -73,11 +90,9 @@ export function init(device: GPUDevice, context: GPUCanvasContext) {
 
 	pass.setPipeline(cellPipeline)
 	pass.setVertexBuffer(0, vertexBuffer)
-	pass.draw(vertices.length / 6)
+	pass.setBindGroup(0, bindGroup)
+	pass.draw(vertices.length / 2, GRID_SIZE * GRID_SIZE)
 	pass.end()
 
-	const commandBuffer = encoder.finish()
-
-	device.queue.submit([commandBuffer])
 	device.queue.submit([encoder.finish()])
 }
