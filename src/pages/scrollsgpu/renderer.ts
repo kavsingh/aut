@@ -39,6 +39,32 @@ export function init(device: GPUDevice, context: GPUCanvasContext) {
 
 	device.queue.writeBuffer(uniformBuffer, 0, uniformArray)
 
+	const cellStateArray = new Uint32Array(GRID_SIZE * GRID_SIZE)
+	const cellStateStorage = [
+		device.createBuffer({
+			label: "Cell state A",
+			size: cellStateArray.byteLength,
+			usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+		}),
+		device.createBuffer({
+			label: "Cell state B",
+			size: cellStateArray.byteLength,
+			usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+		}),
+	] as const
+
+	for (let i = 0; i < cellStateArray.length; i += 3) {
+		cellStateArray[i] = 1
+	}
+
+	device.queue.writeBuffer(cellStateStorage[0], 0, cellStateArray)
+
+	for (let i = 0; i < cellStateArray.length; i++) {
+		cellStateArray[i] = i % 2
+	}
+
+	device.queue.writeBuffer(cellStateStorage[1], 0, cellStateArray)
+
 	const vertexBufferLayout: GPUVertexBufferLayout = {
 		arrayStride: vertices.BYTES_PER_ELEMENT * 2,
 		attributes: [
@@ -70,29 +96,50 @@ export function init(device: GPUDevice, context: GPUCanvasContext) {
 		},
 	})
 
-	const bindGroup = device.createBindGroup({
-		label: "Cell renderer bind group",
-		layout: cellPipeline.getBindGroupLayout(0),
-		entries: [{ binding: 0, resource: { buffer: uniformBuffer } }],
-	})
+	const bindGroups = [
+		device.createBindGroup({
+			label: "Cell renderer bind group A",
+			layout: cellPipeline.getBindGroupLayout(0),
+			entries: [
+				{ binding: 0, resource: { buffer: uniformBuffer } },
+				{ binding: 1, resource: { buffer: cellStateStorage[0] } },
+			],
+		}),
+		device.createBindGroup({
+			label: "Cell renderer bind group B",
+			layout: cellPipeline.getBindGroupLayout(0),
+			entries: [
+				{ binding: 0, resource: { buffer: uniformBuffer } },
+				{ binding: 1, resource: { buffer: cellStateStorage[1] } },
+			],
+		}),
+	] as const
 
-	const encoder = device.createCommandEncoder()
-	const pass = encoder.beginRenderPass({
-		colorAttachments: [
-			{
-				view: context.getCurrentTexture().createView(),
-				loadOp: "clear",
-				clearValue: { r: 0, g: 0, b: 0.4, a: 1 },
-				storeOp: "store",
-			},
-		],
-	})
+	let step = 0
 
-	pass.setPipeline(cellPipeline)
-	pass.setVertexBuffer(0, vertexBuffer)
-	pass.setBindGroup(0, bindGroup)
-	pass.draw(vertices.length / 2, GRID_SIZE * GRID_SIZE)
-	pass.end()
+	function update() {
+		step++
+		const encoder = device.createCommandEncoder()
+		const pass = encoder.beginRenderPass({
+			colorAttachments: [
+				{
+					view: context.getCurrentTexture().createView(),
+					loadOp: "clear",
+					clearValue: { r: 0, g: 0, b: 0.4, a: 1 },
+					storeOp: "store",
+				},
+			],
+		})
 
-	device.queue.submit([encoder.finish()])
+		pass.setPipeline(cellPipeline)
+		pass.setVertexBuffer(0, vertexBuffer)
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		pass.setBindGroup(0, bindGroups[step % 2]!)
+		pass.draw(vertices.length / 2, GRID_SIZE * GRID_SIZE)
+		pass.end()
+
+		device.queue.submit([encoder.finish()])
+	}
+
+	setInterval(update, 200)
 }
