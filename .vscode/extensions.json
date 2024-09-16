@@ -5,6 +5,8 @@
 		"esbenp.prettier-vscode",
 		"Tobermory.es6-string-html",
 		"bradlc.vscode-tailwindcss",
-		"vunguyentuan.vscode-css-variables"
+		"vunguyentuan.vscode-css-variables",
+		"nolanderc.glasgow",
+		"polymeilex.wgsl"
 	]
 }
