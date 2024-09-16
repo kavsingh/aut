@@ -2,6 +2,8 @@ import { onMount } from "solid-js"
 
 import { init } from "./renderer"
 
+const DIM = 500
+
 async function getDevice() {
 	const adapter = await navigator.gpu.requestAdapter()
 
@@ -20,13 +22,13 @@ export function Scrollsgpu() {
 
 		// oxlint-disable-next-line promise/prefer-await-to-then
 		void getDevice().then((device) => {
-			init(device, context)
+			init(device, context, DIM)
 		})
 	})
 
 	return (
 		<div class="grid place-items-center block-full inline-full">
-			<canvas width="400" height="400" ref={(el) => void (canvasEl = el)} />
+			<canvas width={DIM} height={DIM} ref={(el) => void (canvasEl = el)} />
 		</div>
 	)
 }
