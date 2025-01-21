@@ -9,8 +9,5 @@ export default {
 			screens: { fs: { raw: "(display-mode: fullscreen)" } },
 		},
 	},
-	plugins: [
-		// @ts-expect-error exactOptionalProperties conflict
-		containerQueriesPlugin,
-	],
+	plugins: [containerQueriesPlugin],
 } satisfies Config

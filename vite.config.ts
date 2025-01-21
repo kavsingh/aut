@@ -1,5 +1,3 @@
-/// <reference types="vitest" />
-
 import { defineConfig } from "vite"
 import { checker as checkerPlugin } from "vite-plugin-checker"
 import deadFilePlugin from "vite-plugin-deadfile"
@@ -18,14 +16,6 @@ export default defineConfig(({ mode }) => {
 			createHtmlPlugin(),
 			deadfiles(mode),
 		].filter(Boolean),
-		deps: { optimizer: { web: { include: ["vitest-canvas-mock"] } } },
-		test: {
-			include: ["src/**/*.test.ts"],
-			includeSource: ["src/**/*.ts"],
-			environment: "jsdom",
-			setupFiles: ["./vitest.setup.ts"],
-			environmentOptions: { jsdom: { resources: "usable" } },
-		},
 	}
 })
 

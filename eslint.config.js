@@ -1,23 +1,20 @@
 import path from "node:path"
 
-import jsPlugin from "@eslint/js"
-import filenamesPlugin from "@kavsingh/eslint-plugin-filenames"
-import importPlugin from "eslint-plugin-import-x"
-// @ts-expect-error no types available
-import jestDomPlugin from "eslint-plugin-jest-dom"
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
-import solidPlugin from "eslint-plugin-solid"
-// @ts-expect-error no types available
-import tailwindPlugin from "eslint-plugin-tailwindcss"
-// @ts-expect-error no types available
-import testingPlugin from "eslint-plugin-testing-library"
-import vitestPlugin from "eslint-plugin-vitest"
+import js from "@eslint/js"
+import filenames from "@kavsingh/eslint-plugin-filenames"
+import importX from "eslint-plugin-import-x"
+import jestDom from "eslint-plugin-jest-dom"
+import prettierRecommended from "eslint-plugin-prettier/recommended"
+import solid from "eslint-plugin-solid"
+import tailwindcss from "eslint-plugin-tailwindcss"
+import testingLibrary from "eslint-plugin-testing-library"
+import vitest from "eslint-plugin-vitest"
 import globals from "globals"
-import * as tsEslintPlugin from "typescript-eslint"
+import * as tsEslint from "typescript-eslint"
 
 const testFileSuffixes = ["test", "spec", "mock"]
 
-function testFilePatterns({ root = "", extensions = "?([mc])[tj]s?(x)" } = {}) {
+function testFilePatterns({ root = "", extensions = "?(m|c)[tj]s?(x)" } = {}) {
 	return [
 		`*.{${testFileSuffixes.join(",")}}`,
 		"__{test,tests,mocks,fixtures}__/**/*",
@@ -25,7 +22,7 @@ function testFilePatterns({ root = "", extensions = "?([mc])[tj]s?(x)" } = {}) {
 	].map((pattern) => path.join(root, `**/${pattern}.${extensions}`))
 }
 
-export default tsEslintPlugin.config(
+export default tsEslint.config(
 	{
 		ignores: [
 			".vscode/*",
@@ -44,12 +41,12 @@ export default tsEslintPlugin.config(
 		},
 	},
 
-	jsPlugin.configs.recommended,
-	...tsEslintPlugin.configs.strictTypeChecked,
-	...tsEslintPlugin.configs.stylisticTypeChecked,
-	importPlugin.flatConfigs.recommended,
-	importPlugin.flatConfigs.typescript,
-	filenamesPlugin.configs.kebab,
+	js.configs.recommended,
+	...tsEslint.configs.strictTypeChecked,
+	...tsEslint.configs.stylisticTypeChecked,
+	importX.flatConfigs.recommended,
+	importX.flatConfigs.typescript,
+	filenames.configs.kebab,
 
 	{
 		settings: {
@@ -59,7 +56,6 @@ export default tsEslintPlugin.config(
 		},
 		rules: {
 			"camelcase": "off",
-			"curly": ["warn", "multi-line", "consistent"],
 			"no-console": "off",
 			"no-restricted-syntax": [
 				"warn",
@@ -131,30 +127,24 @@ export default tsEslintPlugin.config(
 	},
 
 	{
-		files: ["**/*.?([mc])js?(x)"],
-		extends: [tsEslintPlugin.configs.disableTypeChecked],
-	},
-
-	{
-		files: ["*.?([mc])[tj]s?(x)"],
+		files: ["*.?(m|c)[tj]s?(x)"],
 		rules: {
 			"filenames/match-exported": "off",
 		},
 	},
 
 	{
-		files: ["src/**/*.?([mc])[tj]s?(x)"],
+		files: ["src/**/*.?(m|c)[tj]s?(x)"],
 		languageOptions: { globals: { ...globals.browser } },
 		settings: {
 			tailwindcss: {
 				callees: ["tv", "twMerge", "class", "classList"],
 			},
 		},
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 		extends: [
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-			...tailwindPlugin.configs["flat/recommended"],
-			solidPlugin.configs["flat/recommended"],
+			...tailwindcss.configs["flat/recommended"],
+			solid.configs["flat/recommended"],
 		],
 		rules: {
 			"no-console": "error",
@@ -187,23 +177,21 @@ export default tsEslintPlugin.config(
 	{
 		files: testFilePatterns({ root: "src" }),
 		languageOptions: { globals: { ...globals.node, ...globals.browser } },
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		extends: [
-			vitestPlugin.configs.all,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			testingPlugin.configs.recommended,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			jestDomPlugin.configs["flat/recommended"],
+			vitest.configs.all,
+			testingLibrary.configs["flat/dom"],
+			jestDom.configs["flat/recommended"],
 		],
 		rules: {
 			"vitest/no-hooks": "off",
 		},
 	},
 
-	eslintPluginPrettierRecommended,
+	prettierRecommended,
 
 	{
 		rules: {
+			"curly": ["warn", "multi-line", "consistent"],
 			"prettier/prettier": "warn",
 		},
 	},

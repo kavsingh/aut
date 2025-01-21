@@ -3,10 +3,10 @@
 import { splitProps } from "solid-js"
 import { tv } from "tailwind-variants"
 
-import type { JSX } from "solid-js"
+import type { ComponentProps } from "solid-js"
 
 export default function Button(
-	props: Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "classList">,
+	props: Omit<ComponentProps<"button">, "classList">,
 ) {
 	const [localProps, passProps] = splitProps(props, ["class", "type"])
 
