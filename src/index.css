@@ -7,11 +7,7 @@
 	}
 }
 
-@custom-variant fs {
-	@media screen and (display-mode: fullscreen) {
-		@slot;
-	}
-}
+@custom-variant fs (@media screen and (display-mode: fullscreen));
 
 :root {
 	@apply text-neutral-700 bg-white;
