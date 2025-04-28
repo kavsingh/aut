@@ -98,7 +98,7 @@ export default function Construct() {
 					/>
 				</div>
 			</div>
-			<div class="absolute bottom-[2em] start-1/2 flex -translate-x-1/2 gap-4">
+			<div class="absolute start-1/2 bottom-[2em] flex -translate-x-1/2 gap-4">
 				<Button
 					onClick={() => {
 						audio.toggle()
@@ -156,7 +156,7 @@ const whenIdle =
 		? window.requestIdleCallback
 		: (fn: () => void) => setTimeout(fn, 0)
 
-type EvolverItem = {
+interface EvolverItem {
 	evolverName: keyof typeof ALL_EVOLVERS
 	position: number
 	movable: boolean

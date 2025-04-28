@@ -94,7 +94,7 @@ export default function RuleSlider(props: Props) {
 }
 
 const ruleSliderVariants = tv({
-	base: "absolute end-[-16px] start-full top-0 h-px bg-neutral-400 dark:bg-neutral-500",
+	base: "absolute start-full end-[-16px] top-0 h-px bg-neutral-400 dark:bg-neutral-500",
 	variants: {
 		movable: {
 			true: "cursor-ns-resize",
@@ -103,7 +103,7 @@ const ruleSliderVariants = tv({
 	},
 })
 
-type Props = {
+interface Props {
 	evolverName: string
 	initialPosition: number
 	maxPosition: number

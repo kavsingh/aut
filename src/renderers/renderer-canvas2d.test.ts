@@ -112,6 +112,6 @@ function getDrawCalls(canvas: HTMLCanvasElement, type?: string) {
 	return type ? allDrawCalls.filter((call) => call.type === type) : allDrawCalls
 }
 
-type MockCanvasContext2d = CanvasRenderingContext2D & {
+interface MockCanvasContext2d extends CanvasRenderingContext2D {
 	__getDrawCalls: () => { type: string }[]
 }

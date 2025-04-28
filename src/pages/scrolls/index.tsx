@@ -74,7 +74,7 @@ export default function Scrolls() {
 					</For>
 				</div>
 			</div>
-			<div class="absolute bottom-[2em] start-1/2 flex -translate-x-1/2 gap-4">
+			<div class="absolute start-1/2 bottom-[2em] flex -translate-x-1/2 gap-4">
 				<Button
 					onClick={() => {
 						saveSvgSnapshot("snapshot.svg", worldState)

@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "vite"
 import { checker as checkerPlugin } from "vite-plugin-checker"
 import deadFilePlugin from "vite-plugin-deadfile"
@@ -11,11 +12,12 @@ export default defineConfig(({ mode }) => {
 		plugins: [
 			tsConfigPaths(),
 			solidPlugin(),
+			tailwindcss(),
 			checker(mode),
 			viteSingleFile(),
 			createHtmlPlugin(),
 			deadfiles(mode),
-		].filter(Boolean),
+		],
 	}
 })
 

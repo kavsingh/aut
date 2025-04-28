@@ -2,11 +2,10 @@ import path from "node:path"
 
 import js from "@eslint/js"
 import filenames from "@kavsingh/eslint-plugin-filenames"
-import importX from "eslint-plugin-import-x"
+import { flatConfigs as importX } from "eslint-plugin-import-x"
 import jestDom from "eslint-plugin-jest-dom"
 import prettierRecommended from "eslint-plugin-prettier/recommended"
 import solid from "eslint-plugin-solid"
-import tailwindcss from "eslint-plugin-tailwindcss"
 import testingLibrary from "eslint-plugin-testing-library"
 import vitest from "eslint-plugin-vitest"
 import globals from "globals"
@@ -44,8 +43,8 @@ export default tsEslint.config(
 	js.configs.recommended,
 	...tsEslint.configs.strictTypeChecked,
 	...tsEslint.configs.stylisticTypeChecked,
-	importX.flatConfigs.recommended,
-	importX.flatConfigs.typescript,
+	importX.recommended,
+	importX.typescript,
 	filenames.configs.kebab,
 
 	{
@@ -62,7 +61,7 @@ export default tsEslint.config(
 				{ selector: "TSEnumDeclaration", message: "Avoid using enums" },
 			],
 			"no-unreachable": "error",
-			"@typescript-eslint/consistent-type-definitions": ["warn", "type"],
+			"@typescript-eslint/consistent-type-definitions": ["warn", "interface"],
 			"@typescript-eslint/consistent-type-imports": "error",
 			"@typescript-eslint/member-ordering": ["warn"],
 			"@typescript-eslint/restrict-template-expressions": [
@@ -128,27 +127,14 @@ export default tsEslint.config(
 
 	{
 		files: ["*.?(m|c)[tj]s?(x)"],
-		rules: {
-			"filenames/match-exported": "off",
-		},
+		rules: { "filenames/match-exported": "off" },
 	},
 
 	{
 		files: ["src/**/*.?(m|c)[tj]s?(x)"],
 		languageOptions: { globals: { ...globals.browser } },
-		settings: {
-			tailwindcss: {
-				callees: ["tv", "twMerge", "class", "classList"],
-			},
-		},
-
-		extends: [
-			...tailwindcss.configs["flat/recommended"],
-			solid.configs["flat/recommended"],
-		],
-		rules: {
-			"no-console": "error",
-		},
+		extends: [solid.configs["flat/recommended"]],
+		rules: { "no-console": "error" },
 	},
 
 	{
@@ -182,9 +168,7 @@ export default tsEslint.config(
 			testingLibrary.configs["flat/dom"],
 			jestDom.configs["flat/recommended"],
 		],
-		rules: {
-			"vitest/no-hooks": "off",
-		},
+		rules: { "vitest/no-hooks": "off" },
 	},
 
 	prettierRecommended,

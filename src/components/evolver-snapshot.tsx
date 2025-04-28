@@ -40,7 +40,7 @@ export default function EvolverSnapshot(props: Props) {
 	return <canvas class={props.class} ref={(el) => (canvasRef = el)} />
 }
 
-type Props = {
+interface Props {
 	evolver: WorldStateEvolver
 	size?: number | undefined
 	class?: string | undefined

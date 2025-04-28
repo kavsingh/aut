@@ -1,6 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@layer base {
+	button:not(:disabled),
+	[role="button"]:not(:disabled) {
+		cursor: pointer;
+	}
+}
+
+@custom-variant fs {
+	@media screen and (display-mode: fullscreen) {
+		@slot;
+	}
+}
 
 :root {
 	@apply text-neutral-700 bg-white;
@@ -11,7 +22,7 @@
 }
 
 *:focus-visible {
-	@apply outline outline-1 outline-neutral-500 outline-offset-1;
+	@apply outline-1 outline-neutral-500 outline-offset-1;
 }
 
 @media (prefers-color-scheme: dark) {

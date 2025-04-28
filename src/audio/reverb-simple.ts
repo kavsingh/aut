@@ -94,7 +94,7 @@ export default class ReverbSimple implements EffectNode {
 	}
 }
 
-export type ReverbSimpleOptions = {
+export interface ReverbSimpleOptions {
 	wetDry?: number | undefined
 	seconds?: number | undefined
 	decay?: number | undefined
