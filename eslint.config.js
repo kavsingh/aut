@@ -134,7 +134,25 @@ export default tsEslint.config(
 		files: ["src/**/*.?(m|c)[tj]s?(x)"],
 		languageOptions: { globals: { ...globals.browser } },
 		extends: [solid.configs["flat/recommended"]],
-		rules: { "no-console": "error" },
+		rules: {
+			"no-console": "error",
+			"no-restricted-imports": "off",
+			"@typescript-eslint/no-restricted-imports": [
+				"error",
+				{
+					paths: [
+						{
+							name: "tailwind-merge",
+							message: "please import helpers from #lib/style",
+						},
+						{
+							name: "tailwind-variants",
+							message: "please import helpers from #lib/style",
+						},
+					],
+				},
+			],
+		},
 	},
 
 	{

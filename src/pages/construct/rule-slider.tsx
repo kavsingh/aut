@@ -1,9 +1,9 @@
 import { For, Show, createMemo, createSignal, onCleanup } from "solid-js"
-import { tv } from "tailwind-variants"
 
 import Button from "#components/button"
 import EvolverSnapshot from "#components/evolver-snapshot"
 import { ChevronRightIcon } from "#components/icons"
+import { tv } from "#lib/style"
 
 import { ALL_EVOLVERS } from "./lib"
 

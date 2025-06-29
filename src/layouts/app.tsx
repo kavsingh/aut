@@ -1,5 +1,4 @@
 import { A } from "@solidjs/router"
-import { tv } from "tailwind-variants"
 
 import Button, { buttonVariants } from "#components/button"
 import {
@@ -8,6 +7,7 @@ import {
 	GithubIcon,
 	ScrollsIcon,
 } from "#components/icons"
+import { tv } from "#lib/style"
 
 import type { ComponentProps, ParentProps } from "solid-js"
 

@@ -19,9 +19,7 @@
 	},
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"tailwindCSS.validate": true,
-	"tailwindCSS.experimental.classRegex": [
-		["tv\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
-	],
+	"tailwindCSS.classFunctions": ["tj", "tm", "tv"],
 	"cssVariables.lookupFiles": ["src/style/**/*.css"],
 	"[javascript]": {
 		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
