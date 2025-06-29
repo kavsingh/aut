@@ -52,6 +52,7 @@
   },
   "trustedDependencies": [
     "@tailwindcss/oxide",
+    "esbuild",
     "unrs-resolver",
     "@swc/core",
   ],
