@@ -60,5 +60,10 @@
 		"vite-tsconfig-paths": "5.1.4",
 		"vitest": "3.2.4",
 		"vitest-canvas-mock": "0.3.3"
-	}
+	},
+	"trustedDependencies": [
+		"@swc/core",
+		"@tailwindcss/oxide",
+		"unrs-resolver"
+	]
 }
