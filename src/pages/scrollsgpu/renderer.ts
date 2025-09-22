@@ -58,7 +58,7 @@ export function init(
 		}),
 	] as const
 
-	for (let i = 0; i < cellStateArray.length; ++i) {
+	for (let i = 0; i < gridSize; ++i) {
 		cellStateArray[i] = Math.random() > 0.6 ? 1 : 0
 	}
 
@@ -173,8 +173,7 @@ export function init(
 		const workgroupCount = Math.ceil(gridSize / WORKGROUP_SIZE)
 
 		computePass.setPipeline(simulationPipeline)
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		computePass.setBindGroup(0, bindGroups[step % 2]!)
+		computePass.setBindGroup(0, bindGroups[step % 2])
 		// https://codelabs.developers.google.com/your-first-webgpu-app#7
 		computePass.dispatchWorkgroups(workgroupCount, workgroupCount)
 		computePass.end()
@@ -186,7 +185,7 @@ export function init(
 				{
 					view: context.getCurrentTexture().createView(),
 					loadOp: "clear",
-					clearValue: { r: 0, g: 0, b: 0.4, a: 1 },
+					clearValue: { r: 0, g: 0, b: 0, a: 0 },
 					storeOp: "store",
 				},
 			],
@@ -194,8 +193,7 @@ export function init(
 
 		renderPass.setPipeline(renderPipeline)
 		renderPass.setVertexBuffer(0, vertexBuffer)
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		renderPass.setBindGroup(0, bindGroups[step % 2]!)
+		renderPass.setBindGroup(0, bindGroups[step % 2])
 		renderPass.draw(vertices.length / 2, gridSize * gridSize)
 		renderPass.end()
 
