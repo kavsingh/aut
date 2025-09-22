@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest"
 import { valueEq } from "./compare"
 
 describe("util/compare", () => {
-	describe("valueEq", () => {
+	describe(valueEq, () => {
 		it.each([
 			[undefined, null, false],
 			[Infinity, -Infinity, false],
@@ -20,6 +20,7 @@ describe("util/compare", () => {
 			[NaN, NaN, true],
 			[Infinity, Infinity, true],
 			[-Infinity, -Infinity, true],
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
 			[+0, -0, true],
 			[1, 1, true],
 			["1", "1", true],

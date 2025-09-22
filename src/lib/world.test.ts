@@ -5,7 +5,7 @@ import { mockRandom } from "#__test__/helpers"
 import { seedSingle, seedRandom } from "./world"
 
 describe("util/world", () => {
-	describe("seedRandom", () => {
+	describe(seedRandom, () => {
 		it("should create an array with random 0s and 1s", () => {
 			expect.assertions(3)
 
@@ -15,7 +15,7 @@ describe("util/world", () => {
 
 			const result = seedRandom(1000)
 
-			expect(result.some((r) => r !== 1 && r !== 0)).toBeFalsy()
+			expect(result.some((r) => r !== 1 && r !== 0)).toBe(false)
 			expect(result.filter((r) => r === 0)).toHaveLength(500)
 			expect(result.filter((r) => r === 1)).toHaveLength(500)
 
@@ -23,7 +23,7 @@ describe("util/world", () => {
 		})
 	})
 
-	describe("seedSingle", () => {
+	describe(seedSingle, () => {
 		it.each([
 			[0, []],
 			[1, [1]],

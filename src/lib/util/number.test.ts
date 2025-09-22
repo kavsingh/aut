@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest"
 import { circMod, range } from "./number"
 
 describe("util/number", () => {
-	describe("range", () => {
+	describe(range, () => {
 		it("should create a range of values", () => {
 			expect.assertions(2)
 
@@ -12,7 +12,7 @@ describe("util/number", () => {
 		})
 	})
 
-	describe("circMod", () => {
+	describe(circMod, () => {
 		it("should mod negative numbers the euclidean way", () => {
 			expect.assertions(4)
 

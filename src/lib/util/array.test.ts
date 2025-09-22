@@ -6,7 +6,7 @@ import { groupIndecesBy, sample, accessCirc } from "./array"
 import { range } from "./number"
 
 describe("util/array", () => {
-	describe("sample", () => {
+	describe(sample, () => {
 		const source = ["a", "b", "c", "d"]
 
 		it("should sample a random value from array", () => {
@@ -29,7 +29,7 @@ describe("util/array", () => {
 		})
 	})
 
-	describe("groupIndecesBy", () => {
+	describe(groupIndecesBy, () => {
 		it("should group adjacent indeces in array where value satisfies predicate", () => {
 			expect.assertions(4)
 
@@ -50,7 +50,7 @@ describe("util/array", () => {
 		})
 	})
 
-	describe("accessCirc", () => {
+	describe(accessCirc, () => {
 		const source = ["a", "b", "c", "d"]
 		const accessSource = accessCirc(source)
 

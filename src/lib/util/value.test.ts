@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest"
 import { constant, defaultTo } from "./value"
 
 describe("util/value", () => {
-	describe("constant", () => {
+	describe(constant, () => {
 		it("should create a function that always returns the same value", () => {
 			expect.assertions(2)
 
@@ -15,7 +15,7 @@ describe("util/value", () => {
 		})
 	})
 
-	describe("defaultTo", () => {
+	describe(defaultTo, () => {
 		it("should return a default value for nullish values", () => {
 			expect.assertions(4)
 

@@ -1,15 +1,21 @@
 import path from "node:path"
+import { fileURLToPath } from "node:url"
 
 import js from "@eslint/js"
 import filenames from "@kavsingh/eslint-plugin-filenames"
+import vitest from "@vitest/eslint-plugin"
+import { defineConfig } from "eslint/config"
+import tailwindcss from "eslint-plugin-better-tailwindcss"
+import { getDefaultCallees } from "eslint-plugin-better-tailwindcss/api/defaults"
 import { flatConfigs as importX } from "eslint-plugin-import-x"
 import jestDom from "eslint-plugin-jest-dom"
 import prettierRecommended from "eslint-plugin-prettier/recommended"
 import solid from "eslint-plugin-solid"
 import testingLibrary from "eslint-plugin-testing-library"
-import vitest from "eslint-plugin-vitest"
 import globals from "globals"
-import * as tsEslint from "typescript-eslint"
+import { configs as tsEslint } from "typescript-eslint"
+
+const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const testFileSuffixes = ["test", "spec", "mock"]
 
@@ -21,15 +27,9 @@ function testFilePatterns({ root = "", extensions = "?(m|c)[tj]s?(x)" } = {}) {
 	].map((pattern) => path.join(root, `**/${pattern}.${extensions}`))
 }
 
-export default tsEslint.config(
+export default defineConfig(
 	{
-		ignores: [
-			".vscode/*",
-			"dist/*",
-			"coverage/*",
-			"reports/*",
-			"**/__generated__/*",
-		],
+		ignores: [".vscode/*", "dist/*", "coverage/*"],
 	},
 
 	{
@@ -41,18 +41,14 @@ export default tsEslint.config(
 	},
 
 	js.configs.recommended,
-	...tsEslint.configs.strictTypeChecked,
-	...tsEslint.configs.stylisticTypeChecked,
+	...tsEslint.strictTypeChecked,
+	...tsEslint.stylisticTypeChecked,
+	// @ts-expect-error upstream types
 	importX.recommended,
 	importX.typescript,
 	filenames.configs.kebab,
 
 	{
-		settings: {
-			"import-x/resolver": {
-				"eslint-import-resolver-typescript": { projectService: true },
-			},
-		},
 		rules: {
 			"camelcase": "off",
 			"no-console": "off",
@@ -127,16 +123,31 @@ export default tsEslint.config(
 
 	{
 		files: ["*.?(m|c)[tj]s?(x)"],
-		rules: { "filenames/match-exported": "off" },
+		rules: {
+			"filenames/match-exported": "off",
+		},
 	},
 
 	{
 		files: ["src/**/*.?(m|c)[tj]s?(x)"],
-		languageOptions: { globals: { ...globals.browser } },
-		extends: [solid.configs["flat/recommended"]],
+		languageOptions: {
+			globals: { ...globals.browser },
+		},
+		settings: {
+			"import-x/resolver": {
+				"eslint-import-resolver-typescript": {
+					project: path.resolve(dirname, "src", "tsconfig.json"),
+				},
+			},
+			"better-tailwindcss": {
+				entryPoint: "src/index.css",
+				callees: [...getDefaultCallees(), "tj", "tm"],
+			},
+		},
+		plugins: { "better-tailwindcss": tailwindcss },
+		extends: [solid.configs["flat/typescript"]],
 		rules: {
 			"no-console": "error",
-			"no-restricted-imports": "off",
 			"@typescript-eslint/no-restricted-imports": [
 				"error",
 				{
@@ -152,12 +163,18 @@ export default tsEslint.config(
 					],
 				},
 			],
+			...tailwindcss.configs["recommended"]?.rules,
+			"better-tailwindcss/enforce-consistent-line-wrapping": "off",
+			"better-tailwindcss/enforce-shorthand-classes": "warn",
+			"better-tailwindcss/no-conflicting-classes": "error",
 		},
 	},
 
 	{
 		files: testFilePatterns(),
-		languageOptions: { globals: { ...globals.node } },
+		languageOptions: {
+			globals: { ...globals.node },
+		},
 		rules: {
 			"no-console": "off",
 			"filenames/match-exported": [
@@ -180,13 +197,23 @@ export default tsEslint.config(
 
 	{
 		files: testFilePatterns({ root: "src" }),
-		languageOptions: { globals: { ...globals.node, ...globals.browser } },
+		languageOptions: {
+			globals: { ...globals.node, ...globals.browser },
+		},
+		settings: {
+			vitest: { typecheck: true },
+		},
 		extends: [
 			vitest.configs.all,
 			testingLibrary.configs["flat/dom"],
 			jestDom.configs["flat/recommended"],
 		],
-		rules: { "vitest/no-hooks": "off" },
+		rules: {
+			"vitest/no-disabled-tests": "error",
+			"vitest/no-focused-tests": "error",
+			"vitest/no-hooks": "off",
+			"vitest/require-mock-type-parameters": "off",
+		},
 	},
 
 	prettierRecommended,
