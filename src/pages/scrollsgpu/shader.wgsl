@@ -29,8 +29,6 @@ fn vertexMain(input: VertexInput) -> VertexOutput {
 }
 
 @fragment
-fn fragmentMain(input: VertexOutput) -> @location(0) vec4f {
-    let rg = input.cell / grid;
-
-    return vec4f(rg, 1 - rg.r, 1);
+fn fragmentMain() -> @location(0) vec4f {
+    return vec4f(1, 1, 1, 1);
 }
