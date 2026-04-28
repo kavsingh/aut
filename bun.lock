@@ -5,7 +5,7 @@
     "": {
       "name": "cellular-automaton",
       "dependencies": {
-        "@kavsingh/curry-pipe": "0.3.0",
+        "@kavsingh/curry-pipe": "0.4.0",
         "@solidjs/router": "0.16.1",
         "solid-js": "1.9.12",
         "tailwind-merge": "3.5.0",
@@ -153,7 +153,7 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
-    "@kavsingh/curry-pipe": ["@kavsingh/curry-pipe@0.3.0", "", {}, "sha512-IpHQYG+D5y9OvzBPFgk0zUFBkrifxGpWgorNOzidkYcPXp35aSDr1fupcc4SgHDnFyX9o69Sz8F+rIuxh/AUlw=="],
+    "@kavsingh/curry-pipe": ["@kavsingh/curry-pipe@0.4.0", "", {}, "sha512-FD+pxQteFQEHd2sAo094j8u8LVlRkLIN45l7Bk1jCojWmBpBF6zHS2TacFtVmjNgrWHGM409OKMXqhbMyVp5Vw=="],
 
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.4", "", { "dependencies": { "@tybys/wasm-util": "^0.10.1" }, "peerDependencies": { "@emnapi/core": "^1.7.1", "@emnapi/runtime": "^1.7.1" } }, "sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow=="],
 

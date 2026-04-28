@@ -16,7 +16,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@kavsingh/curry-pipe": "0.3.0",
+		"@kavsingh/curry-pipe": "0.4.0",
 		"@solidjs/router": "0.16.1",
 		"solid-js": "1.9.12",
 		"tailwind-merge": "3.5.0",
