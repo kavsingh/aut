@@ -2,16 +2,12 @@ import { describe, it, expect } from "vitest"
 
 import { createRenderer } from "./renderer-canvas2d"
 
-interface MockCanvasContext2d extends CanvasRenderingContext2D {
-	__getDrawCalls: () => { type: string }[]
-}
-
 function getDrawCalls(canvas: HTMLCanvasElement, type?: string) {
-	const allDrawCalls = (
-		canvas.getContext("2d") as MockCanvasContext2d
-	).__getDrawCalls()
+	const drawCalls = canvas.getContext("2d")?.__getDrawCalls()
 
-	return type ? allDrawCalls.filter((call) => call.type === type) : allDrawCalls
+	if (!drawCalls) return []
+
+	return type ? drawCalls.filter((call) => call.type === type) : drawCalls
 }
 
 describe("renderer 2d", () => {

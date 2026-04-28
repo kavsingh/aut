@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
-	"include": ["scripts", "./*.ts", "./*.js", "./*.cjs", "../../*.config.ts"],
+	"include": ["scripts", "./*.ts", "./*.js"],
 	"extends": ["./tsconfig.base.json", "@tsconfig/bun/tsconfig.json"],
 	"compilerOptions": {
 		"composite": true,
