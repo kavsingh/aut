@@ -1,4 +1,4 @@
-import { groupIndecesBy } from "#lib/util"
+import { groupIndecesBy } from "~/lib/util"
 
 import type { RendererFactory } from "./types"
 
@@ -19,7 +19,7 @@ export const createRenderer: SvgRendererFactory = (
 	})
 
 	function clear() {
-		svgElements.forEach((element) => void (element.innerHTML = ""))
+		for (const element of svgElements) element.innerHTML = ""
 	}
 
 	function drawRow(row: number[], yOffset: number) {
@@ -38,12 +38,12 @@ export const createRenderer: SvgRendererFactory = (
 				fillRect.setAttributeNS(null, "height", `${cellDim}`)
 				fillRect.setAttributeNS(null, "fill", fillColor)
 
-				rowFragment.appendChild(fillRect)
+				rowFragment.append(fillRect)
 			}
 		}
 
 		for (const element of svgElements) {
-			element.appendChild(rowFragment.cloneNode(true))
+			element.append(rowFragment.cloneNode(true))
 		}
 	}
 

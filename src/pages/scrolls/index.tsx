@@ -1,19 +1,19 @@
 import { For, onCleanup, onMount } from "solid-js"
 
-import Audio from "#audio"
-import Button from "#components/button"
-import EvolverSnapshot from "#components/evolver-snapshot"
-import { CameraIcon, SpeakerIcon } from "#components/icons"
-import { createEvolver } from "#lib/evolver"
-import * as rules from "#lib/rules"
-import { generateInitialWorld } from "#lib/world"
-import { saveSvgSnapshot } from "#pages/scrolls/lib/snapshot-to-svg"
+import { Audio } from "~/audio"
+import { Button } from "~/components/button"
+import { EvolverSnapshot } from "~/components/evolver-snapshot"
+import { CameraIcon, SpeakerIcon } from "~/components/icons"
+import { createEvolver } from "~/lib/evolver"
+import { allRules as rules } from "~/lib/rules"
+import { generateInitialWorld } from "~/lib/world"
+import { saveSvgSnapshot } from "~/pages/scrolls/lib/snapshot-to-svg"
 
 import { createWorldsForType, startWorldAnimations } from "./lib/worlds"
 
-import type { State } from "#pages/scrolls/lib/types"
+import type { State } from "~/pages/scrolls/lib/types"
 
-export default function Scrolls() {
+export function Scrolls() {
 	const worldCount = 3
 	const cellDim = 2
 	const worldDim = Math.min(Math.floor(window.innerWidth / worldCount), 300)
@@ -50,14 +50,14 @@ export default function Scrolls() {
 	})
 
 	return (
-		<div class="flex size-full items-center justify-center">
-			<div class="group relative z-[2] mt-[60px]">
+		<div class="flex items-center justify-center block-full inline-full">
+			<div class="group relative z-2 mbs-[60px]">
 				<div
 					class="flex cursor-pointer items-center justify-center [&>*:nth-child(2n-1)]:rotate-180"
-					ref={(el) => (worldsContainer = el)}
+					ref={(el) => void (worldsContainer = el)}
 					onClick={() => (worldState.evolver = undefined)}
 				/>
-				<div class="pointer-events-none flex h-[60px] translate-y-[-20%] cursor-pointer items-center justify-center opacity-0 transition-all group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
+				<div class="pointer-events-none flex translate-y-[-20%] cursor-pointer items-center justify-center opacity-0 transition-all block-[60px] group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
 					<For each={worldState.rules}>
 						{(rule, idx) => {
 							const evolver = createEvolver(rule)
@@ -65,7 +65,7 @@ export default function Scrolls() {
 							return (
 								<button
 									aria-label={`Rule ${idx() + 1}`}
-									onClick={() => (worldState.evolver = evolver)}
+									onClick={() => void (worldState.evolver = evolver)}
 								>
 									<EvolverSnapshot evolver={evolver} />
 								</button>
@@ -74,7 +74,7 @@ export default function Scrolls() {
 					</For>
 				</div>
 			</div>
-			<div class="absolute start-1/2 bottom-[2em] flex -translate-x-1/2 gap-4">
+			<div class="absolute inset-s-1/2 inset-be-[2em] flex -translate-x-1/2 gap-4">
 				<Button
 					onClick={() => {
 						saveSvgSnapshot("snapshot.svg", worldState)

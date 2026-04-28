@@ -2,13 +2,15 @@
 
 import { splitProps } from "solid-js"
 
-import { tv } from "#lib/style"
+import { tv } from "~/lib/style"
 
 import type { ComponentProps } from "solid-js"
 
-export default function Button(
-	props: Omit<ComponentProps<"button">, "classList">,
-) {
+export const buttonVariants = tv({
+	base: "m-0 flex flex-col items-center p-0 text-black opacity-30 transition-opacity inline-[1.1rem] hover:opacity-100 focus-visible:opacity-100 active:opacity-100 dark:text-white fs:opacity-10 [&>svg]:aspect-square [&>svg]:block-[unset] [&>svg]:inline-full",
+})
+
+export function Button(props: Omit<ComponentProps<"button">, "classList">) {
 	const [localProps, passProps] = splitProps(props, ["class", "type"])
 
 	return (
@@ -19,7 +21,3 @@ export default function Button(
 		/>
 	)
 }
-
-export const buttonVariants = tv({
-	base: "m-0 flex w-[1.1rem] flex-col items-center p-0 text-black opacity-30 transition-opacity hover:opacity-100 focus-visible:opacity-100 active:opacity-100 dark:text-white fs:opacity-10 [&>svg]:aspect-square [&>svg]:h-[unset] [&>svg]:w-full",
-})

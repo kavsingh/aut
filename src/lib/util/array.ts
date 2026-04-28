@@ -19,7 +19,7 @@ export const groupIndecesBy: {
 
 		const currentGroup = groups.at(-1)
 
-		if (currentGroup && currentGroup.at(-1) === i - 1) currentGroup.push(i)
+		if (currentGroup?.at(-1) === i - 1) currentGroup.push(i)
 		else groups.push([i])
 	}
 

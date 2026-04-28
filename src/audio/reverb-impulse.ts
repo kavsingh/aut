@@ -1,12 +1,19 @@
-import { clamp } from "#lib/util"
+import { clamp } from "~/lib/util"
 
 import type { EffectNode } from "./types"
 
-export default class ReverbImpulse implements EffectNode {
-	#audioContext: AudioContext
-	#convolver: ConvolverNode
-	#wetGain: GainNode
-	#dryGain: GainNode
+async function loadImpulse(audioContext: AudioContext, url: string) {
+	const response = await fetch(url)
+	const arrayBuffer = await response.arrayBuffer()
+
+	return audioContext.decodeAudioData(arrayBuffer)
+}
+
+export class ReverbImpulse implements EffectNode {
+	readonly #audioContext: AudioContext
+	readonly #convolver: ConvolverNode
+	readonly #wetGain: GainNode
+	readonly #dryGain: GainNode
 
 	constructor(audioContext: AudioContext, impulseUrl: string) {
 		this.#audioContext = audioContext
@@ -20,6 +27,7 @@ export default class ReverbImpulse implements EffectNode {
 		this.#wetGain.gain.setValueAtTime(0, this.#audioContext.currentTime)
 		this.#dryGain.gain.setValueAtTime(1, this.#audioContext.currentTime)
 
+		// oxlint-disable-next-line promise/prefer-await-to-then
 		void loadImpulse(this.#audioContext, impulseUrl).then((impulse) => {
 			this.#convolver.buffer = impulse
 		})
@@ -42,11 +50,4 @@ export default class ReverbImpulse implements EffectNode {
 		this.#wetGain.gain.setValueAtTime(clamped, time)
 		this.#dryGain.gain.setValueAtTime(1 - clamped, time)
 	}
-}
-
-async function loadImpulse(audioContext: AudioContext, url: string) {
-	const response = await fetch(url)
-	const arrayBuffer = await response.arrayBuffer()
-
-	return audioContext.decodeAudioData(arrayBuffer)
 }

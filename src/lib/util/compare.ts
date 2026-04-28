@@ -10,6 +10,7 @@ export const valueEq = curry((a: unknown, b: unknown): boolean => {
 		if (aKeys.length !== bKeys.length) return false
 
 		return aKeys.every((key) => {
+			// oxlint-disable-next-line typescript/no-unsafe-type-assertion
 			return valueEq(a[key as keyof typeof a], b[key as keyof typeof b])
 		})
 	}

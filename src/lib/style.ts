@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-restricted-imports */
+// oxlint-disable eslint/no-restricted-imports
 
 export { twMerge as tm, twJoin as tj } from "tailwind-merge"
 export { tv } from "tailwind-variants"

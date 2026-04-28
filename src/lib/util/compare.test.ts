@@ -4,13 +4,14 @@ import { valueEq } from "./compare"
 
 describe("util/compare", () => {
 	describe(valueEq, () => {
+		// oxlint-disable unicorn/prefer-number-properties
 		it.each([
 			[undefined, null, false],
 			[Infinity, -Infinity, false],
 			[1, "1", false],
 			[1, null, false],
 			[1, undefined, false],
-			[1, NaN, false],
+			[1, Number.NaN, false],
 			[NaN, null, false],
 			[[2, 1], [1, 2], false],
 			[[1, 2, 3], [1, 2], false],
@@ -35,5 +36,6 @@ describe("util/compare", () => {
 			expect(valueEq(a, b)).toBe(result)
 			expect(valueEq(a)(b)).toBe(result)
 		})
+		// oxlint-enable unicorn/prefer-number-properties
 	})
 })

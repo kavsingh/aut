@@ -1,9 +1,12 @@
 import { describe, it, expect } from "vitest"
 
-import { mockRandom } from "#__test__/helpers"
+import { mockRandom } from "~/__test__/helpers"
 
 import { groupIndecesBy, sample, accessCirc } from "./array"
 import { range } from "./number"
+
+const eq1 = (n: number) => n === 1
+const eqA = (s: string) => s === "a"
 
 describe("util/array", () => {
 	describe(sample, () => {
@@ -15,7 +18,7 @@ describe("util/array", () => {
 			const restoreRandom = mockRandom(
 				({ calls }) => (source.length - calls.length) / source.length,
 			)
-			const sampled = new Array(4).fill(0).map(() => sample(source))
+			const sampled = Array.from({ length: 4 }, () => sample(source))
 
 			expect(sampled).toStrictEqual(["d", "c", "b", "a"])
 
@@ -32,9 +35,6 @@ describe("util/array", () => {
 	describe(groupIndecesBy, () => {
 		it("should group adjacent indeces in array where value satisfies predicate", () => {
 			expect.assertions(4)
-
-			const eq1 = (n: number) => n === 1
-			const eqA = (s: string) => s === "a"
 
 			expect(groupIndecesBy(eq1, [0, 2, 3, 5, 6, 0])).toStrictEqual([])
 			expect(groupIndecesBy(eq1, [0, 1, 0, 1, 1, 0])).toStrictEqual([

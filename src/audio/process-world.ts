@@ -1,4 +1,4 @@
-import type { WorldState } from "#lib/types"
+import type { WorldState } from "~/lib/types"
 
 export function processWorld(world: WorldState) {
 	let activeCount = 0
@@ -12,13 +12,13 @@ export function processWorld(world: WorldState) {
 
 			if (typeof val !== "number") continue
 
-			totalCount++
-			if (val) activeCount++
-			else inactiveCount++
+			totalCount += 1
+			if (val) activeCount += 1
+			else inactiveCount += 1
 
 			const prev = generation[j - 1]
 
-			if (typeof prev === "number" && prev !== val) stateSwitches++
+			if (typeof prev === "number" && prev !== val) stateSwitches += 1
 		}
 	}
 

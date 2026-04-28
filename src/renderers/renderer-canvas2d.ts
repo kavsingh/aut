@@ -1,6 +1,12 @@
-import { groupIndecesBy } from "#lib/util"
+import { groupIndecesBy } from "~/lib/util"
 
 import type { RendererFactory } from "./types"
+
+function is2dContext(context: unknown): context is CanvasRenderingContext2D {
+	return !!context && context instanceof CanvasRenderingContext2D
+}
+
+export type CanvasRendererFactory = RendererFactory<HTMLCanvasElement>
 
 export const createRenderer: CanvasRendererFactory = (
 	canvases,
@@ -49,7 +55,7 @@ export const createRenderer: CanvasRendererFactory = (
 	}
 
 	Object.assign(drawingCanvas, { width, height })
-	canvases.forEach((canvas) => Object.assign(canvas, { width, height }))
+	for (const canvas of targetCanvases) Object.assign(canvas, { width, height })
 
 	return function render(state) {
 		clear()
@@ -64,10 +70,4 @@ export const createRenderer: CanvasRendererFactory = (
 			context.drawImage(drawingCanvas, 0, 0)
 		}
 	}
-}
-
-export type CanvasRendererFactory = RendererFactory<HTMLCanvasElement>
-
-function is2dContext(context: unknown): context is CanvasRenderingContext2D {
-	return !!context && context instanceof CanvasRenderingContext2D
 }

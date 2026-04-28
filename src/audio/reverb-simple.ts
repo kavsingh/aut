@@ -1,14 +1,14 @@
-import { clamp } from "#lib/util"
+import { clamp } from "~/lib/util"
 
 import type { EffectNode } from "./types"
 
 // ganked from https://github.com/web-audio-components/simple-reverb/blob/master/index.js
 
-export default class ReverbSimple implements EffectNode {
-	#audioContext: AudioContext
-	#convolver: ConvolverNode
-	#wet: GainNode
-	#dry: GainNode
+export class ReverbSimple implements EffectNode {
+	readonly #audioContext: AudioContext
+	readonly #convolver: ConvolverNode
+	readonly #wet: GainNode
+	readonly #dry: GainNode
 	#seconds: number
 	#decay: number
 	#reverse: boolean
@@ -37,7 +37,6 @@ export default class ReverbSimple implements EffectNode {
 		this.#buildImpulse()
 	}
 
-	// eslint-disable-next-line @typescript-eslint/member-ordering
 	get decay() {
 		return this.#decay
 	}
@@ -47,7 +46,6 @@ export default class ReverbSimple implements EffectNode {
 		this.#buildImpulse()
 	}
 
-	// eslint-disable-next-line @typescript-eslint/member-ordering
 	get reverse() {
 		return this.#reverse
 	}

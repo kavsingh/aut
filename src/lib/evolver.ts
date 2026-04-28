@@ -3,6 +3,17 @@ import { seedRandom } from "./world"
 
 import type { EvolutionRule, WorldStateEvolver } from "./types"
 
+function evolve(rule: EvolutionRule, generation: number[]) {
+	const access = accessCirc(generation)
+	const next: number[] = []
+
+	for (let i = 0; i < generation.length; i++) {
+		next.push(rule(access(i - 1), access(i), access(i + 1)))
+	}
+
+	return next
+}
+
 export function createEvolver(
 	rule: EvolutionRule,
 	allowIdentical = false,
@@ -48,15 +59,4 @@ export function createRule(patterns: string[]): EvolutionRule {
 	return function rule(a, b, c) {
 		return lookup.has(`${a}${b}${c}`) ? 1 : 0
 	}
-}
-
-function evolve(rule: EvolutionRule, generation: number[]) {
-	const access = accessCirc(generation)
-	const next: number[] = []
-
-	for (let i = 0; i < generation.length; i++) {
-		next.push(rule(access(i - 1), access(i), access(i + 1)))
-	}
-
-	return next
 }

@@ -1,24 +1,79 @@
 import { For, onCleanup, onMount } from "solid-js"
 import { createStore, reconcile } from "solid-js/store"
 
-import Audio from "#audio"
-import Button from "#components/button"
-import { SpeakerIcon } from "#components/icons"
-import { StateEmitter } from "#lib/state-emitter"
-import { defaultTo, range, sample } from "#lib/util"
-import { generateInitialWorld, seedRandom } from "#lib/world"
-import { createRenderer } from "#renderers/renderer-canvas2d"
+import { Audio } from "~/audio"
+import { Button } from "~/components/button"
+import { SpeakerIcon } from "~/components/icons"
+import { StateEmitter } from "~/lib/state-emitter"
+import { defaultTo, range, sample } from "~/lib/util"
+import { generateInitialWorld, seedRandom } from "~/lib/world"
+import { createRenderer } from "~/renderers/renderer-canvas2d"
 
 import { ALL_EVOLVERS, EVOLVER_NAMES } from "./lib"
-import RuleSlider from "./rule-slider"
+import { RuleSlider } from "./rule-slider"
 
-import type { WorldState } from "#lib/types"
+import type { WorldState } from "~/lib/types"
 
 const size = 440
 const cellDim = 2
 const genSize = size / cellDim
 
-export default function Construct() {
+function toEvolverList(state: State) {
+	return Object.entries(state).map(
+		([id, { evolverName }]): { id: string; evolverName: string } => {
+			return { id, evolverName }
+		},
+	)
+}
+
+function getInitialState(count: number) {
+	const state: Record<string, EvolverItem> = {}
+
+	for (const i of range(count)) {
+		state[`evolver-${i}`] = {
+			evolverName: defaultTo("rule3", sample(EVOLVER_NAMES)),
+			position: i / count,
+			movable: i !== 0,
+		}
+	}
+
+	return state
+}
+
+type State = ReturnType<typeof getInitialState>
+
+function worldStateGenerator() {
+	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
+
+	return function generateWorldState(state: State) {
+		const sorted = Object.values(state).toSorted(
+			(a, b) => b.position - a.position,
+		)
+
+		return range(genSize).reduce<WorldState>((acc, idx) => {
+			const evolverName = sorted.find(({ position }) => {
+				return position <= idx / acc.length
+			})?.evolverName
+
+			const evolver = evolverName ? ALL_EVOLVERS[evolverName] : undefined
+
+			return evolver?.(acc) ?? acc
+		}, firstGen)
+	}
+}
+
+const whenIdle =
+	typeof globalThis.requestIdleCallback === "function"
+		? globalThis.requestIdleCallback
+		: (fn: () => void) => setTimeout(fn, 0)
+
+interface EvolverItem {
+	evolverName: keyof typeof ALL_EVOLVERS
+	position: number
+	movable: boolean
+}
+
+export function Construct() {
 	const audio = new Audio()
 	const generateWorldState = worldStateGenerator()
 	const state = new StateEmitter(getInitialState(3))
@@ -64,8 +119,11 @@ export default function Construct() {
 
 	return (
 		<>
-			<div class="flex size-full items-center justify-center">
-				<div data-el="world-container" class="relative size-[440px]">
+			<div class="flex items-center justify-center block-full inline-full">
+				<div
+					data-el="world-container"
+					class="relative block-[440px] inline-[440px]"
+				>
 					<div class="absolute inset-0 z-10">
 						<For each={evolvers.evolverList}>
 							{(item) => (
@@ -94,11 +152,11 @@ export default function Construct() {
 					</div>
 					<canvas
 						class="absolute inset-0 z-0 bg-white dark:bg-neutral-900"
-						ref={(el) => (worldCanvasEl = el)}
+						ref={(el) => void (worldCanvasEl = el)}
 					/>
 				</div>
 			</div>
-			<div class="absolute start-1/2 bottom-[2em] flex -translate-x-1/2 gap-4">
+			<div class="absolute inset-s-1/2 inset-be-[2em] flex -translate-x-1/2 gap-4">
 				<Button
 					onClick={() => {
 						audio.toggle()
@@ -110,56 +168,3 @@ export default function Construct() {
 		</>
 	)
 }
-
-function toEvolverList(state: State) {
-	return Object.entries(state).map(
-		([id, { evolverName }]): { id: string; evolverName: string } => {
-			return { id, evolverName }
-		},
-	)
-}
-
-function getInitialState(count: number) {
-	const state: Record<string, EvolverItem> = {}
-
-	for (const i of range(count)) {
-		state[`evolver-${i}`] = {
-			evolverName: defaultTo("rule3", sample(EVOLVER_NAMES)),
-			position: i / count,
-			movable: i !== 0,
-		}
-	}
-
-	return state
-}
-
-function worldStateGenerator() {
-	const firstGen = generateInitialWorld(genSize, genSize, seedRandom)
-
-	return function generateWorldState(state: State) {
-		const sorted = Object.values(state).sort((a, b) => b.position - a.position)
-
-		return range(genSize).reduce<WorldState>((acc, idx) => {
-			const evolverName = sorted.find(({ position }) => {
-				return position <= idx / acc.length
-			})?.evolverName
-
-			const evolver = evolverName ? ALL_EVOLVERS[evolverName] : undefined
-
-			return evolver?.(acc) ?? acc
-		}, firstGen)
-	}
-}
-
-const whenIdle =
-	typeof window.requestIdleCallback === "function"
-		? window.requestIdleCallback
-		: (fn: () => void) => setTimeout(fn, 0)
-
-interface EvolverItem {
-	evolverName: keyof typeof ALL_EVOLVERS
-	position: number
-	movable: boolean
-}
-
-type State = ReturnType<typeof getInitialState>

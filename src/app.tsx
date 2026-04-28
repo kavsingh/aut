@@ -1,12 +1,12 @@
 import { Route, HashRouter } from "@solidjs/router"
 
-import Construct from "#pages/construct"
-import Scrolls from "#pages/scrolls"
+import { Construct } from "~/pages/construct"
+import { Scrolls } from "~/pages/scrolls"
 
 import "./index.css"
-import AppLayout from "./layouts/app"
+import { App as AppLayout } from "./layouts/app"
 
-export default function App() {
+export function App() {
 	return (
 		<HashRouter root={AppLayout}>
 			<Route path="/" component={Scrolls} />

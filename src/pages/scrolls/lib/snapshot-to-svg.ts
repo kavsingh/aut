@@ -1,4 +1,4 @@
-import { svgNs, createRenderer } from "#renderers/renderer-svg"
+import { svgNs, createRenderer } from "~/renderers/renderer-svg"
 
 import type { State } from "./types"
 
@@ -21,9 +21,7 @@ export function saveSvgSnapshot(name: string, state: State) {
 	downloadTrigger.href = svgUrl
 	downloadTrigger.download = name
 
-	document.body.appendChild(downloadTrigger)
-
+	document.body.append(downloadTrigger)
 	downloadTrigger.click()
-
-	document.body.removeChild(downloadTrigger)
+	downloadTrigger.remove()
 }

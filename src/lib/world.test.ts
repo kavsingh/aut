@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 
-import { mockRandom } from "#__test__/helpers"
+import { mockRandom } from "~/__test__/helpers"
 
 import { seedSingle, seedRandom } from "./world"
 
@@ -10,11 +10,13 @@ describe("util/world", () => {
 			expect.assertions(3)
 
 			const restoreRandom = mockRandom(({ calls }) =>
+				// oxlint-disable-next-line vitest/no-conditional-in-test
 				calls.length <= 500 ? 0.001 : 0.999,
 			)
 
 			const result = seedRandom(1000)
 
+			// oxlint-disable-next-line vitest/no-conditional-in-test
 			expect(result.some((r) => r !== 1 && r !== 0)).toBe(false)
 			expect(result.filter((r) => r === 0)).toHaveLength(500)
 			expect(result.filter((r) => r === 1)).toHaveLength(500)

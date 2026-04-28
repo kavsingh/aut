@@ -1,17 +1,37 @@
 import { pipe } from "@kavsingh/curry-pipe"
 
-import { createEvolver } from "#lib/evolver"
-import { rule3 } from "#lib/rules"
-import { sample, constant, defaultTo, range, noop } from "#lib/util"
-import { createRenderer as createCanvas2dRenderer } from "#renderers/renderer-canvas2d"
+import { createEvolver } from "~/lib/evolver"
+import { rule3 } from "~/lib/rules"
+import { sample, constant, defaultTo, range, noop } from "~/lib/util"
+import { createRenderer as createCanvas2dRenderer } from "~/renderers/renderer-canvas2d"
 import {
 	createRenderer as createSvgRenderer,
 	svgNs,
-} from "#renderers/renderer-svg"
+} from "~/renderers/renderer-svg"
 
-import type Audio from "#audio"
-import type { RendererFactoryOptions, RenderFn } from "#renderers/types"
 import type { State } from "./types"
+import type { Audio } from "~/audio"
+import type { RendererFactoryOptions, RenderFn } from "~/renderers/types"
+
+function createNElements(n: number) {
+	return function create<R>(createFn: () => R) {
+		return range(n).map(createFn)
+	}
+}
+
+function appendElementsToContainer(container: HTMLElement) {
+	return function append(elements: Element[]) {
+		const fragment = document.createDocumentFragment()
+
+		for (const element of elements) {
+			fragment.append(element)
+		}
+
+		container.append(fragment)
+	}
+}
+
+export type RenderType = "svg" | "canvas2d"
 
 export function createWorldsForType(
 	type: RenderType,
@@ -52,8 +72,9 @@ export function createWorldsForType(
 				render: createSvgRenderer(elements, rendererOptions),
 			}
 		}
-		default:
+		default: {
 			return { type, elements: [], render: noop }
+		}
 	}
 }
 
@@ -92,34 +113,14 @@ export function startWorldAnimations(
 		if (!running) return
 
 		renderWorld(state.world)
-		window.requestAnimationFrame(onFrame)
+		globalThis.requestAnimationFrame(onFrame)
 	}
 
 	const updateInterval = setInterval(update, 14)
-	window.requestAnimationFrame(onFrame)
+	globalThis.requestAnimationFrame(onFrame)
 
 	return function stopWorldAnimations() {
 		running = false
 		clearInterval(updateInterval)
-	}
-}
-
-export type RenderType = "svg" | "canvas2d"
-
-function createNElements(n: number) {
-	return function create<R>(createFn: () => R) {
-		return range(n).map(createFn)
-	}
-}
-
-function appendElementsToContainer(container: HTMLElement) {
-	return function append(elements: Element[]) {
-		const fragment = document.createDocumentFragment()
-
-		for (const element of elements) {
-			fragment.append(element)
-		}
-
-		container.appendChild(fragment)
 	}
 }

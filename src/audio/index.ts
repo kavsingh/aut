@@ -1,31 +1,31 @@
-import { clamp } from "#lib/util"
+import { clamp } from "~/lib/util"
 
 import { processWorld } from "./process-world"
-import ReverbSimple from "./reverb-simple"
+import { ReverbSimple } from "./reverb-simple"
 
-import type { WorldState } from "#lib/types"
 import type { EffectNode } from "./types"
+import type { WorldState } from "~/lib/types"
 
-export default class Audio {
-	#audioContext: AudioContext
-	#lfo: OscillatorNode
-	#lowOsc: OscillatorNode
-	#midOsc: OscillatorNode
-	#highOsc: OscillatorNode
-	#lfoGain: GainNode
-	#lowGain: GainNode
-	#midGain: GainNode
-	#highGain: GainNode
-	#reverbA: EffectNode
-	#reverbB: EffectNode
-	#filter: BiquadFilterNode
-	#mix: GainNode
-	#compressor: DynamicsCompressorNode
+export class Audio {
+	readonly #audioContext: AudioContext
+	readonly #lfo: OscillatorNode
+	readonly #lowOsc: OscillatorNode
+	readonly #midOsc: OscillatorNode
+	readonly #highOsc: OscillatorNode
+	readonly #lfoGain: GainNode
+	readonly #lowGain: GainNode
+	readonly #midGain: GainNode
+	readonly #highGain: GainNode
+	readonly #reverbA: EffectNode
+	readonly #reverbB: EffectNode
+	readonly #filter: BiquadFilterNode
+	readonly #mix: GainNode
+	readonly #compressor: DynamicsCompressorNode
 	#oscillatorsStarted = false
 
-	#lowBaseFreq = 60
-	#midBaseFreq = 120
-	#highBaseFreq = 240
+	readonly #lowBaseFreq = 60
+	readonly #midBaseFreq = 120
+	readonly #highBaseFreq = 240
 
 	constructor() {
 		this.#audioContext = new AudioContext()

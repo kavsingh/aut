@@ -1,12 +1,18 @@
 import { createEffect, createMemo, onMount } from "solid-js"
 
-import { range } from "#lib/util"
-import { generateInitialWorld, seedRandom } from "#lib/world"
-import { createRenderer } from "#renderers/renderer-canvas2d"
+import { range } from "~/lib/util"
+import { generateInitialWorld, seedRandom } from "~/lib/world"
+import { createRenderer } from "~/renderers/renderer-canvas2d"
 
-import type { WorldStateEvolver } from "#lib/types"
+import type { WorldStateEvolver } from "~/lib/types"
 
-export default function EvolverSnapshot(props: Props) {
+interface Props {
+	evolver: WorldStateEvolver
+	size?: number | undefined
+	class?: string | undefined
+}
+
+export function EvolverSnapshot(props: Props) {
 	const world = createMemo(() => {
 		const evolver = props.evolver
 		const size = props.size ?? 40
@@ -17,7 +23,7 @@ export default function EvolverSnapshot(props: Props) {
 		)
 	})
 
-	let canvasRef: HTMLCanvasElement | null = null
+	let canvasRef: HTMLCanvasElement | undefined = undefined
 	let render: ReturnType<typeof createRenderer> | undefined = undefined
 
 	onMount(() => {
@@ -37,11 +43,5 @@ export default function EvolverSnapshot(props: Props) {
 		render?.(world())
 	})
 
-	return <canvas class={props.class} ref={(el) => (canvasRef = el)} />
-}
-
-interface Props {
-	evolver: WorldStateEvolver
-	size?: number | undefined
-	class?: string | undefined
+	return <canvas class={props.class} ref={(el) => void (canvasRef = el)} />
 }

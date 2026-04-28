@@ -1,28 +1,36 @@
 import { For, Show, createMemo, createSignal, onCleanup } from "solid-js"
 
-import Button from "#components/button"
-import EvolverSnapshot from "#components/evolver-snapshot"
-import { ChevronRightIcon } from "#components/icons"
-import { tv } from "#lib/style"
+import { Button } from "~/components/button"
+import { EvolverSnapshot } from "~/components/evolver-snapshot"
+import { ChevronRightIcon } from "~/components/icons"
+import { tv } from "~/lib/style"
 
 import { ALL_EVOLVERS } from "./lib"
 
-export default function RuleSlider(props: Props) {
+interface Props {
+	evolverName: string
+	initialPosition: number
+	maxPosition: number
+	onPositionChange: (position: number) => void
+	onEvolverSelect: (evolverName: string) => void
+	movable: boolean
+}
+
+const ruleSliderVariants = tv({
+	base: "absolute inset-s-full inset-e-[-16px] inset-bs-0 bg-neutral-400 block-px dark:bg-neutral-500",
+	variants: {
+		movable: {
+			true: "cursor-ns-resize",
+			false: "cursor-default",
+		},
+	},
+})
+
+export function RuleSlider(props: Props) {
 	const [showSelector, setShowSelector] = createSignal(false)
 	const evolver = createMemo(() => ALL_EVOLVERS[props.evolverName])
 	let parentOffset = 0
 	let containerEl: HTMLDivElement | null = null
-
-	function startDrag() {
-		setShowSelector(false)
-
-		if (!(props.movable && containerEl)) return
-
-		parentOffset = containerEl.parentElement?.getBoundingClientRect().top ?? 0
-
-		document.body.addEventListener("pointermove", drag)
-		document.body.addEventListener("pointerup", endDrag)
-	}
 
 	function drag(event: MouseEvent) {
 		if (!containerEl) return
@@ -42,17 +50,28 @@ export default function RuleSlider(props: Props) {
 		document.body.removeEventListener("pointerup", endDrag)
 	}
 
+	function startDrag() {
+		setShowSelector(false)
+
+		if (!(props.movable && containerEl)) return
+
+		parentOffset = containerEl.parentElement?.getBoundingClientRect().top ?? 0
+
+		document.body.addEventListener("pointermove", drag)
+		document.body.addEventListener("pointerup", endDrag)
+	}
+
 	onCleanup(endDrag)
 
 	return (
 		<div
 			class={ruleSliderVariants({ movable: props.movable })}
 			style={{ transform: `translateY(${props.initialPosition}px)` }}
-			ref={(el) => (containerEl = el)}
+			ref={(el) => void (containerEl = el)}
 		>
-			<div class="absolute end-[-8px]">
+			<div class="absolute inset-e-[-8px]">
 				<div
-					class="absolute top-[-16px] size-[32px] scale-[66%] overflow-hidden rounded-full bg-white opacity-40 transition-all hover:scale-100 hover:opacity-100 dark:bg-neutral-900"
+					class="absolute inset-bs-[-16px] scale-[66%] overflow-hidden rounded-full bg-white opacity-40 transition-all block-[32px] inline-[32px] hover:scale-100 hover:opacity-100 dark:bg-neutral-900"
 					onPointerDown={startDrag}
 				>
 					<Show when={evolver()}>
@@ -65,14 +84,14 @@ export default function RuleSlider(props: Props) {
 					when={showSelector()}
 					fallback={
 						<Button
-							class="absolute start-[36px] top-[-6px] size-3"
-							onClick={[setShowSelector, true]}
+							class="absolute inset-s-[36px] inset-bs-[-6px] block-3 inline-3"
+							onClick={() => void setShowSelector(true)}
 						>
 							<ChevronRightIcon />
 						</Button>
 					}
 				>
-					<div class="absolute start-[50px] top-[-20px] grid w-[102px] grid-cols-3 opacity-100">
+					<div class="absolute inset-s-[50px] inset-bs-[-20px] grid grid-cols-3 opacity-100 inline-[102px]">
 						<For each={Object.entries(ALL_EVOLVERS)}>
 							{([name, namedEvolver]) => (
 								<button
@@ -91,23 +110,4 @@ export default function RuleSlider(props: Props) {
 			</div>
 		</div>
 	)
-}
-
-const ruleSliderVariants = tv({
-	base: "absolute start-full end-[-16px] top-0 h-px bg-neutral-400 dark:bg-neutral-500",
-	variants: {
-		movable: {
-			true: "cursor-ns-resize",
-			false: "cursor-default",
-		},
-	},
-})
-
-interface Props {
-	evolverName: string
-	initialPosition: number
-	maxPosition: number
-	onPositionChange: (position: number) => void
-	onEvolverSelect: (evolverName: string) => void
-	movable: boolean
 }

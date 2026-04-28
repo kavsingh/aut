@@ -7,9 +7,7 @@ export function mockRandom(fn: (mock: MockContext<any>) => number) {
 	const random = vi.fn()
 	const mockMath: typeof _Math = Object.create(_Math)
 
-	mockMath.random = function mockedRandom(
-		...args: Parameters<typeof Math.random>
-	) {
+	mockMath.random = (...args: Parameters<typeof Math.random>) => {
 		random(...args)
 
 		return fn(random.mock)
