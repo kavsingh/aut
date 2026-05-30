@@ -5,6 +5,7 @@ import {
 	ConstructIcon,
 	FullscreenIcon,
 	GithubIcon,
+	RocketIcon,
 	ScrollsIcon,
 	TransparencyGridIcon,
 } from "~/components/icons"
@@ -40,6 +41,9 @@ export function App(props: ParentProps) {
 				</InternalLink>
 				<InternalLink href="/construct">
 					<ConstructIcon />
+				</InternalLink>
+				<InternalLink href="/wgpu-scrolls">
+					<RocketIcon />
 				</InternalLink>
 				<Button onClick={toggleFullscreen}>
 					<FullscreenIcon />
