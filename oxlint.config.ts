@@ -9,6 +9,7 @@ import {
 import jestDom from "eslint-plugin-jest-dom"
 import solid from "eslint-plugin-solid"
 import testingLibrary from "eslint-plugin-testing-library"
+import typegpu from "eslint-plugin-typegpu"
 import { defineConfig } from "oxlint"
 
 export default defineConfig({
@@ -196,7 +197,11 @@ export default defineConfig({
 		{
 			files: ["src/**"],
 			env: { browser: true, node: false },
-			jsPlugins: ["eslint-plugin-solid", "eslint-plugin-better-tailwindcss"],
+			jsPlugins: [
+				"eslint-plugin-solid",
+				"eslint-plugin-better-tailwindcss",
+				"eslint-plugin-typegpu",
+			],
 			rules: {
 				"import/no-nodejs-modules": "error",
 
@@ -205,6 +210,8 @@ export default defineConfig({
 				...tailwindcss.configs["recommended-error"].rules,
 				"better-tailwindcss/enforce-consistent-line-wrapping": "off",
 				"better-tailwindcss/enforce-logical-properties": "error",
+
+				...typegpu.configs.recommended.rules,
 			},
 		},
 

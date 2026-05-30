@@ -40,6 +40,7 @@
 		"eslint-plugin-jest-dom": "5.5.0",
 		"eslint-plugin-solid": "0.14.5",
 		"eslint-plugin-testing-library": "7.16.2",
+		"eslint-plugin-typegpu": "0.11.1",
 		"jsdom": "29.1.1",
 		"lefthook": "2.1.9",
 		"oxfmt": "0.53.0",
