@@ -65,7 +65,7 @@ describe("evolver", () => {
 	it("should not perpetuate identical generations if allowIndentical is false (default)", () => {
 		expect.assertions(1)
 
-		vi.spyOn(world, "seedRandom").mockImplementationOnce(() => [0, 1, 0])
+		vi.spyOn(world, "seedRandom").mockReturnValueOnce([0, 1, 0])
 
 		const evolve = createEvolver(createRule([]))
 
@@ -83,7 +83,7 @@ describe("evolver", () => {
 	it("should perpetuate identical generations if allowIndentical is true", () => {
 		expect.assertions(1)
 
-		vi.spyOn(world, "seedRandom").mockImplementationOnce(() => [0, 1, 0])
+		vi.spyOn(world, "seedRandom").mockReturnValueOnce([0, 1, 0])
 
 		const evolve = createEvolver(createRule([]), true)
 
