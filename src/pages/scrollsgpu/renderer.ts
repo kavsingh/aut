@@ -1,4 +1,4 @@
-// oxlint-disable no-inline-comments typescript/no-non-null-assertion
+// oxlint-disable no-inline-comments
 
 import typegpu, { d, std } from "typegpu"
 
@@ -94,6 +94,17 @@ export function init(
 		})
 		.$name("Cell index helper")
 
+	const readCell = typegpu
+		.fn(
+			[d.u32],
+			d.u32,
+		)((index) => {
+			"use gpu"
+			return d.u32(bindGroupLayout.$.cellStateIn[index])
+		})
+		.$uses({ bindGroupLayout })
+		.$name("Read cell")
+
 	const vertexMain = typegpu
 		.vertexFn({
 			in: {
@@ -108,7 +119,7 @@ export function init(
 			"use gpu"
 
 			const i = d.f32(input.instance)
-			const state = d.f32(bindGroupLayout.$.cellStateIn[input.instance])
+			const state = d.f32(readCell(input.instance))
 
 			let px = d.f32(-0.8)
 			if (
@@ -180,40 +191,24 @@ export function init(
 
 			const idx = cellIndex(d.vec2u(x, y), size)
 
-			const tt =
-				bindGroupLayout.$.cellStateIn[
-					cellIndex(d.vec2u(x, std.add(y, one)), size)
-				]!
-			const bb =
-				bindGroupLayout.$.cellStateIn[
-					cellIndex(d.vec2u(x, std.sub(y, one)), size)
-				]!
+			const tt = readCell(cellIndex(d.vec2u(x, std.add(y, one)), size))
+			const bb = readCell(cellIndex(d.vec2u(x, std.sub(y, one)), size))
 
-			const tr =
-				bindGroupLayout.$.cellStateIn[
-					cellIndex(d.vec2u(std.add(x, one), std.add(y, one)), size)
-				]!
-			const rr =
-				bindGroupLayout.$.cellStateIn[
-					cellIndex(d.vec2u(std.add(x, one), y), size)
-				]!
-			const br =
-				bindGroupLayout.$.cellStateIn[
-					cellIndex(d.vec2u(std.add(x, one), std.sub(y, one)), size)
-				]!
+			const tr = readCell(
+				cellIndex(d.vec2u(std.add(x, one), std.add(y, one)), size),
+			)
+			const rr = readCell(cellIndex(d.vec2u(std.add(x, one), y), size))
+			const br = readCell(
+				cellIndex(d.vec2u(std.add(x, one), std.sub(y, one)), size),
+			)
 
-			const tl =
-				bindGroupLayout.$.cellStateIn[
-					cellIndex(d.vec2u(std.sub(x, one), std.add(y, one)), size)
-				]!
-			const ll =
-				bindGroupLayout.$.cellStateIn[
-					cellIndex(d.vec2u(std.sub(x, one), y), size)
-				]!
-			const bl =
-				bindGroupLayout.$.cellStateIn[
-					cellIndex(d.vec2u(std.sub(x, one), std.sub(y, one)), size)
-				]!
+			const tl = readCell(
+				cellIndex(d.vec2u(std.sub(x, one), std.add(y, one)), size),
+			)
+			const ll = readCell(cellIndex(d.vec2u(std.sub(x, one), y), size))
+			const bl = readCell(
+				cellIndex(d.vec2u(std.sub(x, one), std.sub(y, one)), size),
+			)
 
 			const activeNeighbourCount = std.add(
 				std.add(std.add(tt, bb), std.add(tr, rr)),
@@ -223,8 +218,7 @@ export function init(
 			if (activeNeighbourCount === d.u32(3)) {
 				bindGroupLayout.$.cellStateOut[idx] = d.u32(1)
 			} else if (activeNeighbourCount === d.u32(2)) {
-				bindGroupLayout.$.cellStateOut[idx] =
-					bindGroupLayout.$.cellStateIn[idx]!
+				bindGroupLayout.$.cellStateOut[idx] = readCell(idx)
 			} else {
 				bindGroupLayout.$.cellStateOut[idx] = d.u32(0)
 			}
@@ -232,6 +226,7 @@ export function init(
 		.$uses({
 			bindGroupLayout,
 			cellIndex,
+			readCell,
 			std,
 		})
 		.$name("Game of life compute shader")

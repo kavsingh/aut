@@ -36,6 +36,10 @@ Use this skill for TypeGPU or tgpu work in this repository.
 - Do not use ?? inside use gpu callbacks.
   The current TypeGPU path in this repo throws ResolutionError for nullish coalescing in generated functions.
 
+- WGSL caveat: || is boolean-only.
+  Even though TypeGPU accepts logical operators, generated WGSL only allows `||` for booleans.
+  Do not use `value || fallback` for numeric storage reads such as u32.
+
 - Avoid relying on operator overloading semantics.
   Because this repo avoids tsover, prefer std.add/std.sub/std.mul/std.div/std.mod in shader logic where operator transforms are expected.
 
@@ -49,8 +53,13 @@ Use this skill for TypeGPU or tgpu work in this repository.
   In this repo, wrapping bindGroup entries in accessors caused ResolutionError about array schema called with undefined.
   Prefer direct bindGroupLayout.$ usage in shader callbacks unless there is a strong need for accessor indirection.
 
-- For storage array indexing, non-null assertions may be required for TypeScript.
-  Example pattern: layout.$.buffer[idx]!
+- Prefer typed numeric reads over non-null assertions for storage indexing.
+  Example pattern: `d.u32(layout.$.buffer[idx])` or a helper function that returns that value.
+  This avoids `!` in use gpu callbacks without relying on unsupported/defaulting operators.
+
+- Linting caveat for defaults.
+  General TS lint rules may recommend ??, but use gpu callbacks in this repo cannot use ??.
+  Prefer explicit typed conversion or branch logic instead of nullish/coalescing operators.
 
 ## Patterns That Work Well Here
 
