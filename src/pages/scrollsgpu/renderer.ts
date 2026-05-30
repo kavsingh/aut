@@ -2,9 +2,6 @@
 
 import typegpu, { d } from "typegpu"
 
-import shader from "./shader.wgsl"
-import simulation from "./simulation.wgsl"
-
 const WORKGROUP_SIZE = 8 // sqrt 64
 
 export function init(
@@ -17,25 +14,6 @@ export function init(
 	const canvasFormat = navigator.gpu.getPreferredCanvasFormat()
 
 	context.configure({ device: gpu, format: canvasFormat })
-
-	// oxfmt-ignore
-	const vertices = new Float32Array([
-		//    X    Y
-		   -0.8, -0.8, // Triangle 1 (bottom right)
-		    0.8, -0.8,
-		    0.8,  0.8,
-
-		    0.8,  0.8, // Triangle 2 (top left)
-		   -0.8,  0.8,
-		   -0.8, -0.8,
-	])
-
-	const vertexBuffer = root
-		.createBuffer(d.arrayOf(d.vec2f, vertices.length / 2))
-		.$usage("vertex")
-		.$name("Cell vertices")
-
-	vertexBuffer.write(vertices.buffer)
 
 	const uniformBuffer = root
 		.createBuffer(d.vec2f, d.vec2f(gridSize, gridSize))
@@ -61,27 +39,6 @@ export function init(
 
 	cellStateStorage[1].write(cellStateArray.buffer)
 
-	const vertexBufferLayout: GPUVertexBufferLayout = {
-		arrayStride: vertices.BYTES_PER_ELEMENT * 2,
-		attributes: [
-			{
-				format: "float32x2",
-				offset: 0,
-				shaderLocation: 0, // Position, see vertex shader
-			},
-		],
-	}
-
-	const cellShaderModule = gpu.createShaderModule({
-		label: "Cell shader",
-		code: shader,
-	})
-
-	const simulationShaderModule = gpu.createShaderModule({
-		label: "Game of life simulation shader",
-		code: simulation,
-	})
-
 	const bindGroupLayout = typegpu
 		.bindGroupLayout({
 			grid: {
@@ -102,6 +59,13 @@ export function init(
 		.$idx(0)
 		.$name("Cell bind group layout")
 
+	// oxlint-disable-next-line typescript/no-deprecated
+	const cellStateIn = bindGroupLayout.bound.cellStateIn
+	// oxlint-disable-next-line typescript/no-deprecated
+	const cellStateOut = bindGroupLayout.bound.cellStateOut
+	// oxlint-disable-next-line typescript/no-deprecated
+	const grid = bindGroupLayout.bound.grid
+
 	const bindGroups = [
 		root.createBindGroup(bindGroupLayout, {
 			grid: uniformBuffer,
@@ -115,34 +79,98 @@ export function init(
 		}),
 	] as const
 
-	const cellPipelineLayout = gpu.createPipelineLayout({
-		label: "Cell pipeline layout",
-		bindGroupLayouts: [root.unwrap(bindGroupLayout)],
-	})
+	const vertexMain = typegpu.vertexFn({
+		in: {
+			vertexIndex: d.builtin.vertexIndex,
+			instance: d.builtin.instanceIndex,
+		},
+		out: {
+			pos: d.builtin.position,
+			cell: d.location(0, d.vec2f),
+		},
+	}) /* wgsl */ `{
+			let i = f32(in.instance);
+			let state = f32(cellStateIn[in.instance]);
 
-	const renderPipeline = gpu.createRenderPipeline({
-		label: "Render pipeline",
-		layout: cellPipelineLayout,
-		vertex: {
-			module: cellShaderModule,
-			entryPoint: "vertexMain",
-			buffers: [vertexBufferLayout],
-		},
-		fragment: {
-			module: cellShaderModule,
-			entryPoint: "fragmentMain",
-			targets: [{ format: canvasFormat }],
-		},
-	})
+			let pos = array<vec2f, 6>(
+				vec2f(-0.8, -0.8),
+				vec2f(0.8, -0.8),
+				vec2f(0.8, 0.8),
+				vec2f(0.8, 0.8),
+				vec2f(-0.8, 0.8),
+				vec2f(-0.8, -0.8),
+			);
 
-	const simulationPipeline = gpu.createComputePipeline({
-		label: "Simulation pipeline",
-		layout: cellPipelineLayout,
-		compute: {
-			module: simulationShaderModule,
-			entryPoint: "computeMain",
-		},
-	})
+			let targetCell = vec2f(i % grid.x, floor(i / grid.y));
+			let targetOffset = (targetCell / grid) * 2;
+			let gridPos = ((((pos[in.vertexIndex] * state) + 1) / grid) - 1) + targetOffset;
+
+			return Out(vec4f(gridPos, 0, 1), targetCell);
+		}`
+		.$uses({
+			cellStateIn,
+			grid,
+		})
+		.$name("Cell vertex shader")
+
+	const fragmentMain = typegpu.fragmentFn({ out: d.vec4f }) /* wgsl */ `{
+			return vec4f(1, 1, 1, 1);
+		}`.$name("Cell fragment shader")
+
+	const computeMain = typegpu.computeFn({
+		in: { cell: d.builtin.globalInvocationId },
+		workgroupSize: [WORKGROUP_SIZE, WORKGROUP_SIZE],
+	}) /* wgsl */ `{
+			let gridX = u32(grid.x);
+			let gridY = u32(grid.y);
+			let x = cell.x;
+			let y = cell.y;
+
+			let idx = (y % gridY) * gridX + (x % gridX);
+
+			let tt = cellStateIn[((y + 1u) % gridY) * gridX + (x % gridX)];
+			let bb = cellStateIn[((y - 1u) % gridY) * gridX + (x % gridX)];
+
+			let tr = cellStateIn[((y + 1u) % gridY) * gridX + ((x + 1u) % gridX)];
+			let rr = cellStateIn[(y % gridY) * gridX + ((x + 1u) % gridX)];
+			let br = cellStateIn[((y - 1u) % gridY) * gridX + ((x + 1u) % gridX)];
+
+			let tl = cellStateIn[((y + 1u) % gridY) * gridX + ((x - 1u) % gridX)];
+			let ll = cellStateIn[(y % gridY) * gridX + ((x - 1u) % gridX)];
+			let bl = cellStateIn[((y - 1u) % gridY) * gridX + ((x - 1u) % gridX)];
+
+			let activeNeighbourCount = tt + bb + tr + rr + br + tl + ll + bl;
+
+			switch activeNeighbourCount {
+				case 3u: {
+					cellStateOut[idx] = 1u;
+				}
+				case 2u: {
+					cellStateOut[idx] = cellStateIn[idx];
+				}
+				default: {
+					cellStateOut[idx] = 0u;
+				}
+			}
+		}`
+		.$uses({
+			cellStateIn,
+			cellStateOut,
+			grid,
+		})
+		.$name("Game of life compute shader")
+
+	const renderPipeline = root
+		.createRenderPipeline({
+			vertex: vertexMain,
+			fragment: fragmentMain,
+			targets: { format: canvasFormat },
+		})
+		.$name("Render pipeline")
+
+	const simulationPipeline = root
+		.createComputePipeline({ compute: computeMain })
+		.$name("Simulation pipeline")
 
 	let step = 0
 
@@ -152,34 +180,27 @@ export function init(
 
 	function update() {
 		const encoder = gpu.createCommandEncoder()
-		const computePass = encoder.beginComputePass()
 		const workgroupCount = Math.ceil(gridSize / WORKGROUP_SIZE)
 		const activeBindGroup = getBindGroup(step)
 
-		computePass.setPipeline(simulationPipeline)
-		computePass.setBindGroup(0, root.unwrap(activeBindGroup))
-		// https://codelabs.developers.google.com/your-first-webgpu-app#7
-		computePass.dispatchWorkgroups(workgroupCount, workgroupCount)
-		computePass.end()
+		simulationPipeline
+			.with(encoder)
+			.with(activeBindGroup)
+			// https://codelabs.developers.google.com/your-first-webgpu-app#7
+			.dispatchWorkgroups(workgroupCount, workgroupCount)
 
 		step += 1
 
-		const renderPass = encoder.beginRenderPass({
-			colorAttachments: [
-				{
-					view: context.getCurrentTexture().createView(),
-					loadOp: "clear",
-					clearValue: { r: 0, g: 0, b: 0, a: 0 },
-					storeOp: "store",
-				},
-			],
-		})
-
-		renderPass.setPipeline(renderPipeline)
-		renderPass.setVertexBuffer(0, root.unwrap(vertexBuffer))
-		renderPass.setBindGroup(0, root.unwrap(getBindGroup(step)))
-		renderPass.draw(vertices.length / 2, gridSize * gridSize)
-		renderPass.end()
+		renderPipeline
+			.with(encoder)
+			.with(getBindGroup(step))
+			.withColorAttachment({
+				view: context,
+				loadOp: "clear",
+				clearValue: { r: 0, g: 0, b: 0, a: 0 },
+				storeOp: "store",
+			})
+			.draw(6, gridSize * gridSize)
 
 		gpu.queue.submit([encoder.finish()])
 	}

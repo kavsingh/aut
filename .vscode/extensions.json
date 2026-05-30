@@ -3,6 +3,7 @@
 		"oxc.oxc-vscode",
 		"bradlc.vscode-tailwindcss",
 		"nolanderc.glasgow",
-		"polymeilex.wgsl"
+		"polymeilex.wgsl",
+		"ggsimm.wgsl-literal"
 	]
 }
