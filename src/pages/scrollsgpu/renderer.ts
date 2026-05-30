@@ -1,6 +1,6 @@
-// oxlint-disable no-inline-comments
+// oxlint-disable no-inline-comments typescript/no-non-null-assertion
 
-import typegpu, { d } from "typegpu"
+import typegpu, { d, std } from "typegpu"
 
 const WORKGROUP_SIZE = 8 // sqrt 64
 const FRAME_INTERVAL_MS = 16
@@ -14,65 +14,6 @@ function seedFirstRowRandom(state: Uint32Array, gridSize: number) {
 function clearState(state: Uint32Array) {
 	state.fill(0)
 }
-
-const VERTEX_MAIN_WGSL = /* wgsl */ `{
-	let i = f32(in.instance);
-	let state = f32(cellStateIn[in.instance]);
-
-	let pos = array<vec2f, 6>(
-		vec2f(-0.8, -0.8),
-		vec2f(0.8, -0.8),
-		vec2f(0.8, 0.8),
-		vec2f(0.8, 0.8),
-		vec2f(-0.8, 0.8),
-		vec2f(-0.8, -0.8),
-	);
-
-	let targetCell = vec2f(i % grid.x, floor(i / grid.y));
-	let targetOffset = (targetCell / grid) * 2;
-	let gridPos = ((((pos[in.vertexIndex] * state) + 1) / grid) - 1) + targetOffset;
-
-	return Out(vec4f(gridPos, 0, 1), targetCell);
-}`
-
-const FRAGMENT_MAIN_WGSL = /* wgsl */ `{
-	return vec4f(1, 1, 1, 1);
-}`
-
-const COMPUTE_MAIN_WGSL = /* wgsl */ `{
-	let gridX = u32(grid.x);
-	let gridY = u32(grid.y);
-	let gridSize = vec2u(gridX, gridY);
-	let x = cell.x;
-	let y = cell.y;
-
-	let idx = cellIndex(vec2u(x, y), gridSize);
-
-	let tt = cellStateIn[cellIndex(vec2u(x, y + 1u), gridSize)];
-	let bb = cellStateIn[cellIndex(vec2u(x, y - 1u), gridSize)];
-
-	let tr = cellStateIn[cellIndex(vec2u(x + 1u, y + 1u), gridSize)];
-	let rr = cellStateIn[cellIndex(vec2u(x + 1u, y), gridSize)];
-	let br = cellStateIn[cellIndex(vec2u(x + 1u, y - 1u), gridSize)];
-
-	let tl = cellStateIn[cellIndex(vec2u(x - 1u, y + 1u), gridSize)];
-	let ll = cellStateIn[cellIndex(vec2u(x - 1u, y), gridSize)];
-	let bl = cellStateIn[cellIndex(vec2u(x - 1u, y - 1u), gridSize)];
-
-	let activeNeighbourCount = tt + bb + tr + rr + br + tl + ll + bl;
-
-	switch activeNeighbourCount {
-		case 3u: {
-			cellStateOut[idx] = 1u;
-		}
-		case 2u: {
-			cellStateOut[idx] = cellStateIn[idx];
-		}
-		default: {
-			cellStateOut[idx] = 0u;
-		}
-	}
-}`
 
 export function init(
 	device: GPUDevice,
@@ -125,13 +66,6 @@ export function init(
 		.$idx(0)
 		.$name("Cell bind group layout")
 
-	// oxlint-disable-next-line typescript/no-deprecated
-	const cellStateIn = bindGroupLayout.bound.cellStateIn
-	// oxlint-disable-next-line typescript/no-deprecated
-	const cellStateOut = bindGroupLayout.bound.cellStateOut
-	// oxlint-disable-next-line typescript/no-deprecated
-	const grid = bindGroupLayout.bound.grid
-
 	const bindGroups = [
 		root.createBindGroup(bindGroupLayout, {
 			grid: uniformBuffer,
@@ -151,7 +85,12 @@ export function init(
 			d.u32,
 		)((pos, size) => {
 			"use gpu"
-			return (pos.y % size.y) * size.x + (pos.x % size.x)
+			const py = d.f32(pos.y)
+			const sy = d.f32(size.y)
+			const px = d.f32(pos.x)
+			const sx = d.f32(size.x)
+
+			return d.u32(std.add(std.mul(std.mod(py, sy), sx), std.mod(px, sx)))
 		})
 		.$name("Cell index helper")
 
@@ -165,27 +104,135 @@ export function init(
 				pos: d.builtin.position,
 				cell: d.location(0, d.vec2f),
 			},
-		})(VERTEX_MAIN_WGSL)
+		})((input) => {
+			"use gpu"
+
+			const i = d.f32(input.instance)
+			const state = d.f32(bindGroupLayout.$.cellStateIn[input.instance])
+
+			let px = d.f32(-0.8)
+			if (
+				input.vertexIndex === 1 ||
+				input.vertexIndex === 2 ||
+				input.vertexIndex === 3
+			) {
+				px = d.f32(0.8)
+			}
+
+			let py = d.f32(0.8)
+			if (
+				input.vertexIndex === 0 ||
+				input.vertexIndex === 1 ||
+				input.vertexIndex === 5
+			) {
+				py = d.f32(-0.8)
+			}
+
+			const pos = d.vec2f(px, py)
+
+			const targetCell = d.vec2f(
+				std.mod(i, bindGroupLayout.$.grid.x),
+				std.floor(std.div(i, bindGroupLayout.$.grid.y)),
+			)
+			const targetOffset = std.mul(
+				std.div(targetCell, bindGroupLayout.$.grid),
+				2,
+			)
+			const gridPos = std.add(
+				std.sub(
+					std.div(std.add(std.mul(pos, state), 1), bindGroupLayout.$.grid),
+					1,
+				),
+				targetOffset,
+			)
+
+			return {
+				pos: d.vec4f(gridPos, 0, 1),
+				cell: targetCell,
+			}
+		})
 		.$uses({
-			cellStateIn,
-			grid,
+			bindGroupLayout,
 		})
 		.$name("Cell vertex shader")
 
 	const fragmentMain = typegpu
-		.fragmentFn({ out: d.vec4f })(FRAGMENT_MAIN_WGSL)
+		.fragmentFn({ out: d.vec4f })(() => {
+			"use gpu"
+			return d.vec4f(1, 1, 1, 1)
+		})
 		.$name("Cell fragment shader")
 
 	const computeMain = typegpu
 		.computeFn({
 			in: { cell: d.builtin.globalInvocationId },
 			workgroupSize: [WORKGROUP_SIZE, WORKGROUP_SIZE],
-		})(COMPUTE_MAIN_WGSL)
+		})((input) => {
+			"use gpu"
+
+			const one = d.u32(1)
+			const size = d.vec2u(
+				d.u32(bindGroupLayout.$.grid.x),
+				d.u32(bindGroupLayout.$.grid.y),
+			)
+			const x = input.cell.x
+			const y = input.cell.y
+
+			const idx = cellIndex(d.vec2u(x, y), size)
+
+			const tt =
+				bindGroupLayout.$.cellStateIn[
+					cellIndex(d.vec2u(x, std.add(y, one)), size)
+				]!
+			const bb =
+				bindGroupLayout.$.cellStateIn[
+					cellIndex(d.vec2u(x, std.sub(y, one)), size)
+				]!
+
+			const tr =
+				bindGroupLayout.$.cellStateIn[
+					cellIndex(d.vec2u(std.add(x, one), std.add(y, one)), size)
+				]!
+			const rr =
+				bindGroupLayout.$.cellStateIn[
+					cellIndex(d.vec2u(std.add(x, one), y), size)
+				]!
+			const br =
+				bindGroupLayout.$.cellStateIn[
+					cellIndex(d.vec2u(std.add(x, one), std.sub(y, one)), size)
+				]!
+
+			const tl =
+				bindGroupLayout.$.cellStateIn[
+					cellIndex(d.vec2u(std.sub(x, one), std.add(y, one)), size)
+				]!
+			const ll =
+				bindGroupLayout.$.cellStateIn[
+					cellIndex(d.vec2u(std.sub(x, one), y), size)
+				]!
+			const bl =
+				bindGroupLayout.$.cellStateIn[
+					cellIndex(d.vec2u(std.sub(x, one), std.sub(y, one)), size)
+				]!
+
+			const activeNeighbourCount = std.add(
+				std.add(std.add(tt, bb), std.add(tr, rr)),
+				std.add(std.add(br, tl), std.add(ll, bl)),
+			)
+
+			if (activeNeighbourCount === d.u32(3)) {
+				bindGroupLayout.$.cellStateOut[idx] = d.u32(1)
+			} else if (activeNeighbourCount === d.u32(2)) {
+				bindGroupLayout.$.cellStateOut[idx] =
+					bindGroupLayout.$.cellStateIn[idx]!
+			} else {
+				bindGroupLayout.$.cellStateOut[idx] = d.u32(0)
+			}
+		})
 		.$uses({
+			bindGroupLayout,
 			cellIndex,
-			cellStateIn,
-			cellStateOut,
-			grid,
+			std,
 		})
 		.$name("Game of life compute shader")
 
