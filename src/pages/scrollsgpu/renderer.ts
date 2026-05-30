@@ -5,8 +5,8 @@ import typegpu, { d, std } from "typegpu"
 const WORKGROUP_SIZE = 8 // sqrt 64
 const FRAME_INTERVAL_MS = 16
 
-function seedFirstRowRandom(state: Uint32Array, gridSize: number) {
-	for (let i = 0; i < gridSize; ++i) {
+function seedRandom(state: Uint32Array) {
+	for (let i = 0; i < state.length; ++i) {
 		state[i] = Math.random() > 0.6 ? 1 : 0
 	}
 }
@@ -38,7 +38,7 @@ export function init(
 		root.createBuffer(cellStateSchema).$usage("storage").$name("Cell state B"),
 	] as const
 
-	seedFirstRowRandom(cellStateArray, gridSize)
+	seedRandom(cellStateArray)
 
 	cellStateStorage[0].write(cellStateArray.buffer)
 
