@@ -1,4 +1,6 @@
-// oxlint-disable no-bitwise, no-inline-comments
+// oxlint-disable no-inline-comments
+
+import typegpu, { d } from "typegpu"
 
 import shader from "./shader.wgsl"
 import simulation from "./simulation.wgsl"
@@ -10,11 +12,13 @@ export function init(
 	context: GPUCanvasContext,
 	gridSize: number,
 ) {
+	const root = typegpu.initFromDevice({ device })
+	const gpu = root.device
 	const canvasFormat = navigator.gpu.getPreferredCanvasFormat()
 
-	context.configure({ device, format: canvasFormat })
+	context.configure({ device: gpu, format: canvasFormat })
 
-	// prettier-ignore
+	// oxfmt-ignore
 	const vertices = new Float32Array([
 		//    X    Y
 		   -0.8, -0.8, // Triangle 1 (bottom right)
@@ -26,48 +30,36 @@ export function init(
 		   -0.8, -0.8,
 	])
 
-	const vertexBuffer = device.createBuffer({
-		label: "Cell vertices",
-		size: vertices.byteLength,
-		usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-	})
+	const vertexBuffer = root
+		.createBuffer(d.arrayOf(d.vec2f, vertices.length / 2))
+		.$usage("vertex")
+		.$name("Cell vertices")
 
-	device.queue.writeBuffer(vertexBuffer, 0, vertices)
+	vertexBuffer.write(vertices.buffer)
 
-	const uniformArray = new Float32Array([gridSize, gridSize])
-	const uniformBuffer = device.createBuffer({
-		label: "Grid uniforms",
-		size: uniformArray.byteLength,
-		usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-	})
-
-	device.queue.writeBuffer(uniformBuffer, 0, uniformArray)
+	const uniformBuffer = root
+		.createBuffer(d.vec2f, d.vec2f(gridSize, gridSize))
+		.$usage("uniform")
+		.$name("Grid uniforms")
 
 	const cellStateArray = new Uint32Array(gridSize * gridSize)
+	const cellStateSchema = d.arrayOf(d.u32, gridSize * gridSize)
 	const cellStateStorage = [
-		device.createBuffer({
-			label: "Cell state A",
-			size: cellStateArray.byteLength,
-			usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
-		}),
-		device.createBuffer({
-			label: "Cell state B",
-			size: cellStateArray.byteLength,
-			usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
-		}),
+		root.createBuffer(cellStateSchema).$usage("storage").$name("Cell state A"),
+		root.createBuffer(cellStateSchema).$usage("storage").$name("Cell state B"),
 	] as const
 
 	for (let i = 0; i < gridSize; ++i) {
 		cellStateArray[i] = Math.random() > 0.6 ? 1 : 0
 	}
 
-	device.queue.writeBuffer(cellStateStorage[0], 0, cellStateArray)
+	cellStateStorage[0].write(cellStateArray.buffer)
 
 	for (let i = 0; i < cellStateArray.length; i++) {
 		cellStateArray[i] = 0
 	}
 
-	device.queue.writeBuffer(cellStateStorage[1], 0, cellStateArray)
+	cellStateStorage[1].write(cellStateArray.buffer)
 
 	const vertexBufferLayout: GPUVertexBufferLayout = {
 		arrayStride: vertices.BYTES_PER_ELEMENT * 2,
@@ -80,67 +72,55 @@ export function init(
 		],
 	}
 
-	const cellShaderModule = device.createShaderModule({
+	const cellShaderModule = gpu.createShaderModule({
 		label: "Cell shader",
 		code: shader,
 	})
 
-	const simulationShaderModule = device.createShaderModule({
+	const simulationShaderModule = gpu.createShaderModule({
 		label: "Game of life simulation shader",
 		code: simulation,
 	})
 
-	const bindGroupLayout = device.createBindGroupLayout({
-		label: "Cell bind group layout",
-		entries: [
-			{
-				binding: 0,
-				visibility:
-					GPUShaderStage.VERTEX |
-					GPUShaderStage.FRAGMENT |
-					GPUShaderStage.COMPUTE,
-				buffer: { type: "uniform" },
+	const bindGroupLayout = typegpu
+		.bindGroupLayout({
+			grid: {
+				uniform: d.vec2f,
+				visibility: ["vertex", "fragment", "compute"],
 			},
-			{
-				binding: 1,
-				visibility: GPUShaderStage.VERTEX | GPUShaderStage.COMPUTE,
-				buffer: { type: "read-only-storage" },
+			cellStateIn: {
+				storage: cellStateSchema,
+				access: "readonly",
+				visibility: ["vertex", "compute"],
 			},
-			{
-				binding: 2,
-				visibility: GPUShaderStage.COMPUTE,
-				buffer: { type: "storage" },
+			cellStateOut: {
+				storage: cellStateSchema,
+				access: "mutable",
+				visibility: ["compute"],
 			},
-		],
-	})
+		})
+		.$idx(0)
+		.$name("Cell bind group layout")
 
 	const bindGroups = [
-		device.createBindGroup({
-			label: "Cell renderer bind group A",
-			layout: bindGroupLayout,
-			entries: [
-				{ binding: 0, resource: { buffer: uniformBuffer } },
-				{ binding: 1, resource: { buffer: cellStateStorage[0] } },
-				{ binding: 2, resource: { buffer: cellStateStorage[1] } },
-			],
+		root.createBindGroup(bindGroupLayout, {
+			grid: uniformBuffer,
+			cellStateIn: cellStateStorage[0],
+			cellStateOut: cellStateStorage[1],
 		}),
-		device.createBindGroup({
-			label: "Cell renderer bind group B",
-			layout: bindGroupLayout,
-			entries: [
-				{ binding: 0, resource: { buffer: uniformBuffer } },
-				{ binding: 1, resource: { buffer: cellStateStorage[1] } },
-				{ binding: 2, resource: { buffer: cellStateStorage[0] } },
-			],
+		root.createBindGroup(bindGroupLayout, {
+			grid: uniformBuffer,
+			cellStateIn: cellStateStorage[1],
+			cellStateOut: cellStateStorage[0],
 		}),
 	] as const
 
-	const cellPipelineLayout = device.createPipelineLayout({
+	const cellPipelineLayout = gpu.createPipelineLayout({
 		label: "Cell pipeline layout",
-		bindGroupLayouts: [bindGroupLayout],
+		bindGroupLayouts: [root.unwrap(bindGroupLayout)],
 	})
 
-	const renderPipeline = device.createRenderPipeline({
+	const renderPipeline = gpu.createRenderPipeline({
 		label: "Render pipeline",
 		layout: cellPipelineLayout,
 		vertex: {
@@ -155,7 +135,7 @@ export function init(
 		},
 	})
 
-	const simulationPipeline = device.createComputePipeline({
+	const simulationPipeline = gpu.createComputePipeline({
 		label: "Simulation pipeline",
 		layout: cellPipelineLayout,
 		compute: {
@@ -166,13 +146,18 @@ export function init(
 
 	let step = 0
 
+	function getBindGroup(index: number) {
+		return bindGroups[index % 2 === 0 ? 0 : 1]
+	}
+
 	function update() {
-		const encoder = device.createCommandEncoder()
+		const encoder = gpu.createCommandEncoder()
 		const computePass = encoder.beginComputePass()
 		const workgroupCount = Math.ceil(gridSize / WORKGROUP_SIZE)
+		const activeBindGroup = getBindGroup(step)
 
 		computePass.setPipeline(simulationPipeline)
-		computePass.setBindGroup(0, bindGroups[step % 2])
+		computePass.setBindGroup(0, root.unwrap(activeBindGroup))
 		// https://codelabs.developers.google.com/your-first-webgpu-app#7
 		computePass.dispatchWorkgroups(workgroupCount, workgroupCount)
 		computePass.end()
@@ -191,12 +176,12 @@ export function init(
 		})
 
 		renderPass.setPipeline(renderPipeline)
-		renderPass.setVertexBuffer(0, vertexBuffer)
-		renderPass.setBindGroup(0, bindGroups[step % 2])
+		renderPass.setVertexBuffer(0, root.unwrap(vertexBuffer))
+		renderPass.setBindGroup(0, root.unwrap(getBindGroup(step)))
 		renderPass.draw(vertices.length / 2, gridSize * gridSize)
 		renderPass.end()
 
-		device.queue.submit([encoder.finish()])
+		gpu.queue.submit([encoder.finish()])
 	}
 
 	setInterval(update, 16)
