@@ -1,4 +1,5 @@
 import tailwindcss from "@tailwindcss/vite"
+import typegpu from "unplugin-typegpu/vite"
 import { defineConfig } from "vite"
 import { checker } from "vite-plugin-checker"
 import glsl from "vite-plugin-glsl"
@@ -23,6 +24,7 @@ export default defineConfig(({ mode }) => {
 			}),
 			solid(),
 			tailwindcss(),
+			typegpu(),
 			mode === "development"
 				? checker({ oxlint: true, overlay: { initialIsOpen: false } })
 				: undefined,
