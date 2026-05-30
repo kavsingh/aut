@@ -1,0 +1,18 @@
+{
+	"$schema": "./node_modules/lefthook/schema.json",
+	"pre-commit": {
+		"jobs": [
+			{
+				"glob": "*.{ts,tsx,js,jsx,html,css,json,jsonc,yml,yaml,toml,md}",
+				"run": "bun oxfmt --no-error-on-unmatched-pattern {staged_files}",
+				"stage_fixed": true
+			},
+			{
+				"glob": "*.{ts,tsx,js,jsx}",
+				"run": "bun oxlint --fix --no-error-on-unmatched-pattern {staged_files}",
+				"stage_fixed": true
+			}
+		]
+	},
+	"pre-push": { "jobs": [{ "run": "bun lint" }] }
+}
