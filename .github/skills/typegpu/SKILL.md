@@ -7,7 +7,7 @@ user-invocable: true
 
 # TypeGPU Skill
 
-Use this skill for TypeGPU or tgpu work in this repository.
+Use this skill for any TypeGPU or tgpu work in this repository.
 
 ## When To Use
 
@@ -20,8 +20,15 @@ Use this skill for TypeGPU or tgpu work in this repository.
 ## Repository Baseline
 
 - TypeGPU is already configured in this project through dependencies and Vite plugin setup.
-- The GPU page in this repo lives in src/pages/scrollsgpu/renderer.ts.
-- Prefer preserving the current TypeGPU-first architecture unless explicitly asked to roll back.
+- The repository uses tsgo and avoids tsover operator overloading semantics.
+- eslint-plugin-typegpu is enabled in src/\*\* via oxlint config and should be treated as part of the expected feedback loop.
+
+## Linting Tooling
+
+- TypeGPU lint rules come from eslint-plugin-typegpu and are enabled through oxlint overrides for src/\*\*.
+- Prefer code changes that satisfy lint rules over local disables.
+- If a lint suggestion conflicts with known TypeGPU generator limits (for example recommending ?? in use gpu callbacks), use explicit typed conversion or branch logic.
+- Reference: https://docs.swmansion.com/TypeGPU/tooling/eslint-plugin-typegpu/
 
 ## Workflow
 
@@ -50,7 +57,7 @@ Use this skill for TypeGPU or tgpu work in this repository.
   The TypeGPU API marks bound as deprecated; default to layout.$ for shader-visible references.
 
 - Be careful with accessor/mutableAccessor defaults for large array schemas.
-  In this repo, wrapping bindGroup entries in accessors caused ResolutionError about array schema called with undefined.
+  Wrapping bindGroup entries in accessors can cause ResolutionError about array schema called with undefined.
   Prefer direct bindGroupLayout.$ usage in shader callbacks unless there is a strong need for accessor indirection.
 
 - Prefer typed numeric reads over non-null assertions for storage indexing.

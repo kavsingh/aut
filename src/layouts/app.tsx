@@ -5,8 +5,8 @@ import {
 	ConstructIcon,
 	FullscreenIcon,
 	GithubIcon,
-	RocketIcon,
 	ScrollsIcon,
+	TransparencyGridIcon,
 } from "~/components/icons"
 import { tv } from "~/lib/style"
 
@@ -38,15 +38,15 @@ export function App(props: ParentProps) {
 				<InternalLink href="/">
 					<ScrollsIcon />
 				</InternalLink>
-				<InternalLink href="/gpu">
-					<RocketIcon />
-				</InternalLink>
 				<InternalLink href="/construct">
 					<ConstructIcon />
 				</InternalLink>
 				<Button onClick={toggleFullscreen}>
 					<FullscreenIcon />
 				</Button>
+				<InternalLink href="/wgpu-gol">
+					<TransparencyGridIcon />
+				</InternalLink>
 				<a
 					href="https://github.com/kavsingh/cellular-automaton"
 					class={buttonVariants()}

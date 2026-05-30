@@ -1,6 +1,6 @@
 # TypeGPU Gotchas For This Repository
 
-This file records behavior observed while migrating src/pages/scrollsgpu/renderer.ts.
+This file records TypeGPU behavior repeatedly observed in this repository.
 
 ## Confirmed Behaviors
 

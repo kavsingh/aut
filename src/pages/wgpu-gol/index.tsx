@@ -12,7 +12,7 @@ async function getDevice() {
 	return adapter.requestDevice()
 }
 
-export function Scrollsgpu() {
+export function WgpuGol() {
 	let canvasEl: HTMLCanvasElement | undefined = undefined
 
 	onMount(() => {
