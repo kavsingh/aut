@@ -3,6 +3,76 @@
 import typegpu, { d } from "typegpu"
 
 const WORKGROUP_SIZE = 8 // sqrt 64
+const FRAME_INTERVAL_MS = 16
+
+function seedFirstRowRandom(state: Uint32Array, gridSize: number) {
+	for (let i = 0; i < gridSize; ++i) {
+		state[i] = Math.random() > 0.6 ? 1 : 0
+	}
+}
+
+function clearState(state: Uint32Array) {
+	state.fill(0)
+}
+
+const VERTEX_MAIN_WGSL = /* wgsl */ `{
+	let i = f32(in.instance);
+	let state = f32(cellStateIn[in.instance]);
+
+	let pos = array<vec2f, 6>(
+		vec2f(-0.8, -0.8),
+		vec2f(0.8, -0.8),
+		vec2f(0.8, 0.8),
+		vec2f(0.8, 0.8),
+		vec2f(-0.8, 0.8),
+		vec2f(-0.8, -0.8),
+	);
+
+	let targetCell = vec2f(i % grid.x, floor(i / grid.y));
+	let targetOffset = (targetCell / grid) * 2;
+	let gridPos = ((((pos[in.vertexIndex] * state) + 1) / grid) - 1) + targetOffset;
+
+	return Out(vec4f(gridPos, 0, 1), targetCell);
+}`
+
+const FRAGMENT_MAIN_WGSL = /* wgsl */ `{
+	return vec4f(1, 1, 1, 1);
+}`
+
+const COMPUTE_MAIN_WGSL = /* wgsl */ `{
+	let gridX = u32(grid.x);
+	let gridY = u32(grid.y);
+	let gridSize = vec2u(gridX, gridY);
+	let x = cell.x;
+	let y = cell.y;
+
+	let idx = cellIndex(vec2u(x, y), gridSize);
+
+	let tt = cellStateIn[cellIndex(vec2u(x, y + 1u), gridSize)];
+	let bb = cellStateIn[cellIndex(vec2u(x, y - 1u), gridSize)];
+
+	let tr = cellStateIn[cellIndex(vec2u(x + 1u, y + 1u), gridSize)];
+	let rr = cellStateIn[cellIndex(vec2u(x + 1u, y), gridSize)];
+	let br = cellStateIn[cellIndex(vec2u(x + 1u, y - 1u), gridSize)];
+
+	let tl = cellStateIn[cellIndex(vec2u(x - 1u, y + 1u), gridSize)];
+	let ll = cellStateIn[cellIndex(vec2u(x - 1u, y), gridSize)];
+	let bl = cellStateIn[cellIndex(vec2u(x - 1u, y - 1u), gridSize)];
+
+	let activeNeighbourCount = tt + bb + tr + rr + br + tl + ll + bl;
+
+	switch activeNeighbourCount {
+		case 3u: {
+			cellStateOut[idx] = 1u;
+		}
+		case 2u: {
+			cellStateOut[idx] = cellStateIn[idx];
+		}
+		default: {
+			cellStateOut[idx] = 0u;
+		}
+	}
+}`
 
 export function init(
 	device: GPUDevice,
@@ -27,15 +97,11 @@ export function init(
 		root.createBuffer(cellStateSchema).$usage("storage").$name("Cell state B"),
 	] as const
 
-	for (let i = 0; i < gridSize; ++i) {
-		cellStateArray[i] = Math.random() > 0.6 ? 1 : 0
-	}
+	seedFirstRowRandom(cellStateArray, gridSize)
 
 	cellStateStorage[0].write(cellStateArray.buffer)
 
-	for (let i = 0; i < cellStateArray.length; i++) {
-		cellStateArray[i] = 0
-	}
+	clearState(cellStateArray)
 
 	cellStateStorage[1].write(cellStateArray.buffer)
 
@@ -79,81 +145,44 @@ export function init(
 		}),
 	] as const
 
-	const vertexMain = typegpu.vertexFn({
-		in: {
-			vertexIndex: d.builtin.vertexIndex,
-			instance: d.builtin.instanceIndex,
-		},
-		out: {
-			pos: d.builtin.position,
-			cell: d.location(0, d.vec2f),
-		},
-	}) /* wgsl */ `{
-			let i = f32(in.instance);
-			let state = f32(cellStateIn[in.instance]);
+	const cellIndex = typegpu
+		.fn(
+			[d.vec2u, d.vec2u],
+			d.u32,
+		)((pos, size) => {
+			"use gpu"
+			return (pos.y % size.y) * size.x + (pos.x % size.x)
+		})
+		.$name("Cell index helper")
 
-			let pos = array<vec2f, 6>(
-				vec2f(-0.8, -0.8),
-				vec2f(0.8, -0.8),
-				vec2f(0.8, 0.8),
-				vec2f(0.8, 0.8),
-				vec2f(-0.8, 0.8),
-				vec2f(-0.8, -0.8),
-			);
-
-			let targetCell = vec2f(i % grid.x, floor(i / grid.y));
-			let targetOffset = (targetCell / grid) * 2;
-			let gridPos = ((((pos[in.vertexIndex] * state) + 1) / grid) - 1) + targetOffset;
-
-			return Out(vec4f(gridPos, 0, 1), targetCell);
-		}`
+	const vertexMain = typegpu
+		.vertexFn({
+			in: {
+				vertexIndex: d.builtin.vertexIndex,
+				instance: d.builtin.instanceIndex,
+			},
+			out: {
+				pos: d.builtin.position,
+				cell: d.location(0, d.vec2f),
+			},
+		})(VERTEX_MAIN_WGSL)
 		.$uses({
 			cellStateIn,
 			grid,
 		})
 		.$name("Cell vertex shader")
 
-	const fragmentMain = typegpu.fragmentFn({ out: d.vec4f }) /* wgsl */ `{
-			return vec4f(1, 1, 1, 1);
-		}`.$name("Cell fragment shader")
+	const fragmentMain = typegpu
+		.fragmentFn({ out: d.vec4f })(FRAGMENT_MAIN_WGSL)
+		.$name("Cell fragment shader")
 
-	const computeMain = typegpu.computeFn({
-		in: { cell: d.builtin.globalInvocationId },
-		workgroupSize: [WORKGROUP_SIZE, WORKGROUP_SIZE],
-	}) /* wgsl */ `{
-			let gridX = u32(grid.x);
-			let gridY = u32(grid.y);
-			let x = cell.x;
-			let y = cell.y;
-
-			let idx = (y % gridY) * gridX + (x % gridX);
-
-			let tt = cellStateIn[((y + 1u) % gridY) * gridX + (x % gridX)];
-			let bb = cellStateIn[((y - 1u) % gridY) * gridX + (x % gridX)];
-
-			let tr = cellStateIn[((y + 1u) % gridY) * gridX + ((x + 1u) % gridX)];
-			let rr = cellStateIn[(y % gridY) * gridX + ((x + 1u) % gridX)];
-			let br = cellStateIn[((y - 1u) % gridY) * gridX + ((x + 1u) % gridX)];
-
-			let tl = cellStateIn[((y + 1u) % gridY) * gridX + ((x - 1u) % gridX)];
-			let ll = cellStateIn[(y % gridY) * gridX + ((x - 1u) % gridX)];
-			let bl = cellStateIn[((y - 1u) % gridY) * gridX + ((x - 1u) % gridX)];
-
-			let activeNeighbourCount = tt + bb + tr + rr + br + tl + ll + bl;
-
-			switch activeNeighbourCount {
-				case 3u: {
-					cellStateOut[idx] = 1u;
-				}
-				case 2u: {
-					cellStateOut[idx] = cellStateIn[idx];
-				}
-				default: {
-					cellStateOut[idx] = 0u;
-				}
-			}
-		}`
+	const computeMain = typegpu
+		.computeFn({
+			in: { cell: d.builtin.globalInvocationId },
+			workgroupSize: [WORKGROUP_SIZE, WORKGROUP_SIZE],
+		})(COMPUTE_MAIN_WGSL)
 		.$uses({
+			cellIndex,
 			cellStateIn,
 			cellStateOut,
 			grid,
@@ -205,5 +234,5 @@ export function init(
 		gpu.queue.submit([encoder.finish()])
 	}
 
-	setInterval(update, 16)
+	setInterval(update, FRAME_INTERVAL_MS)
 }

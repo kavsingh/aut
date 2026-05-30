@@ -16,7 +16,6 @@
 		"types": [
 			"vite/client",
 			"vitest/importMeta",
-			"vite-plugin-glsl/ext",
 			"@webgpu/types",
 			"@testing-library/jest-dom"
 		]
