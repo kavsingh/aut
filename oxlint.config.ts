@@ -216,8 +216,6 @@ export default defineConfig({
 				"**/*__{mock,mocks,test,test-*,tests,fixtures}__/**/*",
 			],
 			env: { browser: true, node: true },
-			// @TODO: omitting this causes rule overrides to be ignored. why?
-			plugins: ["eslint", "import", "typescript", "promise"],
 			rules: {
 				"eslint/max-lines": "off",
 				"eslint/max-lines-per-function": "off",
