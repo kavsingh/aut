@@ -1,3 +1,5 @@
+// oxlint-disable eslint/max-lines
+
 import { allRules } from "~/lib/rules"
 import { valueEq } from "~/lib/util"
 import { generateInitialWorld, seedRandom } from "~/lib/world"
@@ -9,12 +11,25 @@ const WORLD_COUNT = 3
 const CELL_DIM = 1
 const UPDATE_INTERVAL_MS = 14
 const STEPS_PER_UPDATE = 2
+const AUDIO_STEP_MODULO = 2
 const TRANSITION_HOLD_MS = 1100
 const TRANSITION_BLEND_MS = 500
+
+const CONFIG = {
+	worldCount: WORLD_COUNT,
+	cellDim: CELL_DIM,
+	updateIntervalMs: UPDATE_INTERVAL_MS,
+	stepsPerUpdate: STEPS_PER_UPDATE,
+	audioStepModulo: AUDIO_STEP_MODULO,
+	transitionHoldMs: TRANSITION_HOLD_MS,
+	transitionBlendMs: TRANSITION_BLEND_MS,
+}
 
 type RuleName = keyof typeof allRules
 
 interface TransitionSample {
+	fromName: RuleName
+	toName: RuleName
 	fromRule: EvolutionRule
 	toRule: EvolutionRule
 	progress: number
@@ -35,7 +50,8 @@ interface PerfSnapshot {
 
 interface RuntimeHooks {
 	onUnsupported: (message: string) => void
-	onPerf: (snapshot: PerfSnapshot) => void
+	onRenderSample: (sample: { renderMs: number; cellCount: number }) => void
+	onUpdateSample: (sample: { updateMs: number }) => void
 	audio: {
 		update: (world: WorldState) => void
 		toggle: () => void
@@ -55,45 +71,79 @@ const RULE_SEQUENCE: RuleName[] = [
 	"rule225",
 ]
 
-function hash01(seed: number, index: number) {
-	const x = Math.sin(seed * 12.9898 + (index + 1) * 78.233) * 43_758.5453
+function createRuleLookups(): Readonly<Record<RuleName, Uint32Array>> {
+	const lookups = {
+		rule3: new Uint32Array(8),
+		rule18: new Uint32Array(8),
+		rule45: new Uint32Array(8),
+		rule57: new Uint32Array(8),
+		rule73: new Uint32Array(8),
+		rule90: new Uint32Array(8),
+		rule160: new Uint32Array(8),
+		rule182: new Uint32Array(8),
+		rule225: new Uint32Array(8),
+	} satisfies Record<RuleName, Uint32Array>
 
-	return x - Math.floor(x)
+	for (const ruleName of RULE_SEQUENCE) {
+		const ruleNumber = Number(ruleName.replace("rule", ""))
+
+		for (let pattern = 0; pattern < 8; pattern++) {
+			lookups[ruleName][pattern] = Math.floor(ruleNumber / 2 ** pattern) % 2
+		}
+	}
+
+	return lookups
 }
+
+const RULE_LOOKUPS = createRuleLookups()
 
 function sampleTransition(
 	sequence: RuleName[],
-	elapsedMs: number,
-	transition: { holdMs: number; blendMs: number },
+	elapsedTicks: number,
+	transition: { holdTicks: number; blendTicks: number },
 ): TransitionSample {
 	const safeSequence =
 		sequence.length > 0 ? sequence : (["rule3"] as RuleName[])
-	const segmentMs = Math.max(1, transition.holdMs + transition.blendMs)
-	const cycleMs = segmentMs * safeSequence.length
-	const cycleElapsed = ((elapsedMs % cycleMs) + cycleMs) % cycleMs
-	const segmentIndex = Math.floor(cycleElapsed / segmentMs)
-	const segmentElapsed = cycleElapsed % segmentMs
+	const segmentTicks = Math.max(1, transition.holdTicks + transition.blendTicks)
+	const cycleTicks = segmentTicks * safeSequence.length
+	const cycleElapsed = ((elapsedTicks % cycleTicks) + cycleTicks) % cycleTicks
+	const segmentIndex = Math.floor(cycleElapsed / segmentTicks)
+	const segmentElapsed = cycleElapsed % segmentTicks
 	const nextIndex = (segmentIndex + 1) % safeSequence.length
 	const fromName = safeSequence[segmentIndex] ?? "rule3"
 	const toName = safeSequence[nextIndex] ?? "rule3"
 	const progress =
-		segmentElapsed <= transition.holdMs || transition.blendMs <= 0
+		segmentElapsed <= transition.holdTicks || transition.blendTicks <= 0
 			? 0
-			: Math.min(1, (segmentElapsed - transition.holdMs) / transition.blendMs)
+			: Math.min(
+					1,
+					(segmentElapsed - transition.holdTicks) / transition.blendTicks,
+				)
 
 	return {
+		fromName,
+		toName,
 		fromRule: allRules[fromName],
 		toRule: allRules[toName],
 		progress,
 	}
 }
 
+function fillRuleLookup(
+	ruleName: RuleName,
+	target: Uint32Array,
+	offset: number,
+) {
+	target.set(RULE_LOOKUPS[ruleName], offset)
+}
+
 function evolveGeneration(
 	current: number[],
 	transition: TransitionSample,
-	noiseSeed: number,
+	_noiseSeed: number,
 ) {
 	const next = Array.from<number>({ length: current.length }).fill(0)
+	const useToRule = transition.progress >= 0.5
 
 	for (let i = 0; i < current.length; i++) {
 		const left = current[(i - 1 + current.length) % current.length] ?? 0
@@ -107,7 +157,12 @@ function evolveGeneration(
 			continue
 		}
 
-		next[i] = hash01(noiseSeed, i) < transition.progress ? toValue : fromValue
+		if (transition.progress >= 1) {
+			next[i] = toValue
+			continue
+		}
+
+		next[i] = useToRule ? toValue : fromValue
 	}
 
 	return next
@@ -167,10 +222,13 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 		return undefined
 	}
 
-	const worldDim = Math.min(Math.floor(window.innerWidth / WORLD_COUNT), 300)
-	const generationSize = Math.floor(worldDim / CELL_DIM)
+	const worldDim = Math.min(
+		Math.floor(window.innerWidth / CONFIG.worldCount),
+		300,
+	)
+	const generationSize = Math.floor(worldDim / CONFIG.cellDim)
 
-	canvas.width = worldDim * WORLD_COUNT
+	canvas.width = worldDim * CONFIG.worldCount
 	canvas.height = worldDim
 
 	let renderer: ReturnType<typeof createWgpuWorldRenderer> | undefined =
@@ -179,7 +237,7 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 	try {
 		const device = await getDevice()
 		renderer = createWgpuWorldRenderer(device, context, {
-			worldCount: WORLD_COUNT,
+			worldCount: CONFIG.worldCount,
 			generationSize,
 		})
 	} catch {
@@ -187,92 +245,99 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 		return undefined
 	}
 
-	const worlds = Array.from({ length: WORLD_COUNT }, () =>
+	const initialWorlds = Array.from({ length: CONFIG.worldCount }, () =>
 		generateInitialWorld(generationSize, generationSize),
 	)
+	let audioWorld = generateInitialWorld(generationSize, generationSize)
 	const flatState = new Uint32Array(
-		WORLD_COUNT * generationSize * generationSize,
+		CONFIG.worldCount * generationSize * generationSize,
 	)
+	const fromLookup = new Uint32Array(CONFIG.worldCount * 8)
+	const toLookup = new Uint32Array(CONFIG.worldCount * 8)
+	const transitionProgress = new Float32Array(CONFIG.worldCount)
 	let step = 0
 	let running = true
 	let frameId = 0
-	let perfWindowStart = performance.now()
-	let perfFrames = 0
-	let perfUpdates = 0
-	let perfRenderMsAcc = 0
-	let perfUpdateMsAcc = 0
+	const phaseOffsets = Array.from({ length: CONFIG.worldCount }, (_, i) => {
+		return i
+	})
+	const transitionBlendRatio =
+		CONFIG.transitionBlendMs /
+		Math.max(1, CONFIG.transitionHoldMs + CONFIG.transitionBlendMs)
+	const transitionSegmentTicks = Math.max(
+		1,
+		Math.floor(generationSize / CONFIG.worldCount),
+	)
+	const transitionBlendTicks = Math.max(
+		1,
+		Math.floor(transitionSegmentTicks * transitionBlendRatio),
+	)
+	const transitionHoldTicks = Math.max(
+		0,
+		transitionSegmentTicks - transitionBlendTicks,
+	)
 
-	flattenWorlds(worlds, flatState)
-	renderer.render(flatState)
+	flattenWorlds(initialWorlds, flatState)
+	renderer.seed(flatState)
 
 	const updateInterval = setInterval(() => {
 		if (!running) return
 		const updateStart = performance.now()
-		const segmentMs = TRANSITION_HOLD_MS + TRANSITION_BLEND_MS
 
-		for (let subStep = 0; subStep < STEPS_PER_UPDATE; subStep++) {
-			const now = performance.now()
+		for (let subStep = 0; subStep < CONFIG.stepsPerUpdate; subStep++) {
+			const currentStep = step + subStep
 
-			for (let i = 0; i < worlds.length; i++) {
-				const currentWorld = worlds[i]
-
-				if (!currentWorld) continue
-
-				const phaseOffset = Math.floor((segmentMs / WORLD_COUNT) * i)
-				const transition = sampleTransition(RULE_SEQUENCE, now + phaseOffset, {
-					holdMs: TRANSITION_HOLD_MS,
-					blendMs: TRANSITION_BLEND_MS,
-				})
-
-				worlds[i] = evolveWorld(
-					currentWorld,
-					transition,
-					step + Math.imul(i + 1, 1_013_904_223),
+			for (let i = 0; i < CONFIG.worldCount; i++) {
+				const phaseOffset =
+					(phaseOffsets[i] ?? 0) *
+					Math.max(1, Math.floor(transitionSegmentTicks / CONFIG.worldCount))
+				const transition = sampleTransition(
+					RULE_SEQUENCE,
+					currentStep + phaseOffset,
+					{
+						holdTicks: transitionHoldTicks,
+						blendTicks: transitionBlendTicks,
+					},
 				)
+				const transitionOffset = i * 8
+
+				fillRuleLookup(transition.fromName, fromLookup, transitionOffset)
+				fillRuleLookup(transition.toName, toLookup, transitionOffset)
+				transitionProgress[i] = transition.progress
+
+				if (i === 0 && subStep % CONFIG.audioStepModulo === 0) {
+					audioWorld = evolveWorld(
+						audioWorld,
+						transition,
+						step + Math.imul(i + 1, 1_013_904_223),
+					)
+				}
 			}
+
+			renderer.step({
+				fromLookup,
+				toLookup,
+				progress: transitionProgress,
+			})
 
 			step += 1
 		}
 
-		hooks.audio.update(worlds[0] ?? [])
-		perfUpdates += 1
-		perfUpdateMsAcc += performance.now() - updateStart
-	}, UPDATE_INTERVAL_MS)
+		hooks.audio.update(audioWorld)
+		hooks.onUpdateSample({
+			updateMs: performance.now() - updateStart,
+		})
+	}, CONFIG.updateIntervalMs)
 
 	const onFrame = () => {
 		if (!running) return
 		const frameStart = performance.now()
 
-		flattenWorlds(worlds, flatState)
-		renderer.render(flatState)
-
-		perfFrames += 1
-		perfRenderMsAcc += performance.now() - frameStart
-
-		const perfNow = performance.now()
-		const elapsed = perfNow - perfWindowStart
-
-		if (elapsed >= 500) {
-			hooks.onPerf({
-				fps: Math.round((perfFrames * 1000) / elapsed),
-				ups: Math.round((perfUpdates * 1000) / elapsed),
-				renderMs:
-					perfFrames > 0
-						? Math.round((perfRenderMsAcc / perfFrames) * 100) / 100
-						: 0,
-				updateMs:
-					perfUpdates > 0
-						? Math.round((perfUpdateMsAcc / perfUpdates) * 100) / 100
-						: 0,
-				cellCount: flatState.length,
-			})
-
-			perfWindowStart = perfNow
-			perfFrames = 0
-			perfUpdates = 0
-			perfRenderMsAcc = 0
-			perfUpdateMsAcc = 0
-		}
+		renderer.renderCurrent()
+		hooks.onRenderSample({
+			renderMs: performance.now() - frameStart,
+			cellCount: flatState.length,
+		})
 
 		frameId = requestAnimationFrame(onFrame)
 	}
