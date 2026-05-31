@@ -77,7 +77,11 @@ function createWgpuWorldRenderer(
 		options.generationSize * options.generationSize * options.worldCount
 	const transitionSize = options.worldCount * 8
 
-	context.configure({ device: gpu, format: canvasFormat })
+	context.configure({
+		device: gpu,
+		format: canvasFormat,
+		alphaMode: "premultiplied",
+	})
 
 	const gridBuffer = root
 		.createBuffer(

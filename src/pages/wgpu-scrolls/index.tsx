@@ -13,7 +13,7 @@ export function WgpuScrolls() {
 	let canvasEl: HTMLCanvasElement | undefined = undefined
 	let runtime: WgpuScrollsRuntime | undefined = undefined
 	const [unsupportedReason, setUnsupportedReason] = createSignal("")
-	const perfMonitor = usePerfMonitor(true)
+	const perfMonitor = usePerfMonitor()
 
 	onMount(() => {
 		if (!canvasEl) return
@@ -54,10 +54,7 @@ export function WgpuScrolls() {
 						{`FPS ${perfMonitor.perf().fps} | UPS ${perfMonitor.perf().ups} | render ${perfMonitor.perf().renderMs}ms | update ${perfMonitor.perf().updateMs}ms | cells ${perfMonitor.perf().cellCount}`}
 					</div>
 				) : null}
-				<canvas
-					class="bg-white max-inline-full dark:bg-neutral-900"
-					ref={(el) => void (canvasEl = el)}
-				/>
+				<canvas class="max-inline-full" ref={(el) => void (canvasEl = el)} />
 				{unsupportedReason() ? (
 					<p class="absolute inset-s-1/2 inset-bs-1/2 -translate-1/2 text-xs opacity-60">
 						{unsupportedReason()}
