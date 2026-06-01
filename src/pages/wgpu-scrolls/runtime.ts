@@ -13,13 +13,14 @@ import { writeWorldRuleStops } from "~/renderers/wgpu-rule-payload"
 import type { EvolutionRule, WorldState } from "~/lib/types"
 import type { RuleStop } from "~/renderers/wgpu-rule-payload"
 
-const WORLD_COUNT = 3
+const WORLD_COUNT = 1
 const CELL_DIM = 1
 const UPDATE_INTERVAL_MS = 14
 const STEPS_PER_UPDATE = 2
 const AUDIO_STEP_MODULO = 2
 const TRANSITION_HOLD_MS = 1100
 const TRANSITION_BLEND_MS = 500
+const STAGNATION_RESEED_RUN = 24
 
 const CONFIG = {
 	worldCount: WORLD_COUNT,
@@ -65,7 +66,13 @@ interface RuntimeHooks {
 	}
 }
 
-const RULE_SEQUENCE: RuleName[] = [
+interface CanvasTargets {
+	primary: HTMLCanvasElement
+	mirrors: CanvasRenderingContext2D[]
+}
+
+const SCROLL_STOP_COUNT = 4
+const RULE_POOL: readonly RuleName[] = [
 	"rule3",
 	"rule18",
 	"rule45",
@@ -77,38 +84,45 @@ const RULE_SEQUENCE: RuleName[] = [
 	"rule225",
 ]
 
-const SCROLL_STOP_COUNT = 4
-
 interface AnimatedRuleQueue {
 	stops: RuleStop[]
-	nextRuleIndex: number
 	spacing: number
+}
+
+function sampleRuleName(
+	pool: readonly RuleName[],
+	exclude: readonly RuleName[] = [],
+) {
+	if (pool.length === 0) return "rule3"
+
+	const filtered = pool.filter((rule) => {
+		return !exclude.includes(rule)
+	})
+	const source = filtered.length > 0 ? filtered : pool
+
+	const index = Math.floor(Math.random() * source.length)
+
+	return source[index] ?? "rule3"
 }
 
 function createAnimatedRuleQueue(
 	sequence: readonly RuleName[],
-	startIndex: number,
 	stopCount: number,
 ): AnimatedRuleQueue {
 	const safeSequence =
 		sequence.length > 0 ? sequence : (["rule3"] as RuleName[])
-	const normalizedStart =
-		((startIndex % safeSequence.length) + safeSequence.length) %
-		safeSequence.length
 	const spacing = 1 / Math.max(1, stopCount - 1)
 	const stops: RuleStop[] = []
 
 	for (let i = 0; i < stopCount; i++) {
-		const rule = safeSequence[(normalizedStart + i) % safeSequence.length]
+		const previous = stops.at(-1)?.[0]
+		const rule = sampleRuleName(safeSequence, previous ? [previous] : [])
 
-		if (rule) {
-			stops.push([rule, i * spacing])
-		}
+		stops.push([rule, i * spacing])
 	}
 
 	return {
 		stops,
-		nextRuleIndex: (normalizedStart + stopCount) % safeSequence.length,
 		spacing,
 	}
 }
@@ -128,44 +142,29 @@ function advanceAnimatedRuleQueue(
 	while ((queue.stops[0]?.[1] ?? 0) <= 0 && queue.stops.length > 1) {
 		queue.stops.shift()
 
-		const nextRule = safeSequence[queue.nextRuleIndex] ?? "rule3"
+		const previous = queue.stops.at(-1)?.[0]
+		const nextRule = sampleRuleName(safeSequence, previous ? [previous] : [])
 		const nextRatio = (queue.stops.at(-1)?.[1] ?? 0) + queue.spacing
 
 		queue.stops.push([nextRule, nextRatio])
-		queue.nextRuleIndex = (queue.nextRuleIndex + 1) % safeSequence.length
 	}
 }
 
-function sampleTransition(
-	sequence: RuleName[],
-	elapsedTicks: number,
-	transition: { holdTicks: number; blendTicks: number },
-): TransitionSample {
-	const safeSequence =
-		sequence.length > 0 ? sequence : (["rule3"] as RuleName[])
-	const segmentTicks = Math.max(1, transition.holdTicks + transition.blendTicks)
-	const cycleTicks = segmentTicks * safeSequence.length
-	const cycleElapsed = ((elapsedTicks % cycleTicks) + cycleTicks) % cycleTicks
-	const segmentIndex = Math.floor(cycleElapsed / segmentTicks)
-	const segmentElapsed = cycleElapsed % segmentTicks
-	const nextIndex = (segmentIndex + 1) % safeSequence.length
-	const fromName = safeSequence[segmentIndex] ?? "rule3"
-	const toName = safeSequence[nextIndex] ?? "rule3"
-	const progress =
-		segmentElapsed <= transition.holdTicks || transition.blendTicks <= 0
-			? 0
-			: Math.min(
-					1,
-					(segmentElapsed - transition.holdTicks) / transition.blendTicks,
-				)
+function selectRuleForRowRatio(stops: readonly RuleStop[], rowRatio: number) {
+	let selected = stops[0]?.[0] ?? "rule3"
 
-	return {
-		fromName,
-		toName,
-		fromRule: allRules[fromName],
-		toRule: allRules[toName],
-		progress,
+	for (let i = 1; i < stops.length; i++) {
+		const current = stops[i]
+		if (!current) continue
+
+		const [rule, threshold] = current
+
+		if (rowRatio >= threshold) {
+			selected = rule
+		}
 	}
+
+	return selected
 }
 
 function evolveGeneration(
@@ -199,14 +198,39 @@ function evolveGeneration(
 	return next
 }
 
-function evolveWorld(
-	world: WorldState,
-	transition: TransitionSample,
-	noiseSeed: number,
-) {
+function isLowDiversityGeneration(generation: number[]) {
+	const length = generation.length
+	if (length <= 1) return true
+
+	let ones = 0
+	let transitions = 0
+
+	for (let i = 0; i < length; i++) {
+		const current = generation[i] ?? 0
+		if (current === 1) ones += 1
+
+		const previous = generation[(i - 1 + length) % length] ?? 0
+		if (current !== previous) transitions += 1
+	}
+
+	const fillRatio = ones / length
+	const minTransitions = Math.max(1, Math.floor(length * 0.06))
+
+	return fillRatio <= 0.08 || fillRatio >= 0.92 || transitions <= minTransitions
+}
+
+function evolveWorld(args: {
+	world: WorldState
+	transition: TransitionSample
+	noiseSeed: number
+	shouldReseed: boolean
+}) {
+	const { world, transition, noiseSeed, shouldReseed } = args
 	const currentGeneration = world.at(-1)
 
-	if (!currentGeneration) return world
+	if (!currentGeneration) {
+		return { world, isStable: false }
+	}
 
 	const maxGenerations = world.length
 	const nextGeneration = evolveGeneration(
@@ -214,14 +238,17 @@ function evolveWorld(
 		transition,
 		noiseSeed,
 	)
-	const generation = valueEq(currentGeneration, nextGeneration)
-		? seedRandom(currentGeneration.length)
-		: nextGeneration
+	const isStable = valueEq(currentGeneration, nextGeneration)
+	const isStagnant = isStable || isLowDiversityGeneration(nextGeneration)
+	const generation =
+		isStagnant && shouldReseed
+			? seedRandom(currentGeneration.length)
+			: nextGeneration
 	const nextWorld = world.concat([generation])
 
 	if (nextWorld.length > maxGenerations) nextWorld.shift()
 
-	return nextWorld
+	return { world: nextWorld, isStagnant }
 }
 
 function flattenWorlds(worlds: WorldState[], into: Uint32Array) {
@@ -245,22 +272,46 @@ async function getDevice() {
 	return adapter.requestDevice()
 }
 
-async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
-	const context = canvas.getContext("webgpu")
+function createCanvasTargets(canvases: HTMLCanvasElement[]): CanvasTargets {
+	if (canvases.length === 0) {
+		throw new Error("At least one canvas is required")
+	}
+
+	const primaryIndex = Math.floor(canvases.length / 2)
+	const primary = canvases[primaryIndex] ?? canvases[0]
+	if (!primary) throw new Error("No primary canvas available")
+
+	const mirrors = canvases
+		.filter((_, index) => index !== primaryIndex)
+		.map((canvas) => canvas.getContext("2d"))
+		.filter((ctx): ctx is CanvasRenderingContext2D => !!ctx)
+
+	return { primary, mirrors }
+}
+
+async function createRuntime(
+	canvases: HTMLCanvasElement[],
+	hooks: RuntimeHooks,
+) {
+	const targets = createCanvasTargets(canvases)
+	const context = targets.primary.getContext("webgpu")
 
 	if (!context) {
 		hooks.onUnsupported("Unable to create a WebGPU context")
 		return undefined
 	}
 
+	const displayWorldCount = Math.max(1, canvases.length)
 	const worldDim = Math.min(
-		Math.floor(window.innerWidth / CONFIG.worldCount),
+		Math.floor(window.innerWidth / displayWorldCount),
 		300,
 	)
 	const generationSize = Math.floor(worldDim / CONFIG.cellDim)
 
-	canvas.width = worldDim * CONFIG.worldCount
-	canvas.height = worldDim
+	for (const canvas of canvases) {
+		canvas.width = worldDim
+		canvas.height = worldDim
+	}
 
 	let renderer: ReturnType<typeof createWgpuWorldRenderer> | undefined =
 		undefined
@@ -292,33 +343,17 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 	)
 	const transitionRatios = new Float32Array(CONFIG.worldCount * RULE_STOP_CAP)
 	const ruleCounts = new Uint32Array(CONFIG.worldCount)
+	const reseedFlags = new Uint32Array(CONFIG.worldCount)
+	const stableRuns = Array.from<number>({ length: CONFIG.worldCount }).fill(0)
 	let step = 0
 	let running = true
 	let frameId = 0
-	const phaseOffsets = Array.from({ length: CONFIG.worldCount }, (_, i) => {
-		return i
-	})
-	const transitionBlendRatio =
-		CONFIG.transitionBlendMs /
-		Math.max(1, CONFIG.transitionHoldMs + CONFIG.transitionBlendMs)
 	const transitionSegmentTicks = Math.max(
 		1,
 		Math.floor(generationSize / CONFIG.worldCount),
 	)
-	const transitionBlendTicks = Math.max(
-		1,
-		Math.floor(transitionSegmentTicks * transitionBlendRatio),
-	)
-	const transitionHoldTicks = Math.max(
-		0,
-		transitionSegmentTicks - transitionBlendTicks,
-	)
-	const ruleQueues = Array.from({ length: CONFIG.worldCount }, (_, i) => {
-		return createAnimatedRuleQueue(
-			RULE_SEQUENCE,
-			phaseOffsets[i] ?? i,
-			SCROLL_STOP_COUNT,
-		)
+	const ruleQueues = Array.from({ length: CONFIG.worldCount }, () => {
+		return createAnimatedRuleQueue(RULE_POOL, SCROLL_STOP_COUNT)
 	})
 	const queueRatioDelta = 1 / Math.max(1, transitionSegmentTicks)
 
@@ -332,11 +367,14 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 
 		for (let subStep = 0; subStep < CONFIG.stepsPerUpdate; subStep++) {
 			const currentStep = step + subStep
+			reseedFlags.fill(0)
+			const ratioDenominator = Math.max(1, generationSize - 1)
+			const rowRatio = (currentStep % generationSize) / ratioDenominator
 
 			for (let i = 0; i < CONFIG.worldCount; i++) {
 				const queue = ruleQueues[i]
 				if (queue) {
-					advanceAnimatedRuleQueue(queue, RULE_SEQUENCE, queueRatioDelta)
+					advanceAnimatedRuleQueue(queue, RULE_POOL, queueRatioDelta)
 
 					writeWorldRuleStops({
 						worldIndex: i,
@@ -348,25 +386,37 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 						lookupWidth: RULE_LOOKUP_WIDTH,
 					})
 				}
-
-				const phaseOffset =
-					(phaseOffsets[i] ?? 0) *
-					Math.max(1, Math.floor(transitionSegmentTicks / CONFIG.worldCount))
-				const transition = sampleTransition(
-					RULE_SEQUENCE,
-					currentStep + phaseOffset,
-					{
-						holdTicks: transitionHoldTicks,
-						blendTicks: transitionBlendTicks,
-					},
+				const activeRuleName = selectRuleForRowRatio(
+					queue?.stops ?? [],
+					rowRatio,
 				)
+				const activeRule = allRules[activeRuleName]
+				const transition: TransitionSample = {
+					fromName: activeRuleName,
+					toName: activeRuleName,
+					fromRule: activeRule,
+					toRule: activeRule,
+					progress: 0,
+				}
 
 				if (i === 0 && subStep % CONFIG.audioStepModulo === 0) {
-					audioWorld = evolveWorld(
-						audioWorld,
+					const stableRun = stableRuns[i] ?? 0
+					const shouldReseed = stableRun >= STAGNATION_RESEED_RUN - 1
+					const evolved = evolveWorld({
+						world: audioWorld,
 						transition,
-						step + Math.imul(i + 1, 1_013_904_223),
-					)
+						noiseSeed: step + Math.imul(i + 1, 1_013_904_223),
+						shouldReseed,
+					})
+
+					audioWorld = evolved.world
+
+					if (evolved.isStagnant) {
+						reseedFlags[i] = shouldReseed ? 1 : 0
+						stableRuns[i] = shouldReseed ? 0 : stableRun + 1
+					} else {
+						stableRuns[i] = 0
+					}
 				}
 			}
 
@@ -374,6 +424,7 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 				ruleLookups,
 				transitionRatios,
 				ruleCounts,
+				reseedFlags,
 			})
 
 			step += 1
@@ -390,6 +441,12 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 		const frameStart = performance.now()
 
 		renderer.renderCurrent()
+
+		for (const mirror of targets.mirrors) {
+			mirror.clearRect(0, 0, worldDim, worldDim)
+			mirror.drawImage(targets.primary, 0, 0, worldDim, worldDim)
+		}
+
 		hooks.onRenderSample({
 			renderMs: performance.now() - frameStart,
 			cellCount: flatState.length,

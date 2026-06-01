@@ -127,6 +127,7 @@ export function WgpuConstruct() {
 	const ruleLookups = new Uint32Array(RULE_STOP_CAP * RULE_LOOKUP_WIDTH)
 	const transitionRatios = new Float32Array(RULE_STOP_CAP)
 	const ruleCounts = new Uint32Array(1)
+	const reseedFlags = new Uint32Array(1)
 
 	let worldState: ReturnType<typeof generateWorldState> | undefined = undefined
 	let worldCanvasEl: HTMLCanvasElement | null = null
@@ -139,6 +140,7 @@ export function WgpuConstruct() {
 		ruleLookups.fill(0)
 		transitionRatios.fill(0)
 		ruleCounts.fill(0)
+		reseedFlags.fill(0)
 
 		writeWorldRuleStops({
 			worldIndex: 0,
@@ -157,6 +159,7 @@ export function WgpuConstruct() {
 				ruleLookups,
 				transitionRatios,
 				ruleCounts,
+				reseedFlags,
 			})
 		}
 

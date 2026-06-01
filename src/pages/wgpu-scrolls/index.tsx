@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount } from "solid-js"
+import { For, createSignal, onCleanup, onMount } from "solid-js"
 
 import { Audio } from "~/audio"
 import { Button } from "~/components/button"
@@ -10,13 +10,18 @@ import { usePerfMonitor } from "./use-perf-monitor"
 import type { WgpuScrollsRuntime } from "./runtime"
 
 export function WgpuScrolls() {
-	let canvasEl: HTMLCanvasElement | undefined = undefined
+	const worldCount = 3
+	const worldIndices = Array.from({ length: worldCount }, (_, idx) => idx)
+	const canvasEls: (HTMLCanvasElement | undefined)[] = []
 	let runtime: WgpuScrollsRuntime | undefined = undefined
 	const [unsupportedReason, setUnsupportedReason] = createSignal("")
 	const perfMonitor = usePerfMonitor()
 
 	onMount(() => {
-		if (!canvasEl) return
+		const canvases = canvasEls.filter(
+			(canvas): canvas is HTMLCanvasElement => !!canvas,
+		)
+		if (canvases.length === 0) return
 		const audio = new Audio()
 
 		const onKeyDown = (event: KeyboardEvent) => {
@@ -31,7 +36,7 @@ export function WgpuScrolls() {
 		})
 
 		void (async () => {
-			runtime = await createRuntime(canvasEl, {
+			runtime = await createRuntime(canvases, {
 				onUnsupported: (message) => {
 					setUnsupportedReason(message)
 				},
@@ -54,7 +59,18 @@ export function WgpuScrolls() {
 						{`FPS ${perfMonitor.perf().fps} | UPS ${perfMonitor.perf().ups} | render ${perfMonitor.perf().renderMs}ms | update ${perfMonitor.perf().updateMs}ms | cells ${perfMonitor.perf().cellCount}`}
 					</div>
 				) : null}
-				<canvas class="max-inline-full" ref={(el) => void (canvasEl = el)} />
+				<div class="flex items-center justify-center [&>*:nth-child(2n-1)]:rotate-180">
+					<For each={worldIndices}>
+						{(index) => (
+							<canvas
+								class="max-inline-full"
+								ref={(el) => {
+									canvasEls[index] = el
+								}}
+							/>
+						)}
+					</For>
+				</div>
 				{unsupportedReason() ? (
 					<p class="absolute inset-s-1/2 inset-bs-1/2 -translate-1/2 text-xs opacity-60">
 						{unsupportedReason()}

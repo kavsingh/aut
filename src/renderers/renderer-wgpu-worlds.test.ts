@@ -14,11 +14,13 @@ describe("renderer wgpu worlds helpers", () => {
 			ruleLookups: new Uint32Array(288),
 			transitionRatios: new Float32Array(36),
 			ruleCounts: new Uint32Array(3),
+			reseedFlags: new Uint32Array(3),
 		}
 		const invalid = {
 			ruleLookups: new Uint32Array(16),
 			transitionRatios: new Float32Array(36),
 			ruleCounts: new Uint32Array(3),
+			reseedFlags: new Uint32Array(3),
 		}
 
 		expect(

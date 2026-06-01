@@ -15,6 +15,7 @@ interface WorldStepRules {
 	ruleLookups: Uint32Array
 	transitionRatios: Float32Array
 	ruleCounts: Uint32Array
+	reseedFlags: Uint32Array
 }
 
 interface WgpuWorldRenderer {
@@ -34,7 +35,8 @@ function isRulePayloadValid(
 	return (
 		rules.ruleLookups.length === expected.lookupSize &&
 		rules.transitionRatios.length === expected.ratioSize &&
-		rules.ruleCounts.length === expected.worldCount
+		rules.ruleCounts.length === expected.worldCount &&
+		rules.reseedFlags.length === expected.worldCount
 	)
 }
 
@@ -79,10 +81,10 @@ function createWgpuWorldRenderer(
 	const gpu = root.device
 	const canvasFormat = navigator.gpu.getPreferredCanvasFormat()
 
-	const totalCells =
-		options.generationSize * options.generationSize * options.worldCount
-	const ruleLookupSize = options.worldCount * RULE_STOP_CAP * RULE_LOOKUP_WIDTH
-	const transitionRatioSize = options.worldCount * RULE_STOP_CAP
+	const worldCount = 1
+	const totalCells = options.generationSize * options.generationSize
+	const ruleLookupSize = worldCount * RULE_STOP_CAP * RULE_LOOKUP_WIDTH
+	const transitionRatioSize = worldCount * RULE_STOP_CAP
 
 	context.configure({
 		device: gpu,
@@ -93,11 +95,7 @@ function createWgpuWorldRenderer(
 	const gridBuffer = root
 		.createBuffer(
 			d.vec3f,
-			d.vec3f(
-				options.generationSize,
-				options.generationSize,
-				options.worldCount,
-			),
+			d.vec3f(options.generationSize, options.generationSize, worldCount),
 		)
 		.$usage("uniform")
 		.$name("World grid")
@@ -115,7 +113,8 @@ function createWgpuWorldRenderer(
 
 	const ruleLookupsSchema = d.arrayOf(d.u32, ruleLookupSize)
 	const transitionRatiosSchema = d.arrayOf(d.f32, transitionRatioSize)
-	const ruleCountsSchema = d.arrayOf(d.u32, options.worldCount)
+	const ruleCountsSchema = d.arrayOf(d.u32, worldCount)
+	const reseedFlagsSchema = d.arrayOf(d.u32, worldCount)
 
 	const ruleLookups = root
 		.createBuffer(ruleLookupsSchema)
@@ -129,13 +128,18 @@ function createWgpuWorldRenderer(
 		.createBuffer(ruleCountsSchema)
 		.$usage("storage")
 		.$name("Rule counts")
+	const reseedFlags = root
+		.createBuffer(reseedFlagsSchema)
+		.$usage("storage")
+		.$name("Reseed flags")
 
 	cellStorage[0].write(new Uint32Array(totalCells).buffer)
 	cellStorage[1].write(new Uint32Array(totalCells).buffer)
 
 	ruleLookups.write(new Uint32Array(ruleLookupSize).buffer)
 	transitionRatios.write(new Float32Array(transitionRatioSize).buffer)
-	ruleCounts.write(new Uint32Array(options.worldCount).buffer)
+	ruleCounts.write(new Uint32Array(worldCount).buffer)
+	reseedFlags.write(new Uint32Array(worldCount).buffer)
 
 	const bindGroupLayout = typegpu
 		.bindGroupLayout({
@@ -172,6 +176,11 @@ function createWgpuWorldRenderer(
 				access: "readonly",
 				visibility: ["compute"],
 			},
+			reseedFlags: {
+				storage: reseedFlagsSchema,
+				access: "readonly",
+				visibility: ["compute"],
+			},
 		})
 		.$idx(0)
 		.$name("World render bind group")
@@ -185,6 +194,7 @@ function createWgpuWorldRenderer(
 			ruleLookups,
 			transitionRatios,
 			ruleCounts,
+			reseedFlags,
 		}),
 		root.createBindGroup(bindGroupLayout, {
 			grid: gridBuffer,
@@ -194,6 +204,7 @@ function createWgpuWorldRenderer(
 			ruleLookups,
 			transitionRatios,
 			ruleCounts,
+			reseedFlags,
 		}),
 	] as const
 
@@ -222,26 +233,17 @@ function createWgpuWorldRenderer(
 
 			const worldWidth = d.u32(bindGroupLayout.$.grid.x)
 			const worldHeight = d.u32(bindGroupLayout.$.grid.y)
-			const cellsPerWorld = std.mul(worldWidth, worldHeight)
-			const worldIndex = d.u32(
-				std.floor(std.div(d.f32(idx), d.f32(cellsPerWorld))),
-			)
-			const local = d.u32(std.mod(d.f32(idx), d.f32(cellsPerWorld)))
-			const row = d.u32(std.floor(std.div(d.f32(local), d.f32(worldWidth))))
-			const col = d.u32(std.mod(d.f32(local), d.f32(worldWidth)))
+			const row = d.u32(std.floor(std.div(d.f32(idx), d.f32(worldWidth))))
+			const col = d.u32(std.mod(d.f32(idx), d.f32(worldWidth)))
 
-			if (row < std.sub(worldHeight, d.u32(1))) {
+			if (row > d.u32(0)) {
 				bindGroupLayout.$.cellStateOut[idx] = d.u32(
-					bindGroupLayout.$.cellStateIn[std.add(idx, worldWidth)],
+					bindGroupLayout.$.cellStateIn[std.sub(idx, worldWidth)],
 				)
 				return
 			}
 
-			const worldOffset = std.mul(worldIndex, cellsPerWorld)
-			const lastRowOffset = std.add(
-				worldOffset,
-				std.mul(std.sub(worldHeight, d.u32(1)), worldWidth),
-			)
+			const firstRowOffset = d.u32(0)
 
 			const leftCol = d.u32(
 				std.mod(
@@ -252,13 +254,13 @@ function createWgpuWorldRenderer(
 			const rightCol = d.u32(std.mod(std.add(d.f32(col), 1), d.f32(worldWidth)))
 
 			const left = d.u32(
-				bindGroupLayout.$.cellStateIn[std.add(lastRowOffset, leftCol)],
+				bindGroupLayout.$.cellStateIn[std.add(firstRowOffset, leftCol)],
 			)
 			const center = d.u32(
-				bindGroupLayout.$.cellStateIn[std.add(lastRowOffset, col)],
+				bindGroupLayout.$.cellStateIn[std.add(firstRowOffset, col)],
 			)
 			const right = d.u32(
-				bindGroupLayout.$.cellStateIn[std.add(lastRowOffset, rightCol)],
+				bindGroupLayout.$.cellStateIn[std.add(firstRowOffset, rightCol)],
 			)
 
 			const pattern = std.add(
@@ -270,8 +272,8 @@ function createWgpuWorldRenderer(
 			const ratioDenominator = std.max(d.u32(1), std.sub(worldHeight, d.u32(1)))
 			const rowRatio = std.div(d.f32(virtualRow), d.f32(ratioDenominator))
 
-			const worldStopBase = std.mul(worldIndex, d.u32(RULE_STOP_CAP))
-			const worldRuleCount = d.u32(bindGroupLayout.$.ruleCounts[worldIndex])
+			const worldStopBase = d.u32(0)
+			const worldRuleCount = d.u32(bindGroupLayout.$.ruleCounts[d.u32(0)])
 			let selectedStop = d.u32(0)
 
 			for (let stop = 1; stop < RULE_STOP_CAP; stop++) {
@@ -291,20 +293,22 @@ function createWgpuWorldRenderer(
 				std.add(worldStopBase, selectedStop),
 				d.u32(RULE_LOOKUP_WIDTH),
 			)
-			let nextValue = d.u32(
+			const forceReseed = d.u32(bindGroupLayout.$.reseedFlags[d.u32(0)])
+
+			if (forceReseed > d.u32(0)) {
+				const randomSeed = std.add(
+					std.add(std.mul(stepCounter, d.u32(1_664_525)), d.u32(1_013_904_223)),
+					std.mul(col, d.u32(22_695_477)),
+				)
+				bindGroupLayout.$.cellStateOut[idx] = d.u32(
+					std.mod(d.f32(randomSeed), d.f32(2)),
+				)
+				return
+			}
+
+			const nextValue = d.u32(
 				bindGroupLayout.$.ruleLookups[std.add(selectedRuleBase, pattern)],
 			)
-			const reseedStride = bindGroupLayout.$.sim.y
-			const pulseActive =
-				std.mod(d.f32(stepCounter), d.f32(reseedStride)) === d.f32(0)
-			const pulseCol = std.mod(
-				std.add(d.f32(col), std.mul(d.f32(worldIndex), d.f32(17))),
-				d.f32(worldWidth),
-			)
-
-			if (nextValue === d.u32(0) && pulseActive && pulseCol === d.f32(0)) {
-				nextValue = d.u32(1)
-			}
 
 			bindGroupLayout.$.cellStateOut[idx] = nextValue
 		})
@@ -323,31 +327,10 @@ function createWgpuWorldRenderer(
 		})((input) => {
 			"use gpu"
 
-			const one = d.u32(1)
 			const worldWidthF = bindGroupLayout.$.grid.x
 			const worldHeightF = bindGroupLayout.$.grid.y
-			const worldWidthU = d.u32(worldWidthF)
-			const worldHeightU = d.u32(worldHeightF)
-			const worldCountF = bindGroupLayout.$.grid.z
-			const cellsPerWorldF = std.mul(worldWidthF, worldHeightF)
-
-			const worldIndexU = d.u32(
-				std.floor(std.div(d.f32(input.instance), cellsPerWorldF)),
-			)
-			const cellIndexU = d.u32(std.mod(d.f32(input.instance), cellsPerWorldF))
-
-			const xRaw = d.u32(std.mod(d.f32(cellIndexU), worldWidthF))
-			const yRaw = d.u32(std.floor(std.div(d.f32(cellIndexU), worldWidthF)))
-
-			let x = xRaw
-			let y = yRaw
-
-			if (std.mod(worldIndexU, d.u32(2)) === one) {
-				x = std.sub(std.sub(worldWidthU, one), xRaw)
-				y = std.sub(std.sub(worldHeightU, one), yRaw)
-			}
-
-			const xGlobal = std.add(std.mul(worldIndexU, worldWidthU), x)
+			const x = d.u32(std.mod(d.f32(input.instance), worldWidthF))
+			const y = d.u32(std.floor(std.div(d.f32(input.instance), worldWidthF)))
 			const state = d.f32(readCell(input.instance))
 
 			let px = d.f32(-1)
@@ -369,8 +352,8 @@ function createWgpuWorldRenderer(
 			}
 
 			const pos = d.vec2f(px, py)
-			const targetCell = d.vec2f(d.f32(xGlobal), d.f32(y))
-			const totalGrid = d.vec2f(std.mul(worldWidthF, worldCountF), worldHeightF)
+			const targetCell = d.vec2f(d.f32(x), d.f32(y))
+			const totalGrid = d.vec2f(worldWidthF, worldHeightF)
 			const targetOffset = std.mul(std.div(targetCell, totalGrid), 2)
 
 			const gridPos = std.add(
@@ -421,7 +404,7 @@ function createWgpuWorldRenderer(
 			!isRulePayloadValid(rules, {
 				lookupSize: ruleLookupSize,
 				ratioSize: transitionRatioSize,
-				worldCount: options.worldCount,
+				worldCount,
 			})
 		) {
 			return
@@ -430,6 +413,7 @@ function createWgpuWorldRenderer(
 		ruleLookups.write(rules.ruleLookups)
 		transitionRatios.write(rules.transitionRatios)
 		ruleCounts.write(rules.ruleCounts)
+		reseedFlags.write(rules.reseedFlags)
 		simBuffer.write(new Uint32Array([stepIndex, 97]))
 
 		const workgroups = Math.ceil(totalCells / WORKGROUP_SIZE)
