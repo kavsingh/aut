@@ -1,37 +1,49 @@
 import { describe, expect, it } from "vitest"
 
 import {
-	isTransitionPayloadValid,
-	selectHorizontalTransitionValue,
+	isRulePayloadValid,
+	selectRuleStopIndex,
 	shouldInjectPulse,
 } from "./renderer-wgpu-worlds"
 
 describe("renderer wgpu worlds helpers", () => {
-	it("validates transition payload sizes", () => {
+	it("validates rule payload sizes", () => {
 		expect.assertions(2)
 
 		const valid = {
-			fromLookup: new Uint32Array(24),
-			toLookup: new Uint32Array(24),
-			progress: new Float32Array(3),
+			ruleLookups: new Uint32Array(288),
+			transitionRatios: new Float32Array(36),
+			ruleCounts: new Uint32Array(3),
 		}
 		const invalid = {
-			fromLookup: new Uint32Array(16),
-			toLookup: new Uint32Array(24),
-			progress: new Float32Array(3),
+			ruleLookups: new Uint32Array(16),
+			transitionRatios: new Float32Array(36),
+			ruleCounts: new Uint32Array(3),
 		}
 
-		expect(isTransitionPayloadValid(valid, 24, 3)).toBe(true)
-		expect(isTransitionPayloadValid(invalid, 24, 3)).toBe(false)
+		expect(
+			isRulePayloadValid(valid, {
+				lookupSize: 288,
+				ratioSize: 36,
+				worldCount: 3,
+			}),
+		).toBe(true)
+		expect(
+			isRulePayloadValid(invalid, {
+				lookupSize: 288,
+				ratioSize: 36,
+				worldCount: 3,
+			}),
+		).toBe(false)
 	})
 
-	it("selects horizontal transition value by progress", () => {
+	it("selects rule stop index by ratio", () => {
 		expect.assertions(4)
 
-		expect(selectHorizontalTransitionValue(0, 1, 0)).toBe(0)
-		expect(selectHorizontalTransitionValue(0, 1, 0.2)).toBe(0)
-		expect(selectHorizontalTransitionValue(0, 1, 0.5)).toBe(1)
-		expect(selectHorizontalTransitionValue(0, 1, 1)).toBe(1)
+		expect(selectRuleStopIndex([0], 0.2)).toBe(0)
+		expect(selectRuleStopIndex([0, 0.4, 0.9], 0.2)).toBe(0)
+		expect(selectRuleStopIndex([0, 0.4, 0.9], 0.5)).toBe(1)
+		expect(selectRuleStopIndex([0, 0.4, 0.9], 1)).toBe(2)
 	})
 
 	it("computes pulse injection deterministically", () => {

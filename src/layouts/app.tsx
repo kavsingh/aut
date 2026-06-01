@@ -1,15 +1,15 @@
 import { A } from "@solidjs/router"
+import { splitProps } from "solid-js"
 
 import { Button, buttonVariants } from "~/components/button"
 import {
 	ConstructIcon,
 	FullscreenIcon,
 	GithubIcon,
-	RocketIcon,
 	ScrollsIcon,
 	TransparencyGridIcon,
 } from "~/components/icons"
-import { tv } from "~/lib/style"
+import { tv, tm } from "~/lib/style"
 
 import type { ComponentProps, ParentProps } from "solid-js"
 
@@ -21,10 +21,14 @@ const internalLinkVariants = tv({
 function InternalLink(
 	props: Omit<
 		ComponentProps<typeof A>,
-		"class" | "classList" | "activeClass" | "inactiveClass"
+		"classList" | "activeClass" | "inactiveClass"
 	>,
 ) {
-	return <A {...props} class={internalLinkVariants()} />
+	const [compProps, passProps] = splitProps(props, ["class"])
+
+	return (
+		<A {...passProps} class={tm(compProps.class, internalLinkVariants())} />
+	)
 }
 
 function toggleFullscreen() {
@@ -42,8 +46,11 @@ export function App(props: ParentProps) {
 				<InternalLink href="/construct">
 					<ConstructIcon />
 				</InternalLink>
-				<InternalLink href="/wgpu-scrolls">
-					<RocketIcon />
+				<InternalLink class="text-green-600" href="/wgpu-scrolls">
+					<ScrollsIcon />
+				</InternalLink>
+				<InternalLink class="text-green-600" href="/wgpu-construct">
+					<ConstructIcon />
 				</InternalLink>
 				<Button onClick={toggleFullscreen}>
 					<FullscreenIcon />

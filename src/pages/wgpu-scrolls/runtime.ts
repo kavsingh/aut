@@ -3,9 +3,15 @@
 import { allRules } from "~/lib/rules"
 import { valueEq } from "~/lib/util"
 import { generateInitialWorld, seedRandom } from "~/lib/world"
-import { createWgpuWorldRenderer } from "~/renderers/renderer-wgpu-worlds"
+import {
+	createWgpuWorldRenderer,
+	RULE_LOOKUP_WIDTH,
+	RULE_STOP_CAP,
+} from "~/renderers/renderer-wgpu-worlds"
+import { writeWorldRuleStops } from "~/renderers/wgpu-rule-payload"
 
 import type { EvolutionRule, WorldState } from "~/lib/types"
+import type { RuleStop } from "~/renderers/wgpu-rule-payload"
 
 const WORLD_COUNT = 3
 const CELL_DIM = 1
@@ -71,31 +77,64 @@ const RULE_SEQUENCE: RuleName[] = [
 	"rule225",
 ]
 
-function createRuleLookups(): Readonly<Record<RuleName, Uint32Array>> {
-	const lookups = {
-		rule3: new Uint32Array(8),
-		rule18: new Uint32Array(8),
-		rule45: new Uint32Array(8),
-		rule57: new Uint32Array(8),
-		rule73: new Uint32Array(8),
-		rule90: new Uint32Array(8),
-		rule160: new Uint32Array(8),
-		rule182: new Uint32Array(8),
-		rule225: new Uint32Array(8),
-	} satisfies Record<RuleName, Uint32Array>
+const SCROLL_STOP_COUNT = 4
 
-	for (const ruleName of RULE_SEQUENCE) {
-		const ruleNumber = Number(ruleName.replace("rule", ""))
+interface AnimatedRuleQueue {
+	stops: RuleStop[]
+	nextRuleIndex: number
+	spacing: number
+}
 
-		for (let pattern = 0; pattern < 8; pattern++) {
-			lookups[ruleName][pattern] = Math.floor(ruleNumber / 2 ** pattern) % 2
+function createAnimatedRuleQueue(
+	sequence: readonly RuleName[],
+	startIndex: number,
+	stopCount: number,
+): AnimatedRuleQueue {
+	const safeSequence =
+		sequence.length > 0 ? sequence : (["rule3"] as RuleName[])
+	const normalizedStart =
+		((startIndex % safeSequence.length) + safeSequence.length) %
+		safeSequence.length
+	const spacing = 1 / Math.max(1, stopCount - 1)
+	const stops: RuleStop[] = []
+
+	for (let i = 0; i < stopCount; i++) {
+		const rule = safeSequence[(normalizedStart + i) % safeSequence.length]
+
+		if (rule) {
+			stops.push([rule, i * spacing])
 		}
 	}
 
-	return lookups
+	return {
+		stops,
+		nextRuleIndex: (normalizedStart + stopCount) % safeSequence.length,
+		spacing,
+	}
 }
 
-const RULE_LOOKUPS = createRuleLookups()
+function advanceAnimatedRuleQueue(
+	queue: AnimatedRuleQueue,
+	sequence: readonly RuleName[],
+	ratioDelta: number,
+) {
+	const safeSequence =
+		sequence.length > 0 ? sequence : (["rule3"] as RuleName[])
+
+	queue.stops = queue.stops.map(([rule, ratio]) => {
+		return [rule, ratio - ratioDelta]
+	})
+
+	while ((queue.stops[0]?.[1] ?? 0) <= 0 && queue.stops.length > 1) {
+		queue.stops.shift()
+
+		const nextRule = safeSequence[queue.nextRuleIndex] ?? "rule3"
+		const nextRatio = (queue.stops.at(-1)?.[1] ?? 0) + queue.spacing
+
+		queue.stops.push([nextRule, nextRatio])
+		queue.nextRuleIndex = (queue.nextRuleIndex + 1) % safeSequence.length
+	}
+}
 
 function sampleTransition(
 	sequence: RuleName[],
@@ -127,14 +166,6 @@ function sampleTransition(
 		toRule: allRules[toName],
 		progress,
 	}
-}
-
-function fillRuleLookup(
-	ruleName: RuleName,
-	target: Uint32Array,
-	offset: number,
-) {
-	target.set(RULE_LOOKUPS[ruleName], offset)
 }
 
 function evolveGeneration(
@@ -246,15 +277,21 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 	}
 
 	const initialWorlds = Array.from({ length: CONFIG.worldCount }, () =>
-		generateInitialWorld(generationSize, generationSize),
+		generateInitialWorld(generationSize, generationSize, seedRandom),
 	)
-	let audioWorld = generateInitialWorld(generationSize, generationSize)
+	let audioWorld = generateInitialWorld(
+		generationSize,
+		generationSize,
+		seedRandom,
+	)
 	const flatState = new Uint32Array(
 		CONFIG.worldCount * generationSize * generationSize,
 	)
-	const fromLookup = new Uint32Array(CONFIG.worldCount * 8)
-	const toLookup = new Uint32Array(CONFIG.worldCount * 8)
-	const transitionProgress = new Float32Array(CONFIG.worldCount)
+	const ruleLookups = new Uint32Array(
+		CONFIG.worldCount * RULE_STOP_CAP * RULE_LOOKUP_WIDTH,
+	)
+	const transitionRatios = new Float32Array(CONFIG.worldCount * RULE_STOP_CAP)
+	const ruleCounts = new Uint32Array(CONFIG.worldCount)
 	let step = 0
 	let running = true
 	let frameId = 0
@@ -276,9 +313,18 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 		0,
 		transitionSegmentTicks - transitionBlendTicks,
 	)
+	const ruleQueues = Array.from({ length: CONFIG.worldCount }, (_, i) => {
+		return createAnimatedRuleQueue(
+			RULE_SEQUENCE,
+			phaseOffsets[i] ?? i,
+			SCROLL_STOP_COUNT,
+		)
+	})
+	const queueRatioDelta = 1 / Math.max(1, transitionSegmentTicks)
 
 	flattenWorlds(initialWorlds, flatState)
 	renderer.seed(flatState)
+	renderer.renderCurrent()
 
 	const updateInterval = setInterval(() => {
 		if (!running) return
@@ -288,6 +334,21 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 			const currentStep = step + subStep
 
 			for (let i = 0; i < CONFIG.worldCount; i++) {
+				const queue = ruleQueues[i]
+				if (queue) {
+					advanceAnimatedRuleQueue(queue, RULE_SEQUENCE, queueRatioDelta)
+
+					writeWorldRuleStops({
+						worldIndex: i,
+						stops: queue.stops,
+						ruleLookups,
+						transitionRatios,
+						ruleCounts,
+						stopCap: RULE_STOP_CAP,
+						lookupWidth: RULE_LOOKUP_WIDTH,
+					})
+				}
+
 				const phaseOffset =
 					(phaseOffsets[i] ?? 0) *
 					Math.max(1, Math.floor(transitionSegmentTicks / CONFIG.worldCount))
@@ -299,11 +360,6 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 						blendTicks: transitionBlendTicks,
 					},
 				)
-				const transitionOffset = i * 8
-
-				fillRuleLookup(transition.fromName, fromLookup, transitionOffset)
-				fillRuleLookup(transition.toName, toLookup, transitionOffset)
-				transitionProgress[i] = transition.progress
 
 				if (i === 0 && subStep % CONFIG.audioStepModulo === 0) {
 					audioWorld = evolveWorld(
@@ -315,9 +371,9 @@ async function createRuntime(canvas: HTMLCanvasElement, hooks: RuntimeHooks) {
 			}
 
 			renderer.step({
-				fromLookup,
-				toLookup,
-				progress: transitionProgress,
+				ruleLookups,
+				transitionRatios,
+				ruleCounts,
 			})
 
 			step += 1

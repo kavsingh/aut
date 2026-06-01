@@ -3,45 +3,51 @@
 import typegpu, { d, std } from "typegpu"
 
 const WORKGROUP_SIZE = 64
+const RULE_LOOKUP_WIDTH = 8
+const RULE_STOP_CAP = 12
 
 interface WgpuWorldRendererOptions {
 	worldCount: number
 	generationSize: number
 }
 
-interface WorldStepTransition {
-	fromLookup: Uint32Array
-	toLookup: Uint32Array
-	progress: Float32Array
+interface WorldStepRules {
+	ruleLookups: Uint32Array
+	transitionRatios: Float32Array
+	ruleCounts: Uint32Array
 }
 
 interface WgpuWorldRenderer {
 	seed: (cells: Uint32Array) => void
-	step: (transition: WorldStepTransition) => void
+	step: (rules: WorldStepRules) => void
 	renderCurrent: () => void
 }
 
-function isTransitionPayloadValid(
-	transition: WorldStepTransition,
-	expectedTransitionSize: number,
-	expectedWorldCount: number,
+function isRulePayloadValid(
+	rules: WorldStepRules,
+	expected: {
+		lookupSize: number
+		ratioSize: number
+		worldCount: number
+	},
 ) {
 	return (
-		transition.fromLookup.length === expectedTransitionSize &&
-		transition.toLookup.length === expectedTransitionSize &&
-		transition.progress.length === expectedWorldCount
+		rules.ruleLookups.length === expected.lookupSize &&
+		rules.transitionRatios.length === expected.ratioSize &&
+		rules.ruleCounts.length === expected.worldCount
 	)
 }
 
-function selectHorizontalTransitionValue(
-	fromValue: number,
-	toValue: number,
-	progress: number,
-) {
-	if (progress <= 0) return fromValue
-	if (progress >= 1) return toValue
+function selectRuleStopIndex(ratios: number[], ratio: number) {
+	if (ratios.length <= 1) return 0
 
-	return progress >= 0.5 ? toValue : fromValue
+	let selected = 0
+	for (let i = 1; i < ratios.length; i++) {
+		const threshold = ratios[i]
+		if (threshold !== undefined && ratio >= threshold) selected = i
+	}
+
+	return selected
 }
 
 function shouldInjectPulse(sample: {
@@ -75,7 +81,8 @@ function createWgpuWorldRenderer(
 
 	const totalCells =
 		options.generationSize * options.generationSize * options.worldCount
-	const transitionSize = options.worldCount * 8
+	const ruleLookupSize = options.worldCount * RULE_STOP_CAP * RULE_LOOKUP_WIDTH
+	const transitionRatioSize = options.worldCount * RULE_STOP_CAP
 
 	context.configure({
 		device: gpu,
@@ -106,28 +113,29 @@ function createWgpuWorldRenderer(
 		root.createBuffer(cellSchema).$usage("storage").$name("World cells B"),
 	] as const
 
-	const transitionLookupSchema = d.arrayOf(d.u32, transitionSize)
-	const transitionProgressSchema = d.arrayOf(d.f32, options.worldCount)
+	const ruleLookupsSchema = d.arrayOf(d.u32, ruleLookupSize)
+	const transitionRatiosSchema = d.arrayOf(d.f32, transitionRatioSize)
+	const ruleCountsSchema = d.arrayOf(d.u32, options.worldCount)
 
-	const transitionFrom = root
-		.createBuffer(transitionLookupSchema)
+	const ruleLookups = root
+		.createBuffer(ruleLookupsSchema)
 		.$usage("storage")
-		.$name("Transition from lookup")
-	const transitionTo = root
-		.createBuffer(transitionLookupSchema)
+		.$name("Rule lookup table")
+	const transitionRatios = root
+		.createBuffer(transitionRatiosSchema)
 		.$usage("storage")
-		.$name("Transition to lookup")
-	const transitionProgress = root
-		.createBuffer(transitionProgressSchema)
+		.$name("Transition ratios")
+	const ruleCounts = root
+		.createBuffer(ruleCountsSchema)
 		.$usage("storage")
-		.$name("Transition progress")
+		.$name("Rule counts")
 
 	cellStorage[0].write(new Uint32Array(totalCells).buffer)
 	cellStorage[1].write(new Uint32Array(totalCells).buffer)
 
-	transitionFrom.write(new Uint32Array(transitionSize).buffer)
-	transitionTo.write(new Uint32Array(transitionSize).buffer)
-	transitionProgress.write(new Float32Array(options.worldCount).buffer)
+	ruleLookups.write(new Uint32Array(ruleLookupSize).buffer)
+	transitionRatios.write(new Float32Array(transitionRatioSize).buffer)
+	ruleCounts.write(new Uint32Array(options.worldCount).buffer)
 
 	const bindGroupLayout = typegpu
 		.bindGroupLayout({
@@ -149,18 +157,18 @@ function createWgpuWorldRenderer(
 				access: "mutable",
 				visibility: ["compute"],
 			},
-			transitionFrom: {
-				storage: transitionLookupSchema,
+			ruleLookups: {
+				storage: ruleLookupsSchema,
 				access: "readonly",
 				visibility: ["compute"],
 			},
-			transitionTo: {
-				storage: transitionLookupSchema,
+			transitionRatios: {
+				storage: transitionRatiosSchema,
 				access: "readonly",
 				visibility: ["compute"],
 			},
-			transitionProgress: {
-				storage: transitionProgressSchema,
+			ruleCounts: {
+				storage: ruleCountsSchema,
 				access: "readonly",
 				visibility: ["compute"],
 			},
@@ -174,18 +182,18 @@ function createWgpuWorldRenderer(
 			sim: simBuffer,
 			cellStateIn: cellStorage[0],
 			cellStateOut: cellStorage[1],
-			transitionFrom,
-			transitionTo,
-			transitionProgress,
+			ruleLookups,
+			transitionRatios,
+			ruleCounts,
 		}),
 		root.createBindGroup(bindGroupLayout, {
 			grid: gridBuffer,
 			sim: simBuffer,
 			cellStateIn: cellStorage[1],
 			cellStateOut: cellStorage[0],
-			transitionFrom,
-			transitionTo,
-			transitionProgress,
+			ruleLookups,
+			transitionRatios,
+			ruleCounts,
 		}),
 	] as const
 
@@ -257,59 +265,35 @@ function createWgpuWorldRenderer(
 				std.mul(left, d.u32(4)),
 				std.add(std.mul(center, d.u32(2)), right),
 			)
-			const ruleOffset = std.mul(worldIndex, d.u32(8))
-			const fromValue = d.u32(
-				bindGroupLayout.$.transitionFrom[std.add(ruleOffset, pattern)],
-			)
-			const toValue = d.u32(
-				bindGroupLayout.$.transitionTo[std.add(ruleOffset, pattern)],
-			)
-			const progress = d.f32(bindGroupLayout.$.transitionProgress[worldIndex])
-
-			if (progress <= 0) {
-				let nextValue = fromValue
-				const stepCounter = bindGroupLayout.$.sim.x
-				const reseedStride = bindGroupLayout.$.sim.y
-				const pulseActive =
-					std.mod(d.f32(stepCounter), d.f32(reseedStride)) === d.f32(0)
-				const pulseCol = std.mod(
-					std.add(d.f32(col), std.mul(d.f32(worldIndex), d.f32(17))),
-					d.f32(worldWidth),
-				)
-
-				if (nextValue === d.u32(0) && pulseActive && pulseCol === d.f32(0)) {
-					nextValue = d.u32(1)
-				}
-
-				bindGroupLayout.$.cellStateOut[idx] = nextValue
-				return
-			}
-
-			if (progress >= 1) {
-				let nextValue = toValue
-				const stepCounter = bindGroupLayout.$.sim.x
-				const reseedStride = bindGroupLayout.$.sim.y
-				const pulseActive =
-					std.mod(d.f32(stepCounter), d.f32(reseedStride)) === d.f32(0)
-				const pulseCol = std.mod(
-					std.add(d.f32(col), std.mul(d.f32(worldIndex), d.f32(17))),
-					d.f32(worldWidth),
-				)
-
-				if (nextValue === d.u32(0) && pulseActive && pulseCol === d.f32(0)) {
-					nextValue = d.u32(1)
-				}
-
-				bindGroupLayout.$.cellStateOut[idx] = nextValue
-				return
-			}
-
-			let nextValue = fromValue
-
-			if (progress >= d.f32(0.5)) {
-				nextValue = toValue
-			}
 			const stepCounter = bindGroupLayout.$.sim.x
+			const virtualRow = std.mod(stepCounter, worldHeight)
+			const ratioDenominator = std.max(d.u32(1), std.sub(worldHeight, d.u32(1)))
+			const rowRatio = std.div(d.f32(virtualRow), d.f32(ratioDenominator))
+
+			const worldStopBase = std.mul(worldIndex, d.u32(RULE_STOP_CAP))
+			const worldRuleCount = d.u32(bindGroupLayout.$.ruleCounts[worldIndex])
+			let selectedStop = d.u32(0)
+
+			for (let stop = 1; stop < RULE_STOP_CAP; stop++) {
+				const stopU = d.u32(stop)
+				if (stopU >= worldRuleCount) continue
+
+				const ratio = d.f32(
+					bindGroupLayout.$.transitionRatios[std.add(worldStopBase, stopU)],
+				)
+
+				if (rowRatio >= ratio) {
+					selectedStop = stopU
+				}
+			}
+
+			const selectedRuleBase = std.mul(
+				std.add(worldStopBase, selectedStop),
+				d.u32(RULE_LOOKUP_WIDTH),
+			)
+			let nextValue = d.u32(
+				bindGroupLayout.$.ruleLookups[std.add(selectedRuleBase, pattern)],
+			)
 			const reseedStride = bindGroupLayout.$.sim.y
 			const pulseActive =
 				std.mod(d.f32(stepCounter), d.f32(reseedStride)) === d.f32(0)
@@ -432,16 +416,20 @@ function createWgpuWorldRenderer(
 		stepIndex = 0
 	}
 
-	function step(transition: WorldStepTransition) {
+	function step(rules: WorldStepRules) {
 		if (
-			!isTransitionPayloadValid(transition, transitionSize, options.worldCount)
+			!isRulePayloadValid(rules, {
+				lookupSize: ruleLookupSize,
+				ratioSize: transitionRatioSize,
+				worldCount: options.worldCount,
+			})
 		) {
 			return
 		}
 
-		transitionFrom.write(transition.fromLookup)
-		transitionTo.write(transition.toLookup)
-		transitionProgress.write(transition.progress)
+		ruleLookups.write(rules.ruleLookups)
+		transitionRatios.write(rules.transitionRatios)
+		ruleCounts.write(rules.ruleCounts)
 		simBuffer.write(new Uint32Array([stepIndex, 97]))
 
 		const workgroups = Math.ceil(totalCells / WORKGROUP_SIZE)
@@ -478,8 +466,10 @@ function createWgpuWorldRenderer(
 
 export {
 	createWgpuWorldRenderer,
-	isTransitionPayloadValid,
-	selectHorizontalTransitionValue,
+	isRulePayloadValid,
+	selectRuleStopIndex,
 	shouldInjectPulse,
+	RULE_LOOKUP_WIDTH,
+	RULE_STOP_CAP,
 }
-export type { WgpuWorldRenderer, WgpuWorldRendererOptions, WorldStepTransition }
+export type { WgpuWorldRenderer, WgpuWorldRendererOptions, WorldStepRules }
