@@ -1,0 +1,49 @@
+{
+	"format_on_save": "on",
+	"preferred_line_length": 84,
+	"prettier": { "allowed": false },
+	"formatter": [{ "language_server": { "name": "oxfmt" } }],
+	"code_actions_on_format": { "source.fixAll.oxc": true },
+
+	"lsp": {
+		"tailwindcss-language-server": {
+			"settings": {
+				"validate": false,
+				"experimental": {
+					"configFile": { "src/index.css": "src/**/*" }
+				}
+			}
+		}
+	},
+
+	"languages": {
+		"TypeScript": {
+			"language_servers": [
+				"tsgo",
+				"oxlint",
+				"tailwindcss-language-server",
+				"oxfmt"
+			]
+		},
+
+		"TSX": {
+			"language_servers": [
+				"tsgo",
+				"oxlint",
+				"tailwindcss-language-server",
+				"oxfmt"
+			]
+		},
+
+		"JavaScript": { "language_servers": ["tsgo", "oxlint", "oxfmt"] },
+
+		"CSS": {
+			"language_servers": [
+				"tailwindcss-language-server",
+				"tailwindcss-intellisense-css",
+				"oxfmt",
+				"!vscode-css-language-server"
+			]
+		}
+	}
+}
